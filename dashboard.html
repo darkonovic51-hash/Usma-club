@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة تحكم USMA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* Variables */
+:root{--red:#C8102E;--black:#08090B;--b2:#121417;--b3:#1a1d22;--gold:#B79A62;--white:#F5F5F3;--muted:#9a9ea6;--line:rgba(183,154,98,.22);--r:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',Tahoma,sans-serif;background:var(--black);color:var(--white);min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* Layout */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+aside{background:#000;border-inline-end:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 16px;border-bottom:1px solid var(--line);margin-bottom:12px;font-weight:900}
+.brand img{height:42px}.brand small{display:block;color:var(--gold);font-size:.7rem;letter-spacing:.12em}
+.nav-g{color:var(--gold);font-size:.72rem;letter-spacing:.12em;margin:14px 10px 4px}
+.nav-b{display:flex;width:100%;align-items:center;gap:10px;padding:10px 12px;background:none;border-radius:var(--r);text-align:start;font-weight:600;color:#ddd;transition:.2s}
+.nav-b:hover{background:var(--b3)}.nav-b.on{background:var(--red);color:#fff}
+.nav-b .bd{margin-inline-start:auto;background:var(--gold);color:#000;border-radius:100px;font-size:.7rem;padding:0 8px;font-weight:900}
+main{padding:24px clamp(14px,3vw,36px);min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.top h1{font-size:1.7rem;font-weight:900}.top h1::after{content:"";display:block;width:60px;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));margin-top:6px}
+.btn{padding:10px 20px;border-radius:var(--r);font-weight:800;background:var(--b3);border:1px solid var(--line);transition:.2s}
+.btn:hover{border-color:var(--gold)}.btn.red{background:var(--red);border-color:var(--red)}.btn.red:hover{box-shadow:0 0 20px rgba(200,16,46,.5)}
+.btn.s{padding:4px 12px;font-size:.82rem}.btn.d{color:#ff6b7f}
+.card{background:var(--b2);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}.f.full{grid-column:1/-1}
+.f label{font-size:.82rem;color:var(--gold);font-weight:700}
+.f input:not([type=checkbox]),.f select,.f textarea{background:#0b0c0e;border:1px solid #2b2f36;border-radius:var(--r);padding:10px 12px;width:100%}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--red);outline:0}
+.f textarea{min-height:100px;resize:vertical}.f input[type=checkbox]{width:22px;height:22px;accent-color:var(--red)}
+.img-f{display:flex;gap:8px;align-items:center}.img-f img{width:42px;height:42px;object-fit:cover;border-radius:4px;border:1px solid var(--line)}
+.hint{color:var(--muted);font-size:.75rem}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:560px;background:var(--b2)}
+th{background:#000;color:var(--gold);font-size:.8rem;padding:11px 10px;text-align:start}
+td{padding:9px 10px;border-top:1px solid rgba(255,255,255,.06);font-size:.9rem;vertical-align:middle}
+tr:hover td{background:var(--b3)}td img{width:38px;height:38px;object-fit:cover;border-radius:4px}
+td .acts{display:flex;gap:6px}
+.pill{padding:1px 10px;border-radius:100px;font-size:.75rem;font-weight:800;border:1px solid var(--gold);color:var(--gold)}
+.pill.pending{color:#ffb020;border-color:#ffb020}.pill.confirmed,.pill.completed{color:#3ddc84;border-color:#3ddc84}.pill.cancelled{color:#ff6b7f;border-color:#ff6b7f}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+/* Modal + toast + login */
+.md{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:14px;z-index:50}.md.on{display:flex}
+.mb{background:var(--b2);border:1px solid var(--gold);border-top:4px solid var(--red);border-radius:var(--r);width:min(760px,100%);max-height:92vh;overflow:auto;padding:24px}
+.mb h3{margin-bottom:16px;font-size:1.3rem}.mf{display:flex;gap:10px;margin-top:18px;justify-content:flex-end}
+#toast{position:fixed;bottom:20px;inset-inline-start:20px;background:#000;border:1px solid var(--gold);border-inline-start:4px solid var(--red);padding:12px 18px;border-radius:var(--r);z-index:99;display:none;max-width:90vw}
+#login{position:fixed;inset:0;z-index:80;background:var(--black) radial-gradient(ellipse at top,rgba(200,16,46,.3),transparent 60%);display:none;place-items:center;padding:16px}
+#login form{width:min(400px,100%);background:var(--b2);border:1px solid var(--gold);border-top:4px solid var(--red);padding:28px;border-radius:var(--r);display:grid;gap:14px;text-align:center}
+#login img{height:80px;margin:0 auto}
+.mob{display:none}
+@media(max-width:860px){.app{grid-template-columns:1fr}aside{position:fixed;inset-block:0;inset-inline-start:0;width:260px;z-index:40;transform:translateX(100%);transition:.3s}aside.on{transform:none}.mob{display:inline-block}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN (Firebase Auth REST) -->
+<div id="login"><form id="lf"><img src="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png" alt="USMA">
+<h2>لوحة تحكم USMA</h2>
+<div class="f"><label for="em">البريد الإلكتروني</label><input id="em" type="email" required autocomplete="username"></div>
+<div class="f"><label for="pw">كلمة المرور</label><input id="pw" type="password" required autocomplete="current-password"></div>
+<button class="btn red">دخول</button><div class="hint" id="lerr"></div></form></div>
+
+<div class="app" id="app" hidden>
+  <aside id="side"><div class="brand"><img src="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png" alt=""><div>USM ALGER<small>DASHBOARD</small></div></div><nav id="nav" aria-label="الأقسام"></nav></aside>
+  <main><div class="top"><div style="display:flex;gap:10px;align-items:center"><button class="btn mob" id="menuB" aria-label="القائمة">☰</button><h1 id="ttl"></h1></div><div id="topActs" style="display:flex;gap:8px;flex-wrap:wrap"></div></div><div id="view"></div></main>
+</div>
+<div class="md" id="md"><div class="mb" id="mb" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status"></div>
+
+<script>
+/* ================= CONFIG ================= */
+const CFG = {
+  DB: "https://academy-school-16d1b-default-rtdb.firebaseio.com", // Realtime Database
+  ROOT: "usma",                        // كل بيانات الموقع تحت /usma فقط (لا تلمس بقية المشروع)
+  API_KEY: "YOUR_API_KEY",             // Firebase Console → Project settings → Web API Key (لتسجيل الدخول)
+  BUCKET: "YOUR_STORAGE_BUCKET",       // مثال: academy-school-16d1b.appspot.com (لرفع الصور، اختياري)
+  REQUIRE_AUTH: true                   // false للتجربة فقط مع قواعد مفتوحة (غير آمن)
+};
+const LOGO="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png";
+const HERO="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/49bc88b2bd43cd1ab3bbd2b9301c5b8fa76a1861/file_00000000689c8210b9c8c322a6d1e93d.png";
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s), esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const getP=(o,p)=>p.split(".").reduce((a,k)=>a==null?a:a[k],o);
+const setP=(o,p,v)=>{const k=p.split(".");k.slice(0,-1).reduce((a,x)=>a[x]??(a[x]={}),o)[k.at(-1)]=v;};
+let tok=sessionStorage.getItem("t")||"", DB={}, cur=null;
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",3200);}
+async function api(p,m="GET",b){
+  const r=await fetch(`${CFG.DB}/${CFG.ROOT}/${p}.json${tok?"?auth="+tok:""}`,{method:m,body:b===undefined?undefined:JSON.stringify(b)});
+  if(r.status===401&&sessionStorage.rt){await refresh();return api(p,m,b);}
+  if(!r.ok)throw new Error(r.status===401?"غير مصرح — تحقق من تسجيل الدخول وقواعد Firebase":"خطأ "+r.status);
+  return r.json();
+}
+/* ================= AUTH (REST) ================= */
+async function refresh(){
+  const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${CFG.API_KEY}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:`grant_type=refresh_token&refresh_token=${sessionStorage.rt}`});
+  const d=await r.json(); if(!r.ok){logout();throw new Error("انتهت الجلسة");} tok=d.id_token;sessionStorage.t=tok;sessionStorage.rt=d.refresh_token;
+}
+$("#lf").addEventListener("submit",async e=>{
+  e.preventDefault();$("#lerr").textContent="";
+  try{
+    const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("#em").value,password:$("#pw").value,returnSecureToken:true})});
+    const d=await r.json(); if(!r.ok)throw new Error(d.error?.message||"فشل الدخول");
+    tok=d.idToken;sessionStorage.t=tok;sessionStorage.rt=d.refreshToken;start();
+  }catch(er){$("#lerr").textContent="تعذّر الدخول: "+er.message;}
+});
+function logout(){sessionStorage.clear();tok="";location.reload();}
+setInterval(()=>{if(sessionStorage.rt)refresh().catch(()=>{});},45*60*1000);
+
+/* ================= SCHEMA ================= */
+// حقل: [المسار, التسمية, النوع, خيارات]   الأنواع: text number date datetime textarea image select check goals
+const CATS=[["goalkeepers","حراس المرمى"],["defenders","المدافعون"],["midfielders","لاعبو الوسط"],["forwards","المهاجمون"],["coach","المدرب"]];
+const TABS=[["","(بدون)"],["fx","النتائج والرزنامة"],["st","الترتيب"]];
+const SOC=["Facebook","Instagram","YouTube","X"];
+const SECTIONS=[
+ {g:"الموقع"},
+ {id:"siteSettings",label:"الإعدادات العامة",kind:"single",path:"siteSettings",fields:[["clubName","اسم النادي (عربي)"],["clubNameEn","اسم النادي (EN)"],["shortName","الاختصار"],["since","سنة التأسيس","number"],["logo","الشعار","image"],["topTag","عبارة الشريط العلوي"],["slogan","الشعار النصي"],["about","نبذة (الفوتر)","textarea"],...SOC.map((s,i)=>[`social.${i}.url`,"رابط "+s])]},
+ {id:"hero",label:"الواجهة (Hero)",kind:"single",path:"hero",fields:[["image","صورة الخلفية","image"],["title","العنوان"],["highlight","الجزء الملوّن"],["subtitle","السطر الفرعي"],["buttons.0.text","نص الزر 1"],["buttons.0.target","رابط الزر 1"],["buttons.1.text","نص الزر 2"],["buttons.1.target","رابط الزر 2"]]},
+ {id:"navigation",label:"القائمة (Navbar)",kind:"list",path:"navigation",cols:["order","label","target"],fields:[["label","النص"],["target","الهدف (#team ...)"],["tab","تبويب",'select',TABS],["order","الترتيب","number"],["cta","زر مميّز","check"]]},
+ {id:"services",label:"الخدمات السريعة",kind:"list",path:"services",cols:["order","icon","title"],fields:[["icon","أيقونة (Emoji)"],["title","العنوان"],["desc","الوصف"],["target","الهدف"],["tab","تبويب","select",TABS],["order","الترتيب","number"]]},
+ {g:"الفريق والمباريات"},
+ {id:"players",label:"اللاعبون",kind:"list",path:"players",cols:["image","name","position","number","category"],fields:[["name","الاسم"],["position","المركز"],["category","الفئة","select",CATS],["number","رقم القميص","number"],["image","الصورة","image"],["description","الوصف","textarea"]]},
+ {id:"nextMatch",label:"المباراة القادمة",kind:"single",path:"nextMatch",fields:[["home.name","الفريق 1 (EN)"],["home.nameAr","الفريق 1 (عربي)"],["home.logo","شعار الفريق 1","image"],["away.name","الفريق 2 (EN)"],["away.nameAr","الفريق 2 (عربي)"],["away.logo","شعار الفريق 2 (JSK)","image"],["competition","البطولة"],["season","الموسم"],["round","الجولة","number"],["datetime","التاريخ والساعة (العد التنازلي)","datetime"],["stadium","الملعب"],["durationMinutes","مدة المباراة (دقيقة)","number"]]},
+ {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date"],fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image"],["awayLogo","شعار الضيف","image"],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals",{full:1}],["info","معلومات إضافية","textarea"]]},
+ {id:"standings",label:"الترتيب",kind:"list",path:"standings",sort:(a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf,cols:["logo","team","p","w","d","l","gf","ga","gd","pts"],pre:x=>{x.p=x.w+x.d+x.l;x.gd=x.gf-x.ga;x.pts=x.w*3+x.d;},hint:"P وGD وPTS تُحسب تلقائيًا (فوز=3، تعادل=1).",fields:[["team","الفريق"],["logo","الشعار","image"],["w","فوز","number"],["d","تعادل","number"],["l","خسارة","number"],["gf","له","number"],["ga","عليه","number"]]},
+ {id:"fixturesConfig",label:"إعدادات الموسم",kind:"single",path:"fixturesConfig",fields:[["competition","البطولة"],["season","الموسم"],["rounds","عدد الجولات","number"]]},
+ {g:"التذاكر والمتجر"},
+ {id:"ticket",label:"تذكرة المباراة",kind:"single",path:"tickets/match",fields:[["title","العنوان"],["ticketType","نوع التذكرة"],["matchRound","الجولة","number"],["price","السعر","number"],["currency","العملة"],["stadium","الملعب"],["capacity","عدد التذاكر","number"],["sold","المباعة","number"],["active","الحجز مفتوح","check"]]},
+ {id:"offers",label:"الاشتراكات والبطاقات",kind:"list",path:"tickets/offers",cols:["title","price","period","vip"],fields:[["title","العنوان"],["price","السعر","number"],["period","المدة"],["desc","الوصف","textarea"],["vip","VIP","check"]]},
+ {id:"products",label:"المنتجات",kind:"list",path:"products",cols:["image","name","price","active"],fields:[["name","الاسم"],["price","السعر","number"],["currency","العملة"],["image","الصورة","image"],["short","وصف قصير"],["description","الوصف الكامل","textarea"],["active","ظاهر في المتجر","check"]]},
+ {g:"المحتوى"},
+ {id:"academy",label:"مدرسة كرة القدم",kind:"single",path:"academy",fields:[["image","صورة الخلفية","image"],["title","العنوان"],["text","النص","textarea"],["categories","الفئات (سطر لكل فئة)","textarea"],...[0,1,2].flatMap(i=>[[`points.${i}.icon`,`ميزة ${i+1}: أيقونة`],[`points.${i}.title`,`ميزة ${i+1}: عنوان`],[`points.${i}.desc`,`ميزة ${i+1}: وصف`]])]},
+ {id:"news",label:"الأخبار",kind:"list",path:"news",sort:(a,b)=>(b.date||"").localeCompare(a.date||""),cols:["image","title","category","date"],fields:[["title","العنوان"],["category","التصنيف"],["date","التاريخ","date"],["author","الكاتب"],["image","الصورة","image"],["summary","الملخص","textarea"],["content","النص الكامل (فقرة في كل سطر)","textarea"],["demo","محتوى تجريبي","check"]]},
+ {g:"الطلبات الواردة"},
+ {id:"ticketBookings",label:"حجوزات التذاكر",kind:"inbox",path:"ticketBookings",cols:["id","name","lastName","phone","email","match","createdAt"]},
+ {id:"subscriptionRequests",label:"طلبات الاشتراك",kind:"inbox",path:"subscriptionRequests",cols:["id","offer","name","lastName","phone","email","createdAt"]},
+ {id:"orders",label:"طلبات المتجر",kind:"inbox",path:"orders",cols:["orderId","productId","customerName","customerLastName","phone","address","quantity","createdAt"]},
+ {id:"academyApplications",label:"تسجيلات المدرسة",kind:"inbox",path:"academyApplications",cols:["id","childName","childLastName","age","category","parentName","parentPhone","email","createdAt"]}
+];
+const LBL={id:"المعرّف",orderId:"رقم الطلب",productId:"المنتج",name:"الاسم",lastName:"اللقب",phone:"الهاتف",email:"البريد",match:"المباراة",createdAt:"التاريخ",offer:"العرض",customerName:"الاسم",customerLastName:"اللقب",address:"العنوان",quantity:"الكمية",childName:"الطفل",childLastName:"اللقب",age:"العمر",category:"الفئة",parentName:"الولي",parentPhone:"هاتف الولي",order:"الترتيب",label:"النص",target:"الهدف",icon:"أيقونة",title:"العنوان",image:"صورة",position:"المركز",number:"الرقم",round:"الجولة",homeTeam:"المضيف",awayTeam:"الضيف",scoreHome:"هـ",scoreAway:"ض",date:"التاريخ",logo:"شعار",team:"الفريق",p:"P",w:"W",d:"D",l:"L",gf:"GF",ga:"GA",gd:"GD",pts:"PTS",price:"السعر",period:"المدة",vip:"VIP",active:"ظاهر"};
+const get=(path)=>getP(DB,path.replace(/\//g,"."));
+const arr=p=>Object.entries(get(p)||{}).map(([k,v])=>({...v,_k:k}));
+
+/* ================= FIELD ENGINE ================= */
+function fieldHTML([n,l,t="text",o],val){
+  const id="x_"+n.replace(/\W/g,"_"), full=(t==="textarea"||t==="goals"||(o&&o.full))?" full":"";
+  let v=val, inp;
+  if(t==="goals")v=(val||[]).map(g=>`${g.scorer}|${g.minute}|${g.team}`).join("\n");
+  if(n==="content"&&Array.isArray(val))v=val.join("\n");
+  if(n==="categories"&&Array.isArray(val))v=val.join("\n");
+  v=v??"";
+  if(t==="textarea"||t==="goals")inp=`<textarea id="${id}" name="${n}" data-t="${t}">${esc(v)}</textarea>`;
+  else if(t==="select")inp=`<select id="${id}" name="${n}" data-t="select">${o.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}" ${a==v?"selected":""}>${esc(b)}</option>`}).join("")}</select>`;
+  else if(t==="check")inp=`<input id="${id}" type="checkbox" name="${n}" data-t="check" ${val?"checked":""}>`;
+  else if(t==="image")inp=`<div class="img-f">${v?`<img src="${esc(v)}" alt="">`:""}<input id="${id}" name="${n}" data-t="image" value="${esc(v)}" placeholder="رابط الصورة">${CFG.BUCKET.startsWith("YOUR")?"":`<label class="btn s">رفع<input type="file" accept="image/*" hidden data-up="${id}"></label>`}</div>`;
+  else if(t==="datetime")inp=`<input id="${id}" type="datetime-local" name="${n}" data-t="datetime" value="${esc(String(v).slice(0,16))}">`;
+  else inp=`<input id="${id}" type="${t==="number"?"number":t==="date"?"date":"text"}" ${t==="number"?'step="any"':""} name="${n}" data-t="${t}" value="${esc(v)}">`;
+  return`<div class="f${full}"><label for="${id}">${esc(l)}</label>${inp}</div>`;
+}
+function collect(form,fields,base){
+  const o=structuredClone(base||{});
+  fields.forEach(([n,,t="text"])=>{
+    const el=form.elements[n]; if(!el)return; let v;
+    if(t==="check")v=el.checked;
+    else if(t==="number")v=el.value===""?null:Number(el.value);
+    else if(t==="datetime")v=el.value?el.value+":00+01:00":"";
+    else if(t==="goals")v=el.value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{const[a,b,c]=s.split("|");return{scorer:(a||"").trim(),minute:(b||"").trim(),team:(c||"home").trim()==="away"?"away":"home"}});
+    else if(n==="content"||n==="categories")v=el.value.split("\n").map(s=>s.trim()).filter(Boolean);
+    else v=el.value.trim();
+    if(v===null)deleteP(o,n);else setP(o,n,v);
+  });
+  return o;
+}
+const deleteP=(o,p)=>{const k=p.split("."),t=k.slice(0,-1).reduce((a,x)=>a?.[x],o);if(t)delete t[k.at(-1)];};
+async function upload(file){
+  const name=`usma/${Date.now()}-${file.name.replace(/[^\w.-]/g,"_")}`;
+  const r=await fetch(`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o?name=${encodeURIComponent(name)}`,{method:"POST",headers:{Authorization:"Firebase "+tok,"Content-Type":file.type},body:file});
+  const d=await r.json(); if(!r.ok)throw new Error("فشل رفع الصورة");
+  return`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o/${encodeURIComponent(d.name)}?alt=media&token=${d.downloadTokens}`;
+}
+document.addEventListener("change",async e=>{
+  const u=e.target.dataset?.up; if(!u||!e.target.files[0])return;
+  try{toast("جارٍ رفع الصورة…");$("#"+u).value=await upload(e.target.files[0]);toast("تم الرفع ✓");}catch(er){toast(er.message);}
+});
+
+/* ================= VIEWS ================= */
+const secOf=id=>SECTIONS.find(s=>s.id===id);
+function buildNav(){
+  $("#nav").innerHTML=SECTIONS.map(s=>s.g?`<div class="nav-g">${s.g}</div>`:`<button class="nav-b" data-s="${s.id}">${s.label}${s.kind==="inbox"?`<span class="bd" id="bd-${s.id}" hidden></span>`:""}</button>`).join("")+`<div class="nav-g">النظام</div><button class="nav-b" id="lo">تسجيل الخروج</button>`;
+  $("#lo").onclick=logout;
+}
+async function reload(){DB=await api("")||{};SECTIONS.filter(s=>s.kind==="inbox").forEach(s=>{const n=arr(s.path).filter(x=>x.status==="pending").length,b=$("#bd-"+s.id);if(b){b.hidden=!n;b.textContent=n;}});}
+async function show(id){
+  cur=id;const s=secOf(id);$("#ttl").textContent=s.label;$("#side").classList.remove("on");
+  document.querySelectorAll(".nav-b").forEach(b=>b.classList.toggle("on",b.dataset.s===id));
+  try{await reload();}catch(e){toast(e.message);}
+  $("#topActs").innerHTML=s.kind==="list"?`<button class="btn red" id="addB">＋ إضافة</button>`:"";
+  if(s.kind==="single")single(s);else if(s.kind==="list"){list(s);$("#addB").onclick=()=>editItem(s);}else inbox(s);
+}
+function single(s){
+  const data=get(s.path)||{};
+  $("#view").innerHTML=`<form class="card" id="sf"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,getP(data,f[0]))).join("")}</div><div class="mf"><button class="btn red">حفظ التغييرات</button></div></form>`;
+  $("#sf").onsubmit=async e=>{e.preventDefault();try{await api(s.path,"PUT",collect(e.target,s.fields,data));toast("تم الحفظ ✓ (يظهر في الموقع فورًا)");await reload();}catch(er){toast(er.message);}};
+}
+function cell(x,c){
+  const v=x[c]; if(c==="image"||c==="logo")return v?`<img src="${esc(v)}" alt="">`:"—";
+  if(c==="date"||c==="createdAt")return v?esc(String(v).slice(0,16).replace("T"," ")):"—";
+  if(c==="category"){const f=CATS.find(k=>k[0]===v);return esc(f?f[1]:v);}
+  if(typeof v==="boolean")return v?"✓":"—"; return esc(v??"—");
+}
+function list(s){
+  let rows=arr(s.path); rows.sort(s.sort||((a,b)=>(a.order??0)-(b.order??0)));
+  $("#view").innerHTML=(s.hint?`<p class="hint" style="margin-bottom:10px">${s.hint}</p>`:"")+(rows.length?`<div class="tw"><table><thead><tr>${s.cols.map(c=>`<th>${LBL[c]||c}</th>`).join("")}<th></th></tr></thead><tbody>${rows.map(x=>`<tr>${s.cols.map(c=>`<td>${cell(x,c)}</td>`).join("")}<td><div class="acts"><button class="btn s" data-e="${x._k}">تعديل</button><button class="btn s d" data-x="${x._k}">حذف</button></div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">لا توجد عناصر بعد — اضغط «إضافة»</div>`);
+  $("#view").onclick=async e=>{
+    const k=e.target.dataset.e,x=e.target.dataset.x;
+    if(k)editItem(s,rows.find(r=>r._k===k));
+    if(x&&confirm("هل تريد الحذف نهائيًا؟")){try{await api(`${s.path}/${x}`,"DELETE");toast("تم الحذف");show(cur);}catch(er){toast(er.message);}}
+  };
+}
+function editItem(s,item){
+  const it=item||{};
+  openM(`<h3>${item?"تعديل":"إضافة"} — ${s.label}</h3><form id="ef"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,it[f[0]])).join("")}</div><div class="mf"><button type="button" class="btn" data-c>إلغاء</button><button class="btn red">حفظ</button></div></form>`);
+  $("#ef").onsubmit=async e=>{
+    e.preventDefault();const k=it._k||uid(),base={...it};delete base._k;
+    const o=collect(e.target,s.fields,base);o.id=k; if(s.id==="offers")o.id=k;
+    if(s.pre)["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0),s.pre(o);
+    if(s.id==="players"&&!o.details)o.details={};
+    try{await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);}catch(er){toast(er.message);}
+  };
+}
+const ST=[["pending","قيد الانتظار"],["confirmed","مؤكد"],["completed","مكتمل"],["cancelled","ملغى"]];
+function inbox(s){
+  const rows=arr(s.path).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
+  $("#view").innerHTML=rows.length?`<div class="tw"><table><thead><tr>${s.cols.map(c=>`<th>${LBL[c]||c}</th>`).join("")}<th>الحالة</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr>${s.cols.map(c=>`<td>${cell(x,c)}</td>`).join("")}<td><select data-st="${x._k}" aria-label="الحالة">${ST.map(([v,l])=>`<option value="${v}" ${x.status===v?"selected":""}>${l}</option>`).join("")}</select></td><td><button class="btn s d" data-x="${x._k}">حذف</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">لا توجد طلبات بعد</div>`;
+  $("#view").onchange=async e=>{const k=e.target.dataset.st;if(!k)return;try{await api(`${s.path}/${k}/status`,"PUT",e.target.value);toast("تم تحديث الحالة ✓");reload();}catch(er){toast(er.message);}};
+  $("#view").onclick=async e=>{const x=e.target.dataset.x;if(x&&confirm("حذف هذا الطلب؟")){try{await api(`${s.path}/${x}`,"DELETE");show(cur);}catch(er){toast(er.message);}}};
+}
+function openM(h){$("#mb").innerHTML=h;$("#md").classList.add("on");}
+function closeM(){$("#md").classList.remove("on");}
+$("#md").addEventListener("click",e=>{if(e.target.id==="md"||e.target.dataset.c!==undefined)closeM();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM();});
+$("#nav").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(b)show(b.dataset.s);});
+$("#menuB").onclick=()=>$("#side").classList.toggle("on");
+
+/* ================= SEED (بيانات البداية — تكتب تحت /usma فقط) ================= */
+async function seed(){
+  if(!confirm("سيتم كتابة البيانات الافتراضية للموقع (تستبدل المحتوى الحالي فقط، لا تمسّ الطلبات). متابعة؟"))return;
+  const k=(a,pre)=>Object.fromEntries(a.map((x,i)=>{const id=pre+(i+1);return[id,{...x,id}]}));
+  const opp=["CR Belouizdad","JS Kabylie","MC Alger","CS Constantine","ES Sétif","JS Saoura","MC Oran","Paradou AC","USM Khenchela","ES Mostaganem","MC El Bayadh","USM El Harrach","NC Magra","ASO Chlef","US Biskra"];
+  const ST5="ملعب 5 جويلية", matches=[];
+  for(let r=1;r<=30;r++){const h=r%2===0,o=opp[(r-1)%15];matches.push({round:r,homeTeam:h?"USM Alger":o,awayTeam:h?o:"USM Alger",homeLogo:h?LOGO:"",awayLogo:h?"":LOGO,date:r===2?"2026-10-03T18:00:00+01:00":"",stadium:h?ST5:"",goals:[],info:""});}
+  const gk=(n,img)=>({name:n,position:"حارس مرمى",category:"goalkeepers",image:img,description:"حارس مرمى في الفريق الأول لاتحاد العاصمة."});
+  const B="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/";
+  const data={
+    siteSettings:{clubName:"اتحاد العاصمة",clubNameEn:"USM Alger",shortName:"USMA",since:1937,logo:LOGO,topTag:"إمبراطورية العاصمة · منذ 1937",slogan:"اتحاد العاصمة أكثر من ناد",about:"نادي اتحاد العاصمة الجزائري، ناد عريق كتب اسمه في تاريخ كرة القدم الجزائرية والإفريقية.",social:SOC.map((n,i)=>({name:n,short:["f","ig","yt","x"][i],url:""}))},
+    hero:{image:HERO,title:"اتحاد العاصمة",highlight:"أكثر من ناد",subtitle:"منذ 1937... حكاية تتواصل",buttons:[{text:"اكتشف النادي",target:"#team",style:"red"},{text:"المباراة القادمة",target:"#match",style:"ghost"}]},
+    navigation:k([["الرئيسية","#home"],["الفريق الأول","#team"],["المباريات","#fixtures","fx"],["الترتيب","#fixtures","st"],["المتجر","#store"],["مدرسة كرة القدم","#academy"],["الأخبار","#news"],["التذاكر","#tickets","",true]].map(([label,target,tab,cta],i)=>({label,target,tab:tab||"",cta:!!cta,order:i+1})),"nv"),
+    services:k([["👕","الفريق الأول","تعرّف على اللاعبين والطاقم الفني","#team",""],["📅","الرزنامة","جميع مباريات الموسم جولة بجولة","#fixtures","fx"],["⚽","النتائج","النتائج والأهداف والمسجلون","#fixtures","fx"],["🏆","الترتيب","جدول ترتيب الرابطة المحترفة الأولى","#fixtures","st"],["🎟️","التذاكر","احجز مقعدك في المدرجات","#tickets",""],["🛍️","متجر النادي","القمصان والمنتجات الرسمية","#store",""],["🌱","مدرسة كرة القدم","سجّل طفلك في مدرسة النادي","#academy",""],["📰","الأخبار","آخر أخبار الفريق والنادي","#news",""]].map(([icon,title,desc,target,tab],i)=>({icon,title,desc,target,tab,order:i+1})),"sv"),
+    players:k([gk("أسامة بن بوط",B+"4e6aee7709112029c91b4a3b972ba87a8596f217/1790674350714.jpg"),gk("سيفور",B+"516895d4dedcc00948111ceae87d5241055662ad/1790674354583.jpg"),gk("إيدير حديد",B+"df25839a93ae5c80edcdb43ae84b6afb519058d1/1790674357913.jpg")],"pl"),
+    nextMatch:{home:{name:"USM Alger",nameAr:"اتحاد العاصمة",logo:LOGO},away:{name:"JS Kabylie",nameAr:"شبيبة القبائل",logo:""},competition:"الدوري الجزائري - القسم المحترف الأول",season:"2026/2027",round:2,datetime:"2026-10-03T18:00:00+01:00",stadium:ST5,durationMinutes:120},
+    matches:k(matches,"m"),
+    standings:k(["USM Alger",...opp].map(t=>({team:t,logo:t==="USM Alger"?LOGO:"",p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0})),"st"),
+    fixturesConfig:{rounds:30,season:"2026/2027",competition:"الدوري الجزائري - القسم المحترف الأول"},
+    tickets:{match:{id:"t-match",title:"USMA VS JSK",ticketType:"تذكرة مباراة",matchRound:2,price:500,currency:"دج",stadium:"05 جويلية",capacity:20000,sold:0,active:true},
+      offers:k([["اشتراك مغطى",15000,"موسم 2026/2027","مقعد مغطى طوال الموسم.",false],["اشتراك غير مغطى",9000,"موسم 2026/2027","اشتراك موسمي غير مغطى.",false],["اشتراك VIP",60000,"موسم 2026/2027","مقاعد مميزة وخدمات حصرية.",true],["بطاقة الوفاء",3000,"سنوية","بطاقة عضوية الأنصار.",false]].map(([title,price,period,desc,vip])=>({title,price,period,desc,vip})),"s")},
+    products:k([{name:"قميص النادي",price:6500,currency:"دج",image:"",short:"القميص الرسمي لاتحاد العاصمة.",description:"القميص الرسمي للنادي. (وصف تجريبي)",active:true},{name:"وشاح النادي",price:1500,currency:"دج",image:"",short:"وشاح الأنصار الرسمي.",description:"وشاح رسمي للمناصرين. (وصف تجريبي)",active:true}],"pr"),
+    academy:{image:HERO,title:"مدرسة اتحاد العاصمة لكرة القدم",text:"نصنع أجيال المستقبل بروح اتحاد العاصمة: تكوين، انضباط، وشغف.",categories:["أقل من 9 سنوات","أقل من 11 سنة","أقل من 13 سنة","أقل من 15 سنة","أقل من 17 سنة"],points:[{icon:"🎯",title:"تكوين احترافي",desc:"مدربون مؤهلون وبرنامج منظم"},{icon:"🛡️",title:"قيم النادي",desc:"الانضباط والروح الجماعية"},{icon:"🌟",title:"أفق مفتوح",desc:"اكتشاف المواهب وصقلها"}]},
+    news:k([{demo:true,category:"أخبار النادي",title:"خبر تجريبي: انطلاق التحضيرات لمواجهة شبيبة القبائل",date:"2026-09-28",author:"المكتب الإعلامي",image:HERO,summary:"محتوى تجريبي (Demo) يُعدَّل أو يُحذف من لوحة التحكم.",content:["هذا النص محتوى تجريبي لعرض شكل المقال.","تواصل التشكيلة تحضيراتها لمواجهة شبيبة القبائل."]}],"n")
+  };
+  try{await api("","PATCH",data);toast("تم تجهيز بيانات الموقع ✓");show(cur||"hero");}catch(er){toast(er.message);}
+}
+
+/* ================= START ================= */
+function start(){
+  $("#login").style.display="none";$("#app").hidden=false;buildNav();
+  $("#nav").insertAdjacentHTML("beforeend",`<button class="nav-b" id="sd">⚙ تجهيز البيانات الافتراضية</button>`);$("#sd").onclick=seed;
+  show("hero");
+}
+if(CFG.REQUIRE_AUTH&&!tok){$("#login").style.display="grid";if(CFG.API_KEY.startsWith("YOUR"))$("#lerr").textContent="⚠ ضع Web API Key في CFG.API_KEY";}else start();
+</script>
+</body>
+</html>
