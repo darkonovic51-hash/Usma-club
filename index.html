@@ -1,1 +1,941 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>USM Alger | اتحاد العاصمة - الموقع الرسمي</title>
+<meta name="description" content="الموقع الرسمي لنادي اتحاد العاصمة USM Alger - منذ 1937">
+<meta name="theme-color" content="#08090B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============ Variables ============ */
+:root{--red:#C8102E;--black:#08090B;--black2:#121417;--gold:#B79A62;--white:#F5F5F3;--muted:#9a9ea6;
+--line:rgba(183,154,98,.22);--r:6px;--ease:cubic-bezier(.2,.7,.2,1);--nav-h:74px}
+/* ============ Global ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:'Cairo',Tahoma,Arial,sans-serif;background:var(--black);color:var(--white);line-height:1.7;overflow-x:hidden;
+background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:4px 4px}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.container{width:min(1240px,92%);margin-inline:auto}
+.section{padding:90px 0;position:relative}
+.section.alt{background:var(--black2)}
+.sec-head{margin-bottom:44px}
+.kicker{color:var(--gold);font-weight:700;letter-spacing:.12em;font-size:.85rem;text-transform:uppercase}
+.sec-head h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;line-height:1.2;margin-top:4px}
+.sec-head h2::after{content:"";display:block;width:70px;height:4px;background:linear-gradient(90deg,var(--red),var(--gold));margin-top:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 28px;font-weight:800;border-radius:var(--r);
+border:1.5px solid transparent;transition:.3s var(--ease);position:relative;overflow:hidden}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#e01636;box-shadow:0 0 28px rgba(200,16,46,.55);transform:translateY(-2px)}
+.btn-red:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{border-color:var(--gold);color:var(--gold)}
+.btn-ghost:hover{background:var(--gold);color:var(--black);transform:translateY(-2px)}
+.btn-block{width:100%}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.logo-ph{display:grid;place-items:center;background:linear-gradient(135deg,#1c1f24,#0d0f12);border:1px dashed var(--gold);color:var(--gold);
+font-weight:900;border-radius:50%;flex-shrink:0}
+/* ============ Header (Top bar) ============ */
+.topbar{background:#000;border-bottom:1px solid var(--line);font-size:.8rem}
+.topbar .container{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:36px}
+.topbar .brand{display:flex;align-items:center;gap:8px;color:var(--gold);font-weight:800}
+.topbar .brand img{height:20px;width:auto}
+.topbar .tag{color:var(--muted)}
+.topbar .tools{display:flex;align-items:center;gap:14px}
+.topbar select{background:#000;border:1px solid var(--line);padding:1px 6px;border-radius:4px;font-size:.78rem}
+.social{display:flex;gap:8px}
+.social a{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;font-size:.7rem;font-weight:800;transition:.3s}
+.social a:hover{background:var(--red);border-color:var(--red)}
+/* ============ Navbar ============ */
+.navbar{position:sticky;top:0;z-index:100;background:var(--white);color:var(--black);border-bottom:3px solid var(--red);transition:.35s var(--ease)}
+.navbar .container{display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);transition:.35s var(--ease)}
+.navbar.scrolled{box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.navbar.scrolled .container{height:58px}
+.navbar.scrolled .nav-logo img{height:44px}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:900}
+.nav-logo img{height:56px;width:auto;transition:.35s var(--ease)}
+.nav-logo span{line-height:1.1;font-size:1.05rem}
+.nav-logo small{display:block;color:var(--red);font-size:.7rem;letter-spacing:.15em}
+.nav-menu{display:flex;align-items:center;gap:4px;list-style:none}
+.nav-menu a{padding:8px 13px;font-weight:700;font-size:.95rem;position:relative}
+.nav-menu a:not(.nav-cta)::after{content:"";position:absolute;inset-inline:13px;bottom:2px;height:2px;background:var(--red);transform:scaleX(0);transition:.3s var(--ease)}
+.nav-menu a:not(.nav-cta):hover::after,.nav-menu a.active::after{transform:scaleX(1)}
+.nav-cta{background:var(--red);color:#fff;border-radius:var(--r);margin-inline-start:8px;transition:.3s}
+.nav-cta:hover{background:var(--black);box-shadow:0 0 0 2px var(--gold)}
+.burger{display:none;width:44px;height:44px;flex-direction:column;justify-content:center;gap:5px;align-items:center}
+.burger i{width:24px;height:2.5px;background:var(--black);transition:.3s}
+.burger[aria-expanded=true] i:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.burger[aria-expanded=true] i:nth-child(2){opacity:0}
+.burger[aria-expanded=true] i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+/* ============ Hero ============ */
+.hero{position:relative;min-height:calc(100vh - 110px);min-height:calc(100svh - 110px);display:flex;align-items:center;overflow:hidden;isolation:isolate}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 25%;z-index:-3;animation:kenburns 22s ease-in-out infinite alternate}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;
+background:linear-gradient(90deg,rgba(8,9,11,.92) 5%,rgba(8,9,11,.55) 60%,rgba(8,9,11,.85)),linear-gradient(0deg,var(--black) 2%,transparent 45%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;
+background:radial-gradient(ellipse at 20% 100%,rgba(200,16,46,.5),transparent 60%),radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.65))}
+.hero-content{padding:70px 0;max-width:780px}
+.hero-since{display:inline-flex;align-items:center;gap:10px;color:var(--gold);font-weight:800;letter-spacing:.2em;font-size:.9rem;margin-bottom:18px}
+.hero-since::before{content:"";width:46px;height:2px;background:var(--gold)}
+.hero h1{font-size:clamp(2.6rem,8.5vw,6.2rem);font-weight:900;line-height:1.08;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+.hero h1 em{font-style:normal;color:var(--red);text-shadow:0 0 40px rgba(200,16,46,.6)}
+.hero p{font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--gold);margin:18px 0 34px;font-weight:600}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.scroll-hint{position:absolute;bottom:22px;left:50%;width:24px;height:40px;border:2px solid var(--gold);border-radius:14px;opacity:.7}
+.scroll-hint::after{content:"";position:absolute;top:7px;left:50%;width:4px;height:8px;margin-left:-2px;background:var(--gold);border-radius:2px;animation:wheel 1.6s infinite}
+/* ============ Match ============ */
+.match-section{margin-top:-70px;position:relative;z-index:5;padding-bottom:20px}
+.match-card{position:relative;background:linear-gradient(160deg,#16191d,#0a0b0d);border:1px solid var(--line);border-top:4px solid var(--red);border-radius:var(--r);
+padding:34px clamp(16px,4vw,50px);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(200,16,46,.15);overflow:hidden}
+.match-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(200,16,46,.28),transparent 55%);pointer-events:none}
+.match-meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:26px;position:relative}
+.chip{padding:4px 14px;border:1px solid var(--gold);color:var(--gold);font-size:.8rem;font-weight:700;border-radius:100px}
+.chip.red{background:var(--red);border-color:var(--red);color:#fff}
+.match-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(8px,3vw,40px);position:relative}
+.m-team{text-align:center}
+.m-team .logo-box{width:clamp(78px,15vw,150px);height:clamp(78px,15vw,150px);margin:0 auto 12px;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 0 22px rgba(200,16,46,.55))}
+.m-team:last-child .logo-box{animation-delay:-2s;filter:drop-shadow(0 0 18px rgba(183,154,98,.4))}
+.logo-box img{width:100%;height:100%;object-fit:contain}
+.logo-box .logo-ph{width:100%;height:100%;font-size:2rem}
+.m-team h3{font-size:clamp(1rem,2.4vw,1.6rem);font-weight:900}
+.m-team small{color:var(--muted)}
+.vs{font-size:clamp(1.6rem,5vw,3.4rem);font-weight:900;color:var(--gold);font-style:italic;text-shadow:0 0 30px rgba(183,154,98,.5)}
+.match-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);margin:30px 0;border:1px solid var(--line);position:relative}
+.match-info div{background:#0d0f12;padding:12px 14px;text-align:center}
+.match-info small{display:block;color:var(--gold);font-size:.75rem;font-weight:700}
+.match-info b{font-size:1rem}
+.countdown{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(6px,2vw,16px);max-width:560px;margin:0 auto;position:relative}
+.cd-box{background:#000;border:1px solid var(--line);border-bottom:3px solid var(--red);padding:12px 4px;text-align:center;border-radius:var(--r)}
+.cd-box b{display:block;font-size:clamp(1.6rem,6vw,3rem);font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.cd-box span{font-size:.7rem;color:var(--gold);letter-spacing:.15em;text-transform:uppercase}
+.cd-state{text-align:center;font-size:1.6rem;font-weight:900;color:var(--red);padding:14px}
+/* ============ Quick services ============ */
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.service{background:var(--black2);border:1px solid var(--line);border-radius:var(--r);padding:26px;text-align:start;position:relative;overflow:hidden;transition:.4s var(--ease)}
+.service::before{content:"";position:absolute;top:0;inset-inline:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));transform:scaleX(0);transform-origin:right;transition:.4s var(--ease)}
+.service:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 30px rgba(200,16,46,.18)}
+.service:hover::before{transform:scaleX(1)}
+.service .ico{width:54px;height:54px;display:grid;place-items:center;font-size:1.6rem;background:rgba(200,16,46,.12);border:1px solid var(--red);border-radius:var(--r);margin-bottom:14px;transition:.4s}
+.service:hover .ico{background:var(--red);transform:rotate(-6deg) scale(1.08)}
+.service h3{font-size:1.2rem;font-weight:800}
+.service p{color:var(--muted);font-size:.9rem}
+/* ============ Team ============ */
+.cat-title{display:flex;align-items:center;gap:14px;font-size:1.4rem;font-weight:900;margin:38px 0 18px;color:var(--gold)}
+.cat-title::after{content:"";flex:1;height:1px;background:var(--line)}
+.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
+.player{position:relative;background:var(--black2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;text-align:start;display:block;width:100%;transition:.4s var(--ease)}
+.player:hover{transform:translateY(-8px);border-color:var(--red);box-shadow:0 20px 45px rgba(0,0,0,.6),0 0 35px rgba(200,16,46,.3)}
+.p-img{aspect-ratio:3/4;overflow:hidden;position:relative;background:#0d0f12}
+.p-img img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .7s var(--ease)}
+.player:hover .p-img img{transform:scale(1.08)}
+.p-img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,9,11,.95),transparent 55%)}
+.p-num{position:absolute;top:8px;inset-inline-start:12px;z-index:2;font-size:2.6rem;font-weight:900;color:transparent;-webkit-text-stroke:1.5px var(--gold);line-height:1}
+.p-body{padding:14px 16px 18px;position:relative;margin-top:-56px;z-index:2}
+.p-pos{color:var(--red);font-weight:800;font-size:.8rem;letter-spacing:.08em}
+.p-body h4{font-size:1.25rem;font-weight:900}
+.p-body p{color:var(--muted);font-size:.85rem}
+.img-ph{width:100%;height:100%;display:grid;place-items:center;text-align:center;color:var(--gold);font-weight:700;font-size:.85rem;padding:12px;
+background:repeating-linear-gradient(45deg,#14171b,#14171b 10px,#101215 10px,#101215 20px)}
+/* ============ Fixtures ============ */
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:30px;max-width:100%}
+.tab{padding:13px 30px;font-weight:800;transition:.3s;white-space:nowrap}
+.tab[aria-selected=true]{background:var(--red);color:#fff}
+.tab:not([aria-selected=true]):hover{background:#1b1e23}
+.rounds{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;margin-bottom:22px;scrollbar-width:thin;scrollbar-color:var(--red) transparent}
+.round-chip{flex:0 0 auto;min-width:48px;padding:8px 14px;border:1px solid var(--line);font-weight:800;border-radius:var(--r);transition:.3s}
+.round-chip:hover{border-color:var(--gold)}
+.round-chip[aria-pressed=true]{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.round-title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin-bottom:16px}
+.round-title span{color:var(--red)}
+.fx-list{display:grid;gap:14px}
+.fx{width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;background:var(--black2);border:1px solid var(--line);border-inline-start:4px solid var(--red);
+border-radius:var(--r);padding:18px 22px;text-align:center;transition:.35s var(--ease)}
+.fx:hover{border-color:var(--gold);transform:translateX(-4px);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.fx-team{display:flex;align-items:center;gap:12px;font-weight:800}
+.fx-team:first-child{justify-content:flex-start}.fx-team:last-child{justify-content:flex-end;flex-direction:row-reverse}
+.fx-team .logo-box{width:46px;height:46px;animation:none;filter:none;margin:0}
+.fx-team .logo-ph{font-size:.9rem}
+.fx-score{font-size:1.9rem;font-weight:900;min-width:110px;font-variant-numeric:tabular-nums}
+.fx-score small{display:block;font-size:.75rem;color:var(--gold);font-weight:600}
+.fx-foot{grid-column:1/-1;display:flex;justify-content:center;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);padding-top:10px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--black2)}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{background:#000;color:var(--gold);font-size:.8rem;letter-spacing:.08em;padding:13px 8px;text-align:center}
+td{padding:12px 8px;text-align:center;border-top:1px solid rgba(255,255,255,.06);font-variant-numeric:tabular-nums}
+td.team-cell{text-align:start;font-weight:700;position:sticky;inset-inline-start:0;background:var(--black2);min-width:200px}
+.st-team{display:flex;align-items:center;gap:10px}
+.st-team .logo-box{width:28px;height:28px;margin:0;animation:none;filter:none}
+.st-team .logo-ph{font-size:.6rem}
+tr:hover td{background:#191c21}
+tr:hover td.team-cell{background:#191c21}
+tr.me td{background:linear-gradient(90deg,rgba(200,16,46,.28),rgba(200,16,46,.08));font-weight:900}
+tr.me td.team-cell{background:#2a0c13;box-shadow:inset -4px 0 0 var(--red)}
+td.pts{font-weight:900;color:var(--gold);font-size:1.05rem}
+/* ============ Tickets ============ */
+.ticket{display:grid;grid-template-columns:1.6fr auto 1fr;background:linear-gradient(135deg,#1a0a0e,#0d0f12 55%);border:1px solid var(--red);border-radius:var(--r);position:relative;overflow:hidden;box-shadow:0 0 60px rgba(200,16,46,.15)}
+.ticket-main{padding:34px}
+.ticket-main h3{font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:900;margin:6px 0 14px}
+.ticket-facts{display:flex;gap:26px;flex-wrap:wrap;color:var(--muted)}
+.ticket-facts b{display:block;color:var(--white);font-size:1.15rem}
+.ticket-cut{width:0;border-inline-start:2px dashed var(--gold);position:relative;margin:0 6px}
+.ticket-cut::before,.ticket-cut::after{content:"";position:absolute;left:-13px;width:24px;height:24px;background:var(--black);border-radius:50%}
+.ticket-cut::before{top:-12px}.ticket-cut::after{bottom:-12px}
+.ticket-buy{padding:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px}
+.price{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:900;color:var(--gold);line-height:1}
+.price small{font-size:1rem;color:var(--white)}
+.offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:34px}
+.offer{background:var(--black2);border:1px solid var(--line);border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:10px;transition:.4s var(--ease);position:relative}
+.offer:hover{border-color:var(--gold);transform:translateY(-6px)}
+.offer.vip{border-color:var(--gold);background:linear-gradient(160deg,#1f1a10,var(--black2))}
+.offer.vip::before{content:"VIP";position:absolute;top:0;inset-inline-end:0;background:var(--gold);color:var(--black);font-weight:900;font-size:.7rem;padding:2px 12px}
+.offer h4{font-size:1.2rem;font-weight:900}
+.offer .price{font-size:2rem}
+.offer p{color:var(--muted);font-size:.9rem;flex:1}
+.demo-tag{display:inline-block;font-size:.68rem;color:var(--gold);border:1px dashed var(--gold);padding:0 8px;border-radius:100px}
+/* ============ Store ============ */
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.product{background:var(--black2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.4s var(--ease);display:flex;flex-direction:column}
+.product:hover{border-color:var(--red);transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.pr-img{aspect-ratio:1/1;overflow:hidden}
+.pr-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.product:hover .pr-img img{transform:scale(1.07)}
+.pr-body{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pr-body h4{font-size:1.2rem;font-weight:900}
+.pr-body p{color:var(--muted);font-size:.9rem;flex:1}
+/* ============ Academy ============ */
+.academy{position:relative;isolation:isolate;overflow:hidden}
+.academy::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--ac-img) center/cover;filter:grayscale(.4)}
+.academy::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(8,9,11,.94),rgba(120,8,28,.78) 60%,rgba(8,9,11,.94))}
+.academy-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:44px;align-items:start}
+.ac-points{display:grid;gap:14px;margin-top:24px}
+.ac-point{display:flex;gap:14px;padding:16px;border:1px solid var(--line);border-inline-start:3px solid var(--gold);background:rgba(0,0,0,.45);border-radius:var(--r)}
+.ac-point i{font-style:normal;font-size:1.6rem}
+.ac-point b{display:block}.ac-point span{color:var(--muted);font-size:.88rem}
+.form-card{background:rgba(8,9,11,.92);border:1px solid var(--gold);border-radius:var(--r);padding:28px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.form-card h3{font-size:1.5rem;font-weight:900;margin-bottom:16px}
+/* ============ Forms ============ */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f.full{grid-column:1/-1}
+.f label{font-size:.85rem;font-weight:700;color:var(--gold)}
+.f input,.f select,.f textarea{background:#0d0f12;border:1px solid #2b2f36;border-radius:var(--r);padding:11px 13px;transition:.25s;width:100%}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--red);outline:0;box-shadow:0 0 0 3px rgba(200,16,46,.25)}
+.f textarea{min-height:90px;resize:vertical}
+.success{text-align:center;padding:30px 10px}
+.success .ok{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-size:2.2rem;animation:pop .5s var(--ease)}
+.success h3{font-size:1.4rem;margin-bottom:6px}
+.success code{display:inline-block;margin-top:10px;color:var(--gold);border:1px dashed var(--gold);padding:2px 12px;direction:ltr}
+/* ============ News ============ */
+.news{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px}
+.card-news{background:var(--black2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:.4s var(--ease)}
+.card-news:hover{transform:translateY(-6px);border-color:var(--gold)}
+.n-img{aspect-ratio:16/10;overflow:hidden;position:relative}
+.n-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+.card-news:hover .n-img img{transform:scale(1.08)}
+.n-img .chip{position:absolute;top:12px;inset-inline-start:12px;background:var(--red);border-color:var(--red);color:#fff}
+.n-body{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.n-body time{color:var(--gold);font-size:.8rem;font-weight:700}
+.n-body h4{font-size:1.2rem;font-weight:900;line-height:1.4}
+.n-body p{color:var(--muted);font-size:.9rem;flex:1}
+.link-more{color:var(--red);font-weight:800;align-self:flex-start}
+.link-more:hover{color:var(--gold)}
+/* ============ Footer ============ */
+.footer{background:#000;border-top:4px solid var(--red);position:relative;padding-top:60px}
+.footer::before{content:"";position:absolute;top:0;inset-inline:0;height:1px;background:var(--gold)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px;padding-bottom:40px}
+.foot-brand img{height:84px;margin-bottom:12px}
+.foot-brand p{font-size:1.25rem;font-weight:900;color:var(--gold)}
+.foot-grid h5{color:var(--gold);font-size:1rem;margin-bottom:14px;letter-spacing:.08em}
+.foot-links{list-style:none;display:grid;gap:8px}
+.foot-links a{color:var(--muted);transition:.3s}
+.foot-links a:hover{color:var(--white);padding-inline-start:8px}
+.foot-bottom{border-top:1px solid var(--line);padding:18px 0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.foot-bottom b{color:var(--gold);letter-spacing:.15em}
+/* ============ Modals ============ */
+.modal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex;animation:fade .25s}
+.modal-box{background:var(--black2);border:1px solid var(--gold);border-top:4px solid var(--red);border-radius:var(--r);width:min(760px,100%);max-height:92vh;overflow:auto;position:relative;animation:slideUp .4s var(--ease);padding:30px}
+.modal-box.wide{width:min(900px,100%)}
+.modal-x{position:absolute;top:10px;inset-inline-start:10px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;font-size:1.2rem;z-index:3;background:var(--black);transition:.3s}
+.modal-x:hover{background:var(--red)}
+.md-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:26px}
+.md-img{border-radius:var(--r);overflow:hidden;aspect-ratio:3/4;background:#0d0f12}
+.md-img img{width:100%;height:100%;object-fit:cover;object-position:top}
+.md-title{font-size:1.8rem;font-weight:900;margin:6px 0}
+.md-list{list-style:none;display:grid;gap:8px;margin:14px 0}
+.md-list li{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0;gap:10px}
+.md-list li span{color:var(--gold)}
+.article img.cover{width:100%;aspect-ratio:16/8;object-fit:cover;border-radius:var(--r);margin-bottom:16px}
+.article .body p{margin-bottom:12px;color:#d6d6d2}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:var(--r)}
+.qty button{width:40px;height:40px;font-size:1.3rem}.qty button:hover{background:var(--red)}
+.qty input{width:52px;text-align:center;background:none;border:0;font-weight:800}
+.goal-row{display:flex;justify-content:space-between;padding:8px 12px;background:#0d0f12;border-inline-start:3px solid var(--red);margin-bottom:6px;border-radius:4px}
+/* ============ Reveal / Animations ============ */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0s)}
+.reveal.in{opacity:1;transform:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes wheel{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(14px)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.hero-content>*{animation:slideUp .9s var(--ease) both}
+.hero-content>*:nth-child(2){animation-delay:.15s}.hero-content>*:nth-child(3){animation-delay:.3s}.hero-content>*:nth-child(4){animation-delay:.45s}
+/* ============ Responsive ============ */
+@media(max-width:1024px){.academy-grid,.md-grid{grid-template-columns:1fr}.md-img{aspect-ratio:4/3}.foot-grid{grid-template-columns:1fr 1fr}.foot-brand{grid-column:1/-1}.ticket{grid-template-columns:1fr}.ticket-cut{display:none}.ticket-buy{border-top:2px dashed var(--gold)}}
+@media(max-width:900px){
+.burger{display:flex;position:relative;z-index:200}
+.nav-menu{position:fixed;top:0;bottom:0;inset-inline-start:0;width:min(320px,84vw);background:var(--white);flex-direction:column;align-items:stretch;padding:90px 20px 20px;gap:2px;
+transform:translateX(100%);transition:.4s var(--ease);box-shadow:-20px 0 60px rgba(0,0,0,.5);z-index:150;overflow:auto}
+.nav-menu.open{transform:none!important}
+.nav-menu a{padding:14px;border-bottom:1px solid #ddd}
+.nav-cta{margin:12px 0 0;text-align:center}
+.topbar .tag{display:none}}
+@media(max-width:640px){
+.section{padding:64px 0}.match-section{margin-top:-40px}.fgrid{grid-template-columns:1fr}
+.match-teams{gap:4px}.fx{grid-template-columns:1fr;text-align:center;gap:10px}.fx-team:first-child,.fx-team:last-child{justify-content:center;flex-direction:row}
+.foot-grid{grid-template-columns:1fr}.tab{padding:12px 16px;flex:1}.tabs{display:flex}.modal-box{padding:22px 16px}.players{grid-template-columns:repeat(2,1fr);gap:12px}
+.topbar .social{display:none}.p-num{font-size:1.9rem}.p-body h4{font-size:1.05rem}}
+@media(max-width:360px){.players{grid-template-columns:1fr}.cd-box span{font-size:.6rem}.nav-logo span{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
 
+<!-- ============ TOP BAR ============ -->
+<div class="topbar" role="banner">
+  <div class="container">
+    <div class="brand"><img id="tbLogo" alt="شعار USMA"><span>USM ALGER</span></div>
+    <span class="tag" id="tbTag"></span>
+    <div class="tools">
+      <div class="social" id="socialTop" aria-label="روابط التواصل"></div>
+      <select id="langSel" aria-label="اختيار اللغة"><option value="ar">العربية</option><option value="fr">Français</option><option value="en">English</option></select>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN NAVBAR ============ -->
+<header class="navbar" id="navbar">
+  <nav class="container" aria-label="القائمة الرئيسية">
+    <a href="#home" class="nav-logo" aria-label="الرئيسية"><img id="navLogo" alt="شعار اتحاد العاصمة"><span id="navName"></span></a>
+    <ul class="nav-menu" id="navMenu"></ul>
+    <button class="burger" id="burger" aria-label="فتح القائمة" aria-expanded="false" aria-controls="navMenu"><i></i><i></i><i></i></button>
+  </nav>
+</header>
+
+<main id="home">
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-label="الواجهة الرئيسية">
+    <div class="hero-bg" id="heroBg" role="img" aria-label="جماهير اتحاد العاصمة"></div>
+    <div class="container"><div class="hero-content">
+      <div class="hero-since" id="heroSince"></div>
+      <h1 id="heroTitle"></h1>
+      <p id="heroSub"></p>
+      <div class="hero-actions" id="heroBtns"></div>
+    </div></div>
+    <div class="scroll-hint" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ NEXT MATCH ============ -->
+  <section class="match-section" id="match" aria-labelledby="mTitle">
+    <div class="container"><h2 id="mTitle" style="position:absolute;left:-9999px">المباراة القادمة</h2><div id="matchCard"></div></div>
+  </section>
+
+  <!-- ============ QUICK SERVICES ============ -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="sec-head reveal"><span class="kicker">QUICK ACCESS</span><h2>خدمات النادي</h2></div>
+      <div class="services" id="servicesGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ FIRST TEAM ============ -->
+  <section class="section alt" id="team">
+    <div class="container">
+      <div class="sec-head reveal"><span class="kicker">FIRST TEAM</span><h2>الفريق الأول</h2></div>
+      <div id="playersWrap"></div>
+    </div>
+  </section>
+
+  <!-- ============ FIXTURES / RESULTS / STANDINGS ============ -->
+  <section class="section" id="fixtures">
+    <div class="container">
+      <div class="sec-head reveal"><span class="kicker" id="seasonKicker"></span><h2>المباريات والترتيب</h2></div>
+      <div class="tabs reveal" role="tablist" aria-label="النتائج والترتيب">
+        <button class="tab" role="tab" id="tab-fx" aria-selected="true" aria-controls="panel-fx">النتائج والرزنامة</button>
+        <button class="tab" role="tab" id="tab-st" aria-selected="false" aria-controls="panel-st">الترتيب</button>
+      </div>
+      <div id="panel-fx" role="tabpanel" aria-labelledby="tab-fx">
+        <div class="rounds" id="roundsBar" role="group" aria-label="اختيار الجولة"></div>
+        <div id="roundBody"></div>
+      </div>
+      <div id="panel-st" role="tabpanel" aria-labelledby="tab-st" hidden><div class="table-wrap" id="standingsWrap"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ TICKETS ============ -->
+  <section class="section alt" id="tickets">
+    <div class="container">
+      <div class="sec-head reveal"><span class="kicker">TICKETS</span><h2>التذاكر</h2></div>
+      <div id="ticketMain"></div>
+      <div class="cat-title">الاشتراكات والبطاقات</div>
+      <div class="offers" id="offersGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ STORE ============ -->
+  <section class="section" id="store">
+    <div class="container">
+      <div class="sec-head reveal"><span class="kicker">OFFICIAL STORE</span><h2>متجر USMA</h2></div>
+      <div class="products" id="productsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTBALL ACADEMY ============ -->
+  <section class="section academy" id="academy">
+    <div class="container academy-grid">
+      <div class="reveal">
+        <span class="kicker">USMA ACADEMY</span>
+        <h2 style="font-size:clamp(2rem,5vw,3.4rem);font-weight:900;line-height:1.15" id="acTitle"></h2>
+        <p style="color:#ddd;margin-top:10px" id="acText"></p>
+        <div class="ac-points" id="acPoints"></div>
+      </div>
+      <div class="form-card reveal" id="acFormWrap"></div>
+    </div>
+  </section>
+
+  <!-- ============ NEWS ============ -->
+  <section class="section alt" id="news">
+    <div class="container">
+      <div class="sec-head reveal"><span class="kicker">LATEST NEWS</span><h2>الأخبار</h2></div>
+      <div class="news" id="newsGrid"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand"><img id="ftLogo" alt="شعار USMA" loading="lazy"><p id="ftSlogan"></p><div class="social" id="socialFoot" style="margin-top:14px"></div></div>
+      <div><h5>روابط الموقع</h5><ul class="foot-links" id="ftLinks"></ul></div>
+      <div><h5>USM ALGER</h5><p style="color:var(--muted)" id="ftAbout"></p></div>
+    </div>
+    <div class="foot-bottom"><b>USM ALGER · SINCE 1937</b><span id="ftCopy"></span></div>
+  </div>
+</footer>
+
+<!-- ============ MODAL ROOT ============ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="نافذة"><div class="modal-box" id="modalBox"></div></div>
+
+<script>
+/* =====================================================================
+   FIREBASE REALTIME DATABASE
+   كل بيانات الموقع تحت العقدة /usma (نفس العقدة التي تديرها لوحة التحكم dashboard.html)
+   ===================================================================== */
+const RTDB = "https://academy-school-16d1b-default-rtdb.firebaseio.com/usma";
+
+/* =====================================================================
+   DEFAULT / DEMO DATA — تُستعمل كاحتياط إذا كانت القاعدة فارغة أو تعذّر الاتصال.
+   الشكل نفسه هو شكل البيانات في Firebase (الـ Dashboard يكتب بهذه البنية).
+   ===================================================================== */
+const LOGO = "https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png";
+const HERO_IMG = "https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/49bc88b2bd43cd1ab3bbd2b9301c5b8fa76a1861/file_00000000689c8210b9c8c322a6d1e93d.png";
+const HOME_STADIUM = "ملعب 5 جويلية";
+
+const siteData = {
+  siteSettings: {
+    clubName: "اتحاد العاصمة", clubNameEn: "USM Alger", shortName: "USMA", since: 1937,
+    logo: LOGO, topTag: "إمبراطورية العاصمة · منذ 1937", slogan: "اتحاد العاصمة أكثر من ناد",
+    about: "نادي اتحاد العاصمة الجزائري، ناد عريق كتب اسمه في تاريخ كرة القدم الجزائرية والإفريقية.",
+    social: [ {name:"Facebook",short:"f",url:""}, {name:"Instagram",short:"ig",url:""}, {name:"YouTube",short:"yt",url:""}, {name:"X",short:"x",url:""} ]
+  },
+  hero: {
+    image: HERO_IMG, title: "اتحاد العاصمة", highlight: "أكثر من ناد", subtitle: "منذ 1937... حكاية تتواصل",
+    buttons: [ {text:"اكتشف النادي", target:"#team", style:"red"}, {text:"المباراة القادمة", target:"#match", style:"ghost"} ]
+  },
+  navigation: [
+    {label:"الرئيسية",target:"#home"},{label:"الفريق الأول",target:"#team"},{label:"المباريات",target:"#fixtures",tab:"fx"},
+    {label:"الترتيب",target:"#fixtures",tab:"st"},{label:"المتجر",target:"#store"},{label:"مدرسة كرة القدم",target:"#academy"},
+    {label:"الأخبار",target:"#news"},{label:"التذاكر",target:"#tickets",cta:true}
+  ],
+  nextMatch: {
+    home: {name:"USM Alger", nameAr:"اتحاد العاصمة", logo: LOGO},
+    away: {name:"JS Kabylie", nameAr:"شبيبة القبائل", logo: ""},      // شعار JSK: يُضاف من لوحة التحكم
+    competition: "الدوري الجزائري - القسم المحترف الأول", season: "2026/2027", round: 2,
+    datetime: "2026-10-03T18:00:00+01:00",                          // توقيت الجزائر — يتحكم في العد التنازلي
+    stadium: HOME_STADIUM, durationMinutes: 120
+  },
+  services: [
+    {icon:"👕",title:"الفريق الأول",desc:"تعرّف على اللاعبين والطاقم الفني",target:"#team"},
+    {icon:"📅",title:"الرزنامة",desc:"جميع مباريات الموسم جولة بجولة",target:"#fixtures",tab:"fx"},
+    {icon:"⚽",title:"النتائج",desc:"النتائج والأهداف والمسجلون",target:"#fixtures",tab:"fx"},
+    {icon:"🏆",title:"الترتيب",desc:"جدول ترتيب الرابطة المحترفة الأولى",target:"#fixtures",tab:"st"},
+    {icon:"🎟️",title:"التذاكر",desc:"احجز مقعدك في المدرجات",target:"#tickets"},
+    {icon:"🛍️",title:"متجر النادي",desc:"القمصان والمنتجات الرسمية",target:"#store"},
+    {icon:"🌱",title:"مدرسة كرة القدم",desc:"سجّل طفلك في مدرسة النادي",target:"#academy"},
+    {icon:"📰",title:"الأخبار",desc:"آخر أخبار الفريق والنادي",target:"#news"}
+  ],
+  playerCategories: [
+    {key:"goalkeepers",label:"حراس المرمى"},{key:"defenders",label:"المدافعون"},
+    {key:"midfielders",label:"لاعبو الوسط"},{key:"forwards",label:"المهاجمون"},{key:"coach",label:"المدرب"}
+  ],
+  players: [
+    {id:"p1",name:"أسامة بن بوط",position:"حارس مرمى",category:"goalkeepers",number:null,
+     image:"https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/4e6aee7709112029c91b4a3b972ba87a8596f217/1790674350714.jpg",
+     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{}},
+    {id:"p2",name:"سيفور",position:"حارس مرمى",category:"goalkeepers",number:null,
+     image:"https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/516895d4dedcc00948111ceae87d5241055662ad/1790674354583.jpg",
+     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{}},
+    {id:"p3",name:"إيدير حديد",position:"حارس مرمى",category:"goalkeepers",number:null,
+     image:"https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/df25839a93ae5c80edcdb43ae84b6afb519058d1/1790674357913.jpg",
+     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{}}
+    // بقية اللاعبين والمدرب: تُضاف من لوحة التحكم
+  ],
+  fixturesConfig: { rounds: 30, season: "2026/2027", competition: "الدوري الجزائري - القسم المحترف الأول" },
+  matches: [],   // تُولَّد أدناه كبيانات افتراضية، وتُستبدل ببيانات Firebase
+  standings: [], // تُولَّد أدناه
+  tickets: {
+    match: {id:"t-match", title:"USMA VS JSK", matchRound:2, price:500, currency:"دج", stadium:"05 جويلية", capacity:20000, sold:0, active:true, ticketType:"تذكرة مباراة"},
+    offers: [
+      {id:"s1",title:"اشتراك مغطى",price:15000,period:"موسم 2026/2027",desc:"مقعد مغطى طوال الموسم في مباريات ملعب 5 جويلية.",vip:false},
+      {id:"s2",title:"اشتراك غير مغطى",price:9000,period:"موسم 2026/2027",desc:"اشتراك موسمي في المدرجات غير المغطاة.",vip:false},
+      {id:"s3",title:"اشتراك VIP",price:60000,period:"موسم 2026/2027",desc:"مقاعد مميزة وخدمات حصرية لجميع المباريات.",vip:true},
+      {id:"s4",title:"بطاقة الوفاء",price:3000,period:"سنوية",desc:"بطاقة عضوية الأنصار مع مزايا وتخفيضات.",vip:false}
+    ]
+  },
+  products: [
+    {id:"pr1",name:"قميص النادي",price:6500,currency:"دج",image:"",short:"القميص الرسمي لاتحاد العاصمة.",
+     description:"القميص الرسمي للنادي بألوان الأحمر والأسود. (وصف تجريبي - يُعدَّل لاحقًا)",active:true},
+    {id:"pr2",name:"وشاح النادي",price:1500,currency:"دج",image:"",short:"وشاح الأنصار الرسمي.",
+     description:"وشاح رسمي للمناصرين بألوان النادي. (وصف تجريبي - يُعدَّل لاحقًا)",active:true}
+  ],
+  academy: {
+    image: HERO_IMG, title: "مدرسة اتحاد العاصمة لكرة القدم",
+    text: "نصنع أجيال المستقبل بروح اتحاد العاصمة: تكوين، انضباط، وشغف.",
+    points: [ {icon:"🎯",title:"تكوين احترافي",desc:"مدربون مؤهلون وبرنامج تدريبي منظم"}, {icon:"🛡️",title:"قيم النادي",desc:"الانضباط والروح الجماعية وحب القميص"}, {icon:"🌟",title:"أفق مفتوح",desc:"فرصة لاكتشاف المواهب وصقلها"} ],
+    categories: ["أقل من 9 سنوات","أقل من 11 سنة","أقل من 13 سنة","أقل من 15 سنة","أقل من 17 سنة"]
+  },
+  news: [
+    {id:"n1",demo:true,category:"أخبار النادي",title:"خبر تجريبي: انطلاق التحضيرات لمواجهة شبيبة القبائل",date:"2026-09-28",author:"المكتب الإعلامي",
+     image:HERO_IMG,images:[],summary:"محتوى تجريبي (Demo) يُعدَّل أو يُحذف من لوحة التحكم.",
+     content:["هذا النص محتوى تجريبي (Demo Content) لعرض شكل المقال داخل الموقع، وسيتم استبداله بأخبار حقيقية من لوحة التحكم.","تواصل تشكيلة الفريق الأول تحضيراتها لمواجهة شبيبة القبائل برسم الجولة الثانية من الدوري، وسط أجواء إيجابية ودعم كبير من الجماهير.","يمكن للمدير من Dashboard إضافة الصور والنصوص وتعديل هذا المقال بالكامل."]}
+  ]
+};
+
+/* ---------- Default generators (احتياط عند غياب البيانات) ---------- */
+(function seedDemo(){
+  const opp = ["CR Belouizdad","JS Kabylie","MC Alger","CS Constantine","ES Sétif","JS Saoura","MC Oran","Paradou AC","USM Khenchela","ES Mostaganem","MC El Bayadh","USM El Harrach","NC Magra","ASO Chlef","US Biskra"];
+  const nm = siteData.nextMatch;
+  for(let r=1;r<=siteData.fixturesConfig.rounds;r++){
+    const home = r%2===0, o = opp[(r-1)%opp.length], isNext = r===nm.round;
+    const oppLogo = o==="JS Kabylie" ? nm.away.logo : "";
+    siteData.matches.push({
+      id:"m"+r, round:r, homeTeam:home?"USM Alger":o, awayTeam:home?o:"USM Alger", homeLogo:home?LOGO:oppLogo, awayLogo:home?oppLogo:LOGO,
+      date:isNext?nm.datetime:"", stadium:home?HOME_STADIUM:"", scoreHome:null, scoreAway:null,
+      goals:[], /* {team:"home|away", scorer:"", minute:""} */ info:""
+    });
+  }
+  ["USM Alger",...opp].forEach((t,i)=>siteData.standings.push({id:"st"+i,team:t,logo:t==="USM Alger"?LOGO:"",p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0}));
+})();
+
+/* =====================================================================
+   DATA SERVICE — الربط مع Firebase Realtime Database (REST)
+   القراءة: تُدمج بيانات /usma فوق البيانات الافتراضية.
+   الكتابة: الحجوزات/الطلبات/التسجيلات تُنشأ فقط (قواعد Firebase تمنع الزائر من القراءة أو التعديل).
+   ===================================================================== */
+const DataService = {
+  async loadSiteData(){
+    try{
+      const res = await fetch(RTDB + ".json");
+      if(!res.ok) throw new Error(res.status);
+      const d = await res.json(); if(!d) return siteData;
+      const L = o => o ? Object.values(o).sort((a,b)=>(a.order??0)-(b.order??0)) : null;
+      ["siteSettings","hero","nextMatch","fixturesConfig"].forEach(k=>{ if(d[k]) Object.assign(siteData[k], d[k]); });
+      if(d.academy) Object.assign(siteData.academy, d.academy);
+      if(d.tickets?.match)  Object.assign(siteData.tickets.match, d.tickets.match);
+      if(d.tickets?.offers) siteData.tickets.offers = L(d.tickets.offers);
+      if(d.navigation) siteData.navigation = L(d.navigation);
+      if(d.services)   siteData.services   = L(d.services);
+      if(d.players)    siteData.players    = L(d.players).map(p=>({...p,number:p.number??null,details:p.details||{}}));
+      if(d.matches)    siteData.matches    = L(d.matches).sort((a,b)=>a.round-b.round)
+        .map(m=>({...m,scoreHome:m.scoreHome??null,scoreAway:m.scoreAway??null,goals:m.goals||[],date:m.date||""}));
+      if(d.standings)  siteData.standings  = L(d.standings);
+      if(d.products)   siteData.products   = L(d.products);
+      if(d.news)       siteData.news       = L(d.news).map(n=>({...n,images:n.images||[],content:Array.isArray(n.content)?n.content:[n.content||""]}));
+    }catch(e){ console.warn("RTDB load failed, using default data:", e); }
+    return siteData;
+  },
+  async add(col, data){
+    const key = data.id || data.orderId;
+    try{
+      const r = await fetch(`${RTDB}/${col}/${key}.json`,{method:"PUT",body:JSON.stringify(data)});
+      if(!r.ok) throw new Error(r.status);
+      return key;
+    }catch(e){
+      alert("تعذّر إرسال الطلب، يرجى المحاولة مرة أخرى.");
+      throw e; // لا تظهر رسالة النجاح
+    }
+  }
+};
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const $ = (s,r=document)=>r.querySelector(s), $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtNum = n => Number(n).toLocaleString("en-US");
+const TZ = "Africa/Algiers";
+const fmtDate = (iso,opt) => iso ? new Date(iso).toLocaleDateString("ar-u-nu-latn",{timeZone:TZ,...opt}) : "يُحدد لاحقًا";
+const fmtTime = iso => iso ? new Date(iso).toLocaleTimeString("en-GB",{timeZone:TZ,hour:"2-digit",minute:"2-digit"}) : "—";
+const uid = p => p+"-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6).toUpperCase();
+const initials = n => String(n).split(/\s+/).map(w=>w[0]).join("").slice(0,3).toUpperCase();
+const logoBox = (url,name) => `<div class="logo-box">${url?`<img src="${esc(url)}" alt="شعار ${esc(name)}" loading="lazy">`:`<div class="logo-ph" role="img" aria-label="شعار ${esc(name)} (قريبًا)">${esc(initials(name))}</div>`}</div>`;
+const imgOrPh = (url,alt,label="الصورة قريبًا") => url?`<img src="${esc(url)}" alt="${esc(alt)}" loading="lazy">`:`<div class="img-ph" role="img" aria-label="${esc(label)}">${esc(label)}<br>${esc(alt)}</div>`;
+const money = (p,c="دج") => `${fmtNum(p)} <small>${esc(c)}</small>`;
+const field = (name,label,type="text",o={}) => `<div class="f ${o.full?"full":""}"><label for="f-${name}">${label}</label>${
+  type==="select"?`<select id="f-${name}" name="${name}" ${o.req===false?"":"required"}>${o.options.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("")}</select>`:
+  type==="textarea"?`<textarea id="f-${name}" name="${name}"></textarea>`:
+  `<input id="f-${name}" name="${name}" type="${type}" ${o.req===false?"":"required"} ${o.attr||""} autocomplete="${o.ac||"off"}">`}</div>`;
+const successView = (msg,id) => `<div class="success" role="status"><div class="ok">✓</div><h3>${msg}</h3>${id?`<code>${esc(id)}</code>`:""}<div style="margin-top:18px"><button class="btn btn-ghost" data-close>إغلاق</button></div></div>`;
+const formData = f => Object.fromEntries(new FormData(f).entries());
+
+/* =====================================================================
+   MODAL SYSTEM
+   ===================================================================== */
+let lastFocus = null;
+function openModal(html,wide){
+  lastFocus = document.activeElement;
+  $("#modalBox").className = "modal-box"+(wide?" wide":"");
+  $("#modalBox").innerHTML = `<button class="modal-x" data-close aria-label="إغلاق">✕</button>`+html;
+  $("#modal").classList.add("open"); document.body.style.overflow="hidden";
+  $("#modalBox .modal-x").focus();
+}
+function closeModal(){ $("#modal").classList.remove("open"); document.body.style.overflow=""; lastFocus&&lastFocus.focus&&lastFocus.focus(); }
+$("#modal").addEventListener("click",e=>{ if(e.target.id==="modal"||e.target.closest("[data-close]")) closeModal(); });
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){ closeModal(); closeMenu(); }
+  if(e.key==="Tab" && $("#modal").classList.contains("open")){           // focus trap
+    const els=$$("button,input,select,textarea,a[href]",$("#modalBox")).filter(x=>!x.disabled); if(!els.length) return;
+    const first=els[0], last=els[els.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();} else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+
+/* =====================================================================
+   RENDER — GLOBAL (top bar, nav, hero, footer)
+   ===================================================================== */
+function renderGlobal(){
+  const s = siteData.siteSettings, h = siteData.hero;
+  $("#tbLogo").src = s.logo; $("#navLogo").src = s.logo; $("#ftLogo").src = s.logo;
+  $("#tbTag").textContent = s.topTag;
+  $("#navName").innerHTML = `${esc(s.clubName)}<small>${esc(String(s.clubNameEn).toUpperCase())}</small>`;
+  const soc = (s.social||[]).map(x=>`<a href="${esc(x.url||"#")}" aria-label="${esc(x.name)}" ${x.url?'target="_blank" rel="noopener"':""}>${esc(x.short)}</a>`).join("");
+  $("#socialTop").innerHTML = soc; $("#socialFoot").innerHTML = soc;
+  $("#navMenu").innerHTML = siteData.navigation.map(n=>`<li><a href="${esc(n.target)}" ${n.tab?`data-tab="${n.tab}"`:""} class="${n.cta?"nav-cta":""}">${esc(n.label)}</a></li>`).join("");
+  $("#heroBg").style.backgroundImage = `url("${h.image}")`;
+  $("#heroSince").textContent = `SINCE ${s.since}`;
+  $("#heroTitle").innerHTML = `${esc(h.title)} <em>${esc(h.highlight)}</em>`;
+  $("#heroSub").textContent = h.subtitle;
+  $("#heroBtns").innerHTML = (h.buttons||[]).map(b=>`<a class="btn btn-${b.style==="ghost"?"ghost":"red"}" href="${esc(b.target)}">${esc(b.text)}</a>`).join("");
+  $("#ftSlogan").textContent = s.slogan; $("#ftAbout").textContent = s.about;
+  $("#ftLinks").innerHTML = siteData.navigation.filter(n=>n.target!=="#home").map(n=>`<li><a href="${esc(n.target)}" ${n.tab?`data-tab="${n.tab}"`:""}>${esc(n.label)}</a></li>`).join("");
+  $("#ftCopy").textContent = `© ${new Date().getFullYear()} ${s.clubNameEn} — جميع الحقوق محفوظة`;
+  $("#seasonKicker").textContent = `${siteData.fixturesConfig.competition} · ${siteData.fixturesConfig.season}`;
+}
+
+/* =====================================================================
+   RENDER — NEXT MATCH + COUNTDOWN
+   ===================================================================== */
+let cdTimer = null;
+function renderNextMatch(){
+  const m = siteData.nextMatch;
+  $("#matchCard").innerHTML = `<article class="match-card reveal">
+    <div class="match-meta"><span class="chip red">${esc(m.competition)}</span><span class="chip">الموسم ${esc(m.season)}</span><span class="chip">الجولة ${esc(m.round)}</span></div>
+    <div class="match-teams">
+      <div class="m-team">${logoBox(m.home.logo,m.home.name)}<h3>${esc(m.home.name)}</h3><small>${esc(m.home.nameAr)}</small></div>
+      <div class="vs" aria-label="ضد">VS</div>
+      <div class="m-team">${logoBox(m.away.logo,m.away.name)}<h3>${esc(m.away.name)}</h3><small>${esc(m.away.nameAr)}</small></div>
+    </div>
+    <div class="match-info">
+      <div><small>التاريخ</small><b>${fmtDate(m.datetime,{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}</b></div>
+      <div><small>الساعة</small><b>${fmtTime(m.datetime)}</b></div>
+      <div><small>الملعب</small><b>${esc(m.stadium)}</b></div>
+      <div><small>الجولة</small><b>${esc(m.round)}</b></div>
+    </div>
+    <div id="cdWrap" aria-live="off"></div>
+  </article>`;
+  startCountdown();
+}
+function startCountdown(){
+  clearInterval(cdTimer);
+  const m = siteData.nextMatch, target = new Date(m.datetime).getTime(), end = target + (m.durationMinutes||120)*60000, wrap = $("#cdWrap");
+  const tick = () => {
+    const now = Date.now(), diff = target-now;
+    if(diff<=0){ wrap.innerHTML = `<div class="cd-state">${now<end?"انطلقت المباراة":"المباراة انتهت"}</div>`; if(now>=end) clearInterval(cdTimer); return; }
+    const v = [["Days",Math.floor(diff/864e5)],["Hours",Math.floor(diff%864e5/36e5)],["Minutes",Math.floor(diff%36e5/6e4)],["Seconds",Math.floor(diff%6e4/1e3)]];
+    if(!$(".countdown",wrap)) wrap.innerHTML = `<div class="countdown" role="timer" aria-label="العد التنازلي للمباراة">${v.map(([l])=>`<div class="cd-box"><b>00</b><span>${l}</span></div>`).join("")}</div>`;
+    $$(".cd-box b",wrap).forEach((b,i)=>b.textContent = String(v[i][1]).padStart(2,"0"));
+  };
+  tick(); cdTimer = setInterval(tick,1000);
+}
+
+/* =====================================================================
+   RENDER — SERVICES
+   ===================================================================== */
+function renderServices(){
+  $("#servicesGrid").innerHTML = siteData.services.map((s,i)=>`<a class="service reveal" style="--d:${i*.05}s" href="${esc(s.target)}" ${s.tab?`data-tab="${s.tab}"`:""}>
+    <div class="ico" aria-hidden="true">${s.icon}</div><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></a>`).join("");
+}
+
+/* =====================================================================
+   RENDER — PLAYERS
+   ===================================================================== */
+function renderPlayers(){
+  $("#playersWrap").innerHTML = siteData.playerCategories.map(c=>{
+    const list = siteData.players.filter(p=>p.category===c.key);
+    return `<h3 class="cat-title reveal">${esc(c.label)}</h3>` + (list.length ? `<div class="players">${list.map((p,i)=>`
+      <button class="player reveal" style="--d:${i*.07}s" data-player="${esc(p.id)}" aria-label="${esc(p.name)} - ${esc(p.position)}">
+        <div class="p-img">${imgOrPh(p.image,p.name)}<span class="p-num" aria-hidden="true">${p.number??""}</span></div>
+        <div class="p-body"><div class="p-pos">${esc(p.position)}</div><h4>${esc(p.name)}</h4><p>${esc(p.description)}</p></div>
+      </button>`).join("")}</div>` : `<div class="empty reveal">سيتم إضافة ${esc(c.label)} قريبًا</div>`);
+  }).join("");
+}
+function openPlayer(id){
+  const p = siteData.players.find(x=>x.id===id); if(!p) return;
+  const extra = Object.entries(p.details||{}).map(([k,v])=>`<li>${esc(k)}<span>${esc(v)}</span></li>`).join("");
+  openModal(`<div class="md-grid"><div class="md-img">${imgOrPh(p.image,p.name)}</div><div>
+    <span class="chip red">${esc(p.position)}</span><h3 class="md-title">${esc(p.name)}</h3>
+    <ul class="md-list"><li>رقم القميص<span>${p.number??"—"}</span></li><li>المركز<span>${esc(p.position)}</span></li>${extra}</ul>
+    <p style="color:#d6d6d2">${esc(p.description)}</p></div></div>`);
+}
+
+/* =====================================================================
+   RENDER — MATCHES (results & fixtures) + STANDINGS
+   ===================================================================== */
+let currentRound = siteData.nextMatch.round;
+function renderMatches(){
+  const rounds = siteData.fixturesConfig.rounds;
+  $("#roundsBar").innerHTML = Array.from({length:rounds},(_,i)=>i+1).map(r=>`<button class="round-chip" data-round="${r}" aria-pressed="${r===currentRound}">${r}</button>`).join("");
+  const list = siteData.matches.filter(m=>m.round===currentRound);
+  $("#roundBody").innerHTML = `<h3 class="round-title">الجولة <span>${String(currentRound).padStart(2,"0")}</span> <small style="font-size:.9rem;color:var(--gold)">ROUND ${String(currentRound).padStart(2,"0")}</small></h3>` +
+   (list.length?`<div class="fx-list">${list.map(m=>{
+    const done = m.scoreHome!==null && m.scoreAway!==null;
+    return `<button class="fx reveal in" data-match="${esc(m.id)}" aria-label="${esc(m.homeTeam)} ضد ${esc(m.awayTeam)}">
+      <div class="fx-team">${logoBox(m.homeLogo,m.homeTeam)}<span>${esc(m.homeTeam)}</span></div>
+      <div class="fx-score">${done?`${m.scoreHome} - ${m.scoreAway}<small>النتيجة النهائية</small>`:`VS<small>${fmtTime(m.date)}</small>`}</div>
+      <div class="fx-team">${logoBox(m.awayLogo,m.awayTeam)}<span>${esc(m.awayTeam)}</span></div>
+      <div class="fx-foot"><span>📅 ${fmtDate(m.date,{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}</span><span>🏟️ ${esc(m.stadium||"يُحدد لاحقًا")}</span><span>الجولة ${m.round}</span></div></button>`;}).join("")}</div>`
+   :`<div class="empty">لا توجد مباريات في هذه الجولة بعد</div>`);
+}
+function openMatch(id){
+  const m = siteData.matches.find(x=>x.id===id); if(!m) return;
+  const done = m.scoreHome!==null && m.scoreAway!==null;
+  openModal(`<span class="chip red">الجولة ${m.round}</span>
+   <div class="match-teams" style="margin:20px 0">
+    <div class="m-team">${logoBox(m.homeLogo,m.homeTeam)}<h3>${esc(m.homeTeam)}</h3></div>
+    <div class="vs">${done?`${m.scoreHome} - ${m.scoreAway}`:"VS"}</div>
+    <div class="m-team">${logoBox(m.awayLogo,m.awayTeam)}<h3>${esc(m.awayTeam)}</h3></div></div>
+   <ul class="md-list"><li>التاريخ<span>${fmtDate(m.date,{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}</span></li><li>الساعة<span>${fmtTime(m.date)}</span></li>
+    <li>الملعب<span>${esc(m.stadium||"يُحدد لاحقًا")}</span></li><li>البطولة<span>${esc(siteData.fixturesConfig.competition)}</span></li></ul>
+   <h4 style="margin:16px 0 8px;color:var(--gold)">الأهداف</h4>
+   ${m.goals&&m.goals.length?m.goals.map(g=>`<div class="goal-row"><span>⚽ ${esc(g.scorer)}</span><span>${esc(g.minute)}' · ${g.team==="home"?esc(m.homeTeam):esc(m.awayTeam)}</span></div>`).join(""):`<div class="empty">لا توجد أهداف مسجلة</div>`}
+   ${m.info?`<p style="margin-top:14px;color:#d6d6d2">${esc(m.info)}</p>`:""}`);
+}
+function renderStandings(){
+  const rows = [...siteData.standings].sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+  $("#standingsWrap").innerHTML = `<table><caption style="position:absolute;left:-9999px">جدول الترتيب</caption><thead><tr>
+    <th>#</th><th style="text-align:start">الفريق</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>PTS</th></tr></thead><tbody>
+    ${rows.map((r,i)=>`<tr class="${r.team==="USM Alger"?"me":""}"><td>${i+1}</td><td class="team-cell"><div class="st-team">${logoBox(r.logo,r.team)}${esc(r.team)}</div></td>
+    <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gd}</td><td class="pts">${r.pts}</td></tr>`).join("")}</tbody></table>`;
+}
+function switchTab(which){
+  const fx = which==="fx";
+  $("#tab-fx").setAttribute("aria-selected",fx); $("#tab-st").setAttribute("aria-selected",!fx);
+  $("#panel-fx").hidden = !fx; $("#panel-st").hidden = fx;
+}
+
+/* =====================================================================
+   RENDER — TICKETS (+ booking form → ticketBookings)
+   ===================================================================== */
+function renderTickets(){
+  const t = siteData.tickets.match, left = t.capacity - t.sold;
+  $("#ticketMain").innerHTML = `<article class="ticket reveal">
+    <div class="ticket-main"><span class="chip red">${esc(t.ticketType)}</span><h3>${esc(t.title)}</h3>
+      <div class="ticket-facts"><div>الملعب<b>${esc(t.stadium)}</b></div><div>عدد التذاكر<b data-count="${t.capacity}">${fmtNum(t.capacity)}</b></div><div>المتبقي<b>${fmtNum(left)}</b></div></div></div>
+    <div class="ticket-cut" aria-hidden="true"></div>
+    <div class="ticket-buy"><div class="price">${money(t.price,t.currency)}</div>
+      <button class="btn btn-red btn-block" id="bookBtn" ${t.active&&left>0?"":"disabled"}>${t.active&&left>0?"حجز التذكرة":"غير متاح"}</button></div></article>`;
+  $("#offersGrid").innerHTML = siteData.tickets.offers.map((o,i)=>`<article class="offer reveal ${o.vip?"vip":""}" style="--d:${i*.07}s">
+    <h4>${esc(o.title)}</h4><div class="price">${money(o.price)}</div><small style="color:var(--gold)">${esc(o.period)}</small><p>${esc(o.desc)}</p>
+    <button class="btn btn-ghost" data-offer="${esc(o.id)}">اطلب الآن</button></article>`).join("");
+}
+function openBooking(){
+  const t = siteData.tickets.match;
+  openModal(`<h3 class="md-title">حجز تذكرة — ${esc(t.title)}</h3><p style="color:var(--muted);margin-bottom:16px">${esc(t.stadium)} · ${money(t.price,t.currency)}</p>
+   <form id="bookingForm"><div class="fgrid">${field("name","الاسم","text",{ac:"given-name"})}${field("lastName","اللقب","text",{ac:"family-name"})}
+   ${field("phone","رقم الهاتف","tel",{ac:"tel",attr:'pattern="[0-9+\\s]{9,15}"'})}${field("email","البريد الإلكتروني","email",{ac:"email"})}</div>
+   <button class="btn btn-red btn-block" style="margin-top:18px">تأكيد الحجز</button></form>`);
+  $("#bookingForm").addEventListener("submit",async e=>{
+    e.preventDefault(); const btn=e.submitter; btn.disabled=true; const d=formData(e.target);
+    const booking = {id:uid("BK"),name:d.name,lastName:d.lastName,phone:d.phone,email:d.email,ticketType:t.ticketType,ticketId:t.id,
+      match:t.title,date:siteData.nextMatch.datetime,price:t.price,status:"pending",createdAt:new Date().toISOString()};
+    try{ await DataService.add("ticketBookings",booking); }catch(_){ btn.disabled=false; return; }
+    $("#modalBox").innerHTML = `<button class="modal-x" data-close aria-label="إغلاق">✕</button>`+successView("تم تسجيل حجزك بنجاح",booking.id);
+  });
+}
+function openOffer(id){
+  const o = siteData.tickets.offers.find(x=>x.id===id); if(!o) return;
+  openModal(`<h3 class="md-title">${esc(o.title)}</h3><p style="color:var(--muted);margin-bottom:16px">${money(o.price)} · ${esc(o.period)}</p>
+   <form id="offerForm"><div class="fgrid">${field("name","الاسم")}${field("lastName","اللقب")}${field("phone","رقم الهاتف","tel")}${field("email","البريد الإلكتروني","email")}</div>
+   <button class="btn btn-red btn-block" style="margin-top:18px">إرسال الطلب</button></form>`);
+  $("#offerForm").addEventListener("submit",async e=>{
+    e.preventDefault(); const btn=e.submitter; btn.disabled=true; const d=formData(e.target);
+    const req = {id:uid("SUB"),offerId:o.id,offer:o.title,...d,status:"pending",createdAt:new Date().toISOString()};
+    try{ await DataService.add("subscriptionRequests",req); }catch(_){ btn.disabled=false; return; }
+    $("#modalBox").innerHTML = `<button class="modal-x" data-close aria-label="إغلاق">✕</button>`+successView("تم استلام طلبك، سنتصل بك قريبًا",req.id);
+  });
+}
+
+/* =====================================================================
+   RENDER — PRODUCTS (+ order form → orders)
+   ===================================================================== */
+function renderProducts(){
+  const list = siteData.products.filter(p=>p.active!==false);
+  $("#productsGrid").innerHTML = list.length ? list.map((p,i)=>`<article class="product reveal" style="--d:${i*.08}s">
+    <div class="pr-img">${imgOrPh(p.image,p.name,"صورة المنتج قريبًا")}</div>
+    <div class="pr-body"><h4>${esc(p.name)}</h4><div class="price" style="font-size:1.6rem">${money(p.price,p.currency)}</div><p>${esc(p.short)}</p>
+    <button class="btn btn-ghost" data-product="${esc(p.id)}">عرض المنتج</button></div></article>`).join("") : `<div class="empty">لا توجد منتجات حاليًا</div>`;
+}
+function openProduct(id){
+  const p = siteData.products.find(x=>x.id===id); if(!p) return;
+  openModal(`<div class="md-grid"><div class="md-img" style="aspect-ratio:1/1">${imgOrPh(p.image,p.name,"صورة المنتج قريبًا")}</div><div>
+   <h3 class="md-title">${esc(p.name)}</h3><div class="price">${money(p.price,p.currency)}</div><p style="margin:14px 0;color:#d6d6d2">${esc(p.description)}</p>
+   <label style="color:var(--gold);font-weight:700;font-size:.85rem">الكمية</label>
+   <div class="qty" style="display:flex;width:max-content;margin:6px 0 18px"><button type="button" data-q="-1" aria-label="إنقاص">−</button><input id="qtyIn" type="number" min="1" value="1" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">+</button></div>
+   <button class="btn btn-red btn-block" id="buyBtn">شراء</button></div></div>`,true);
+  $$("[data-q]").forEach(b=>b.onclick=()=>{ const i=$("#qtyIn"); i.value=Math.max(1,(+i.value||1)+ +b.dataset.q); });
+  $("#buyBtn").onclick=()=>openOrder(p,Math.max(1,+$("#qtyIn").value||1));
+}
+function openOrder(p,qty){
+  openModal(`<h3 class="md-title">طلب: ${esc(p.name)}</h3><p style="color:var(--muted);margin-bottom:16px">${money(p.price,p.currency)}</p>
+   <form id="orderForm"><div class="fgrid">${field("name","الاسم","text",{ac:"given-name"})}${field("lastName","اللقب","text",{ac:"family-name"})}${field("phone","رقم الهاتف","tel",{ac:"tel"})}
+   ${field("quantity","الكمية","number",{attr:`min="1" value="${qty}"`})}${field("address","العنوان","text",{full:1,ac:"street-address"})}</div>
+   <button class="btn btn-red btn-block" style="margin-top:18px">إرسال الطلب</button></form>`);
+  $("#orderForm").addEventListener("submit",async e=>{
+    e.preventDefault(); const btn=e.submitter; btn.disabled=true; const d=formData(e.target);
+    const order = {orderId:uid("ORD"),productId:p.id,customerName:d.name,customerLastName:d.lastName,phone:d.phone,address:d.address,
+      quantity:+d.quantity,status:"pending",createdAt:new Date().toISOString()};
+    try{ await DataService.add("orders",order); }catch(_){ btn.disabled=false; return; }
+    $("#modalBox").innerHTML = `<button class="modal-x" data-close aria-label="إغلاق">✕</button>`+successView("تم تسجيل طلبك، سيتم الاتصال بك لتأكيد الطلبية.",order.orderId);
+  });
+}
+
+/* =====================================================================
+   RENDER — ACADEMY (form → academyApplications)
+   ===================================================================== */
+function renderAcademy(){
+  const a = siteData.academy;
+  $(".academy").style.setProperty("--ac-img",`url("${a.image}")`);
+  $("#acTitle").textContent = a.title; $("#acText").textContent = a.text;
+  $("#acPoints").innerHTML = (a.points||[]).map(p=>`<div class="ac-point"><i aria-hidden="true">${p.icon}</i><div><b>${esc(p.title)}</b><span>${esc(p.desc)}</span></div></div>`).join("");
+  $("#acFormWrap").innerHTML = `<h3>سجّل طفلك الآن</h3><form id="acForm"><div class="fgrid">
+    ${field("childName","اسم الطفل")}${field("childLastName","اللقب")}${field("birthDate","تاريخ الميلاد","date")}${field("age","العمر","number",{attr:'min="4" max="18" readonly'})}
+    ${field("gender","الجنس","select",{options:["ذكر","أنثى"]})}${field("category","الفئة المطلوبة","select",{options:a.categories})}
+    ${field("parentName","اسم الولي")}${field("parentPhone","رقم هاتف الولي","tel",{ac:"tel"})}${field("email","البريد الإلكتروني","email",{ac:"email"})}
+    ${field("address","العنوان","text",{ac:"street-address"})}${field("notes","ملاحظات","textarea",{full:1,req:false})}</div>
+    <button class="btn btn-red btn-block" style="margin-top:18px">إرسال طلب التسجيل</button></form>`;
+  $("#f-birthDate").addEventListener("change",e=>{
+    const b=new Date(e.target.value), n=new Date(); let age=n.getFullYear()-b.getFullYear();
+    if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate())) age--; $("#f-age").value = isNaN(age)?"":age;
+  });
+  $("#acForm").addEventListener("submit",async e=>{
+    e.preventDefault(); const btn=e.submitter; btn.disabled=true; const d=formData(e.target);
+    const app = {id:uid("ACD"),...d,status:"pending",createdAt:new Date().toISOString()};
+    try{ await DataService.add("academyApplications",app); }catch(_){ btn.disabled=false; return; }
+    $("#acFormWrap").innerHTML = successView("تم إرسال طلب التسجيل بنجاح، سنتواصل مع الولي قريبًا.",app.id).replace('<button class="btn btn-ghost" data-close>إغلاق</button>','');
+  });
+}
+
+/* =====================================================================
+   RENDER — NEWS
+   ===================================================================== */
+function renderNews(){
+  const list = [...siteData.news].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  $("#newsGrid").innerHTML = list.length ? list.map((n,i)=>`<article class="card-news reveal" style="--d:${i*.08}s">
+    <div class="n-img">${imgOrPh(n.image,n.title)}<span class="chip">${esc(n.category)}</span></div>
+    <div class="n-body"><time datetime="${esc(n.date)}">${fmtDate(n.date,{day:"2-digit",month:"long",year:"numeric"})}</time>
+    ${n.demo?'<span class="demo-tag" style="align-self:flex-start">Demo Content — قابل للتعديل</span>':""}
+    <h4>${esc(n.title)}</h4><p>${esc(n.summary)}</p><button class="link-more" data-news="${esc(n.id)}">اقرأ المزيد ←</button></div></article>`).join("") : `<div class="empty">لا توجد أخبار حاليًا</div>`;
+}
+function openNews(id){
+  const n = siteData.news.find(x=>x.id===id); if(!n) return;
+  openModal(`<article class="article"><span class="chip red">${esc(n.category)}</span><h3 class="md-title">${esc(n.title)}</h3>
+   <p style="color:var(--gold);font-size:.85rem;margin-bottom:14px">${fmtDate(n.date,{day:"2-digit",month:"long",year:"numeric"})} · ${esc(n.author)}</p>
+   ${n.image?`<img class="cover" src="${esc(n.image)}" alt="${esc(n.title)}">`:""}
+   <div class="body">${n.content.map(p=>`<p>${esc(p)}</p>`).join("")}</div>
+   ${(n.images||[]).map(u=>`<img class="cover" src="${esc(u)}" alt="صورة من المقال" loading="lazy">`).join("")}</article>`,true);
+}
+
+/* =====================================================================
+   UI BEHAVIOR — nav, scroll, reveal, counters, events
+   ===================================================================== */
+function closeMenu(){ $("#navMenu").classList.remove("open"); $("#burger").setAttribute("aria-expanded","false"); }
+$("#burger").addEventListener("click",()=>{ const o=$("#navMenu").classList.toggle("open"); $("#burger").setAttribute("aria-expanded",o); });
+window.addEventListener("scroll",()=>$("#navbar").classList.toggle("scrolled",scrollY>30),{passive:true});
+$("#langSel").addEventListener("change",e=>{ document.documentElement.lang=e.target.value; /* hook لنظام الترجمة لاحقًا (i18n) */ });
+
+function spy(){
+  const links=$$("#navMenu a:not(.nav-cta)");
+  const io=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting) links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+en.target.id&&!a.dataset.tab)); }),{rootMargin:"-45% 0px -50% 0px"});
+  ["home","team","fixtures","store","academy","news"].forEach(id=>{const el=document.getElementById(id); el&&io.observe(el);});
+}
+let revealIO;
+function observeReveal(){
+  revealIO = revealIO || new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); $$("[data-count]",en.target).forEach(countUp); revealIO.unobserve(en.target);} }),{threshold:.12});
+  $$(".reveal:not(.in)").forEach(el=>revealIO.observe(el));
+}
+function countUp(el){
+  const to=+el.dataset.count, t0=performance.now(), dur=1400;
+  (function f(t){ const k=Math.min(1,(t-t0)/dur); el.textContent=fmtNum(Math.round(to*(1-Math.pow(1-k,3)))); if(k<1) requestAnimationFrame(f); })(t0);
+}
+
+/* Event delegation */
+document.addEventListener("click",e=>{
+  const t = e.target;
+  const a = t.closest("a[data-tab]"); if(a){ switchTab(a.dataset.tab); }
+  if(t.closest("#navMenu a")) closeMenu();
+  let el;
+  if((el=t.closest("[data-player]"))) openPlayer(el.dataset.player);
+  else if((el=t.closest("[data-match]"))) openMatch(el.dataset.match);
+  else if((el=t.closest("[data-round]"))){ currentRound=+el.dataset.round; renderMatches(); $(`[data-round="${currentRound}"]`).scrollIntoView({inline:"center",block:"nearest"}); }
+  else if(t.closest("#bookBtn")) openBooking();
+  else if((el=t.closest("[data-offer]"))) openOffer(el.dataset.offer);
+  else if((el=t.closest("[data-product]"))) openProduct(el.dataset.product);
+  else if((el=t.closest("[data-news]"))) openNews(el.dataset.news);
+  else if(t.id==="tab-fx") switchTab("fx");
+  else if(t.id==="tab-st") switchTab("st");
+});
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+async function initSite(){
+  await DataService.loadSiteData();          // ← يقرأ من Firebase (/usma) ويدمج مع البيانات الافتراضية
+  currentRound = siteData.nextMatch.round;
+  renderGlobal(); renderNextMatch(); renderServices(); renderPlayers();
+  renderMatches(); renderStandings(); renderTickets(); renderProducts();
+  renderAcademy(); renderNews();
+  observeReveal(); spy();
+}
+initSite();
+</script>
+</body>
+  </html>
