@@ -44,7 +44,6 @@ td{padding:9px 10px;border-top:1px solid rgba(255,255,255,.06);font-size:.9rem;v
 tr:hover td{background:var(--b3)}td img{width:38px;height:38px;object-fit:cover;border-radius:4px}
 td .acts{display:flex;gap:6px}
 .pill{padding:1px 10px;border-radius:100px;font-size:.75rem;font-weight:800;border:1px solid var(--gold);color:var(--gold)}
-.pill.pending{color:#ffb020;border-color:#ffb020}.pill.confirmed,.pill.completed{color:#3ddc84;border-color:#3ddc84}.pill.cancelled{color:#ff6b7f;border-color:#ff6b7f}
 .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
 /* Modal + toast + login */
 .md{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:14px;z-index:50}.md.on{display:flex}
@@ -54,18 +53,18 @@ td .acts{display:flex;gap:6px}
 #login{position:fixed;inset:0;z-index:80;background:var(--black) radial-gradient(ellipse at top,rgba(200,16,46,.3),transparent 60%);display:none;place-items:center;padding:16px}
 #login form{width:min(400px,100%);background:var(--b2);border:1px solid var(--gold);border-top:4px solid var(--red);padding:28px;border-radius:var(--r);display:grid;gap:14px;text-align:center}
 #login img{height:80px;margin:0 auto}
+#lerr{color:#ff6b7f;min-height:1.3em}
 .mob{display:none}
 @media(max-width:860px){.app{grid-template-columns:1fr}aside{position:fixed;inset-block:0;inset-inline-start:0;width:260px;z-index:40;transform:translateX(100%);transition:.3s}aside.on{transform:none}.mob{display:inline-block}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN (Firebase Auth REST) -->
-<div id="login"><form id="lf"><img src="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png" alt="USMA">
+<!-- ENTRY CODE — كود الدخول -->
+<div id="login"><form id="lf" autocomplete="off"><img src="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png" alt="USMA">
 <h2>لوحة تحكم USMA</h2>
-<div class="f"><label for="em">البريد الإلكتروني</label><input id="em" type="email" required autocomplete="username"></div>
-<div class="f"><label for="pw">كلمة المرور</label><input id="pw" type="password" required autocomplete="current-password"></div>
-<button class="btn red">دخول</button><div class="hint" id="lerr"></div></form></div>
+<div class="f"><label for="cd">كود الدخول</label><input id="cd" type="password" required autocomplete="off"></div>
+<button class="btn red">دخول</button><div id="lerr" role="alert"></div><a href="index.html" class="hint">← العودة للموقع</a></form></div>
 
 <div class="app" id="app" hidden>
   <aside id="side"><div class="brand"><img src="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png" alt=""><div>USM ALGER<small>DASHBOARD</small></div></div><nav id="nav" aria-label="الأقسام"></nav></aside>
@@ -79,10 +78,9 @@ td .acts{display:flex;gap:6px}
 const CFG = {
   DB: "https://academy-school-16d1b-default-rtdb.firebaseio.com", // Realtime Database
   ROOT: "usma",                        // كل بيانات الموقع تحت /usma فقط (لا تلمس بقية المشروع)
-  API_KEY: "YOUR_API_KEY",             // Firebase Console → Project settings → Web API Key (لتسجيل الدخول)
-  BUCKET: "YOUR_STORAGE_BUCKET",       // مثال: academy-school-16d1b.appspot.com (لرفع الصور، اختياري)
-  REQUIRE_AUTH: true                   // false للتجربة فقط مع قواعد مفتوحة (غير آمن)
+  BUCKET: "YOUR_STORAGE_BUCKET"        // اختياري: لرفع الصور (يتطلب قواعد Storage تسمح بالرفع). اتركه كما هو لاستعمال روابط الصور فقط
 };
+const ADMIN_CODE = "usma2627";         // كود دخول الإدارة (نفس الكود في index.html)
 const LOGO="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png";
 const HERO="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/49bc88b2bd43cd1ab3bbd2b9301c5b8fa76a1861/file_00000000689c8210b9c8c322a6d1e93d.png";
 
@@ -91,29 +89,21 @@ const $=s=>document.querySelector(s), esc=v=>String(v??"").replace(/[&<>"']/g,c=
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const getP=(o,p)=>p.split(".").reduce((a,k)=>a==null?a:a[k],o);
 const setP=(o,p,v)=>{const k=p.split(".");k.slice(0,-1).reduce((a,x)=>a[x]??(a[x]={}),o)[k.at(-1)]=v;};
-let tok=sessionStorage.getItem("t")||"", DB={}, cur=null;
+let DB={}, cur=null;
 function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",3200);}
 async function api(p,m="GET",b){
-  const r=await fetch(`${CFG.DB}/${CFG.ROOT}/${p}.json${tok?"?auth="+tok:""}`,{method:m,body:b===undefined?undefined:JSON.stringify(b)});
-  if(r.status===401&&sessionStorage.rt){await refresh();return api(p,m,b);}
-  if(!r.ok)throw new Error(r.status===401?"غير مصرح — تحقق من تسجيل الدخول وقواعد Firebase":"خطأ "+r.status);
+  const r=await fetch(`${CFG.DB}/${CFG.ROOT}/${p}.json`,{method:m,body:b===undefined?undefined:JSON.stringify(b)});
+  if(!r.ok)throw new Error(r.status===401||r.status===403?"غير مصرح — تحقق من قواعد Firebase":"خطأ "+r.status);
   return r.json();
 }
-/* ================= AUTH (REST) ================= */
-async function refresh(){
-  const r=await fetch(`https://securetoken.googleapis.com/v1/token?key=${CFG.API_KEY}`,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:`grant_type=refresh_token&refresh_token=${sessionStorage.rt}`});
-  const d=await r.json(); if(!r.ok){logout();throw new Error("انتهت الجلسة");} tok=d.id_token;sessionStorage.t=tok;sessionStorage.rt=d.refresh_token;
-}
-$("#lf").addEventListener("submit",async e=>{
-  e.preventDefault();$("#lerr").textContent="";
-  try{
-    const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("#em").value,password:$("#pw").value,returnSecureToken:true})});
-    const d=await r.json(); if(!r.ok)throw new Error(d.error?.message||"فشل الدخول");
-    tok=d.idToken;sessionStorage.t=tok;sessionStorage.rt=d.refreshToken;start();
-  }catch(er){$("#lerr").textContent="تعذّر الدخول: "+er.message;}
+
+/* ================= ENTRY CODE ================= */
+$("#lf").addEventListener("submit",e=>{
+  e.preventDefault();
+  if($("#cd").value.trim()===ADMIN_CODE){sessionStorage.setItem("usmaAdmin","1");start();}
+  else{$("#lerr").textContent="كود الدخول غير صحيح";$("#cd").value="";$("#cd").focus();}
 });
-function logout(){sessionStorage.clear();tok="";location.reload();}
-setInterval(()=>{if(sessionStorage.rt)refresh().catch(()=>{});},45*60*1000);
+function logout(){sessionStorage.clear();location.href="index.html";}
 
 /* ================= SCHEMA ================= */
 // حقل: [المسار, التسمية, النوع, خيارات]   الأنواع: text number date datetime textarea image select check goals
@@ -154,8 +144,7 @@ function fieldHTML([n,l,t="text",o],val){
   const id="x_"+n.replace(/\W/g,"_"), full=(t==="textarea"||t==="goals"||(o&&o.full))?" full":"";
   let v=val, inp;
   if(t==="goals")v=(val||[]).map(g=>`${g.scorer}|${g.minute}|${g.team}`).join("\n");
-  if(n==="content"&&Array.isArray(val))v=val.join("\n");
-  if(n==="categories"&&Array.isArray(val))v=val.join("\n");
+  if((n==="content"||n==="categories")&&Array.isArray(val))v=val.join("\n");
   v=v??"";
   if(t==="textarea"||t==="goals")inp=`<textarea id="${id}" name="${n}" data-t="${t}">${esc(v)}</textarea>`;
   else if(t==="select")inp=`<select id="${id}" name="${n}" data-t="select">${o.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}" ${a==v?"selected":""}>${esc(b)}</option>`}).join("")}</select>`;
@@ -182,8 +171,8 @@ function collect(form,fields,base){
 const deleteP=(o,p)=>{const k=p.split("."),t=k.slice(0,-1).reduce((a,x)=>a?.[x],o);if(t)delete t[k.at(-1)];};
 async function upload(file){
   const name=`usma/${Date.now()}-${file.name.replace(/[^\w.-]/g,"_")}`;
-  const r=await fetch(`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o?name=${encodeURIComponent(name)}`,{method:"POST",headers:{Authorization:"Firebase "+tok,"Content-Type":file.type},body:file});
-  const d=await r.json(); if(!r.ok)throw new Error("فشل رفع الصورة");
+  const r=await fetch(`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o?name=${encodeURIComponent(name)}`,{method:"POST",headers:{"Content-Type":file.type},body:file});
+  const d=await r.json(); if(!r.ok)throw new Error("فشل رفع الصورة (تحقق من قواعد Storage)");
   return`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o/${encodeURIComponent(d.name)}?alt=media&token=${d.downloadTokens}`;
 }
 document.addEventListener("change",async e=>{
@@ -194,8 +183,8 @@ document.addEventListener("change",async e=>{
 /* ================= VIEWS ================= */
 const secOf=id=>SECTIONS.find(s=>s.id===id);
 function buildNav(){
-  $("#nav").innerHTML=SECTIONS.map(s=>s.g?`<div class="nav-g">${s.g}</div>`:`<button class="nav-b" data-s="${s.id}">${s.label}${s.kind==="inbox"?`<span class="bd" id="bd-${s.id}" hidden></span>`:""}</button>`).join("")+`<div class="nav-g">النظام</div><button class="nav-b" id="lo">تسجيل الخروج</button>`;
-  $("#lo").onclick=logout;
+  $("#nav").innerHTML=SECTIONS.map(s=>s.g?`<div class="nav-g">${s.g}</div>`:`<button class="nav-b" data-s="${s.id}">${s.label}${s.kind==="inbox"?`<span class="bd" id="bd-${s.id}" hidden></span>`:""}</button>`).join("")+`<div class="nav-g">النظام</div><button class="nav-b" id="sd">⚙ تجهيز البيانات الافتراضية</button><a class="nav-b" href="index.html" target="_blank" rel="noopener">↗ عرض الموقع</a><button class="nav-b" id="lo">تسجيل الخروج</button>`;
+  $("#lo").onclick=logout; $("#sd").onclick=seed;
 }
 async function reload(){DB=await api("")||{};SECTIONS.filter(s=>s.kind==="inbox").forEach(s=>{const n=arr(s.path).filter(x=>x.status==="pending").length,b=$("#bd-"+s.id);if(b){b.hidden=!n;b.textContent=n;}});}
 async function show(id){
@@ -207,6 +196,7 @@ async function show(id){
 }
 function single(s){
   const data=get(s.path)||{};
+  $("#view").onclick=null;$("#view").onchange=null;
   $("#view").innerHTML=`<form class="card" id="sf"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,getP(data,f[0]))).join("")}</div><div class="mf"><button class="btn red">حفظ التغييرات</button></div></form>`;
   $("#sf").onsubmit=async e=>{e.preventDefault();try{await api(s.path,"PUT",collect(e.target,s.fields,data));toast("تم الحفظ ✓ (يظهر في الموقع فورًا)");await reload();}catch(er){toast(er.message);}};
 }
@@ -218,6 +208,7 @@ function cell(x,c){
 }
 function list(s){
   let rows=arr(s.path); rows.sort(s.sort||((a,b)=>(a.order??0)-(b.order??0)));
+  $("#view").onchange=null;
   $("#view").innerHTML=(s.hint?`<p class="hint" style="margin-bottom:10px">${s.hint}</p>`:"")+(rows.length?`<div class="tw"><table><thead><tr>${s.cols.map(c=>`<th>${LBL[c]||c}</th>`).join("")}<th></th></tr></thead><tbody>${rows.map(x=>`<tr>${s.cols.map(c=>`<td>${cell(x,c)}</td>`).join("")}<td><div class="acts"><button class="btn s" data-e="${x._k}">تعديل</button><button class="btn s d" data-x="${x._k}">حذف</button></div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">لا توجد عناصر بعد — اضغط «إضافة»</div>`);
   $("#view").onclick=async e=>{
     const k=e.target.dataset.e,x=e.target.dataset.x;
@@ -230,8 +221,8 @@ function editItem(s,item){
   openM(`<h3>${item?"تعديل":"إضافة"} — ${s.label}</h3><form id="ef"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,it[f[0]])).join("")}</div><div class="mf"><button type="button" class="btn" data-c>إلغاء</button><button class="btn red">حفظ</button></div></form>`);
   $("#ef").onsubmit=async e=>{
     e.preventDefault();const k=it._k||uid(),base={...it};delete base._k;
-    const o=collect(e.target,s.fields,base);o.id=k; if(s.id==="offers")o.id=k;
-    if(s.pre)["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0),s.pre(o);
+    const o=collect(e.target,s.fields,base);o.id=k;
+    if(s.pre){["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0);s.pre(o);}
     if(s.id==="players"&&!o.details)o.details={};
     try{await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);}catch(er){toast(er.message);}
   };
@@ -280,11 +271,10 @@ async function seed(){
 
 /* ================= START ================= */
 function start(){
-  $("#login").style.display="none";$("#app").hidden=false;buildNav();
-  $("#nav").insertAdjacentHTML("beforeend",`<button class="nav-b" id="sd">⚙ تجهيز البيانات الافتراضية</button>`);$("#sd").onclick=seed;
-  show("hero");
+  $("#login").style.display="none";$("#app").hidden=false;buildNav();show("hero");
 }
-if(CFG.REQUIRE_AUTH&&!tok){$("#login").style.display="grid";if(CFG.API_KEY.startsWith("YOUR"))$("#lerr").textContent="⚠ ضع Web API Key في CFG.API_KEY";}else start();
+if(sessionStorage.getItem("usmaAdmin")==="1")start();
+else{$("#login").style.display="grid";$("#cd").focus();}
 </script>
 </body>
 </html>
