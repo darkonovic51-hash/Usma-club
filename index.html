@@ -255,8 +255,12 @@ td.pts{font-weight:900;color:var(--gold);font-size:1.05rem}
 .foot-links{list-style:none;display:grid;gap:8px}
 .foot-links a{color:var(--muted);transition:.3s}
 .foot-links a:hover{color:var(--white);padding-inline-start:8px}
-.foot-bottom{border-top:1px solid var(--line);padding:18px 0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.foot-bottom{border-top:1px solid var(--line);padding:18px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
 .foot-bottom b{color:var(--gold);letter-spacing:.15em}
+/* Admin entry */
+.admin-link{color:var(--muted);font-size:.8rem;border:1px solid var(--line);padding:2px 14px;border-radius:100px;transition:.3s}
+.admin-link:hover{color:var(--white);background:var(--red);border-color:var(--red)}
+.admin-err{color:#ff6b7f;font-size:.85rem;min-height:1.4em;margin:8px 0}
 /* ============ Modals ============ */
 .modal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
 .modal.open{display:flex;animation:fade .25s}
@@ -428,7 +432,8 @@ transform:translateX(100%);transition:.4s var(--ease);box-shadow:-20px 0 60px rg
       <div><h5>روابط الموقع</h5><ul class="foot-links" id="ftLinks"></ul></div>
       <div><h5>USM ALGER</h5><p style="color:var(--muted)" id="ftAbout"></p></div>
     </div>
-    <div class="foot-bottom"><b>USM ALGER · SINCE 1937</b><span id="ftCopy"></span></div>
+    <div class="foot-bottom"><b>USM ALGER · SINCE 1937</b><span id="ftCopy"></span>
+      <button type="button" class="admin-link" id="adminBtn" aria-label="دخول الإدارة">🔒 دخول الإدارة</button></div>
   </div>
 </footer>
 
@@ -443,8 +448,7 @@ transform:translateX(100%);transition:.4s var(--ease);box-shadow:-20px 0 60px rg
 const RTDB = "https://academy-school-16d1b-default-rtdb.firebaseio.com/usma";
 
 /* =====================================================================
-   DEFAULT / DEMO DATA — تُستعمل كاحتياط إذا كانت القاعدة فارغة أو تعذّر الاتصال.
-   الشكل نفسه هو شكل البيانات في Firebase (الـ Dashboard يكتب بهذه البنية).
+   DEFAULT / DEMO DATA — احتياط إذا كانت القاعدة فارغة أو تعذّر الاتصال.
    ===================================================================== */
 const LOGO = "https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png";
 const HERO_IMG = "https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/49bc88b2bd43cd1ab3bbd2b9301c5b8fa76a1861/file_00000000689c8210b9c8c322a6d1e93d.png";
@@ -548,8 +552,6 @@ const siteData = {
 
 /* =====================================================================
    DATA SERVICE — الربط مع Firebase Realtime Database (REST)
-   القراءة: تُدمج بيانات /usma فوق البيانات الافتراضية.
-   الكتابة: الحجوزات/الطلبات/التسجيلات تُنشأ فقط (قواعد Firebase تمنع الزائر من القراءة أو التعديل).
    ===================================================================== */
 const DataService = {
   async loadSiteData(){
@@ -885,6 +887,27 @@ function openNews(id){
 }
 
 /* =====================================================================
+   ADMIN ENTRY — خانة دخول الإدارة (كود الدخول)
+   ===================================================================== */
+const ADMIN_CODE = "usma2627";
+$("#adminBtn").addEventListener("click",()=>{
+  openModal(`<h3 class="md-title">دخول الإدارة</h3>
+    <form id="adminForm" autocomplete="off"><div class="fgrid">${field("code","كود الدخول","password",{full:1})}</div>
+    <p class="admin-err" id="adminErr" role="alert"></p>
+    <button class="btn btn-red btn-block">دخول</button></form>`);
+  $("#adminForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    if($("#f-code").value.trim()===ADMIN_CODE){
+      sessionStorage.setItem("usmaAdmin","1");
+      location.href="dashboard.html";
+    }else{
+      $("#adminErr").textContent="كود الدخول غير صحيح";
+      $("#f-code").value=""; $("#f-code").focus();
+    }
+  });
+});
+
+/* =====================================================================
    UI BEHAVIOR — nav, scroll, reveal, counters, events
    ===================================================================== */
 function closeMenu(){ $("#navMenu").classList.remove("open"); $("#burger").setAttribute("aria-expanded","false"); }
@@ -938,4 +961,4 @@ async function initSite(){
 initSite();
 </script>
 </body>
-  </html>
+</html>
