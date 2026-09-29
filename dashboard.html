@@ -12,6 +12,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cairo',Tahoma,sans-serif;background:var(--black);color:var(--white);min-height:100vh}
 button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0}
+a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 /* Layout */
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
@@ -25,17 +26,22 @@ aside{background:#000;border-inline-end:1px solid var(--line);padding:18px 12px;
 main{padding:24px clamp(14px,3vw,36px);min-width:0}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
 .top h1{font-size:1.7rem;font-weight:900}.top h1::after{content:"";display:block;width:60px;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));margin-top:6px}
-.btn{padding:10px 20px;border-radius:var(--r);font-weight:800;background:var(--b3);border:1px solid var(--line);transition:.2s}
+.btn{display:inline-block;padding:10px 20px;border-radius:var(--r);font-weight:800;background:var(--b3);border:1px solid var(--line);transition:.2s;text-align:center}
 .btn:hover{border-color:var(--gold)}.btn.red{background:var(--red);border-color:var(--red)}.btn.red:hover{box-shadow:0 0 20px rgba(200,16,46,.5)}
-.btn.s{padding:4px 12px;font-size:.82rem}.btn.d{color:#ff6b7f}
+.btn.s{padding:5px 14px;font-size:.85rem}.btn.d{color:#ff6b7f}.btn:disabled{opacity:.5;cursor:wait}
 .card{background:var(--b2);border:1px solid var(--line);border-radius:var(--r);padding:22px}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
 .f{display:flex;flex-direction:column;gap:5px}.f.full{grid-column:1/-1}
-.f label{font-size:.82rem;color:var(--gold);font-weight:700}
-.f input:not([type=checkbox]),.f select,.f textarea{background:#0b0c0e;border:1px solid #2b2f36;border-radius:var(--r);padding:10px 12px;width:100%}
+.f label.lb{font-size:.82rem;color:var(--gold);font-weight:700}
+.f input:not([type=checkbox]):not([type=hidden]),.f select,.f textarea{background:#0b0c0e;border:1px solid #2b2f36;border-radius:var(--r);padding:10px 12px;width:100%}
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--red);outline:0}
 .f textarea{min-height:100px;resize:vertical}.f input[type=checkbox]{width:22px;height:22px;accent-color:var(--red)}
-.img-f{display:flex;gap:8px;align-items:center}.img-f img{width:42px;height:42px;object-fit:cover;border-radius:4px;border:1px solid var(--line)}
+/* Image picker */
+.img-f{display:flex;gap:12px;align-items:center;background:#0b0c0e;border:1px dashed var(--gold);border-radius:var(--r);padding:10px}
+.img-f .pv{width:84px;height:84px;flex-shrink:0;border-radius:var(--r);overflow:hidden;background:repeating-linear-gradient(45deg,#14171b,#14171b 8px,#101215 8px,#101215 16px);display:grid;place-items:center;font-size:1.8rem;border:1px solid var(--line)}
+.img-f .pv img{width:100%;height:100%;object-fit:cover}
+.img-f .ia{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.img-f .hint{flex-basis:100%}
 .hint{color:var(--muted);font-size:.75rem}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
 table{width:100%;border-collapse:collapse;min-width:560px;background:var(--b2)}
@@ -43,7 +49,6 @@ th{background:#000;color:var(--gold);font-size:.8rem;padding:11px 10px;text-alig
 td{padding:9px 10px;border-top:1px solid rgba(255,255,255,.06);font-size:.9rem;vertical-align:middle}
 tr:hover td{background:var(--b3)}td img{width:38px;height:38px;object-fit:cover;border-radius:4px}
 td .acts{display:flex;gap:6px}
-.pill{padding:1px 10px;border-radius:100px;font-size:.75rem;font-weight:800;border:1px solid var(--gold);color:var(--gold)}
 .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
 /* Modal + toast + login */
 .md{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:14px;z-index:50}.md.on{display:flex}
@@ -63,7 +68,7 @@ td .acts{display:flex;gap:6px}
 <!-- ENTRY CODE — كود الدخول -->
 <div id="login"><form id="lf" autocomplete="off"><img src="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png" alt="USMA">
 <h2>لوحة تحكم USMA</h2>
-<div class="f"><label for="cd">كود الدخول</label><input id="cd" type="password" required autocomplete="off"></div>
+<div class="f"><label class="lb" for="cd">كود الدخول</label><input id="cd" type="password" required autocomplete="off"></div>
 <button class="btn red">دخول</button><div id="lerr" role="alert"></div><a href="index.html" class="hint">← العودة للموقع</a></form></div>
 
 <div class="app" id="app" hidden>
@@ -77,8 +82,8 @@ td .acts{display:flex;gap:6px}
 /* ================= CONFIG ================= */
 const CFG = {
   DB: "https://academy-school-16d1b-default-rtdb.firebaseio.com", // Realtime Database
-  ROOT: "usma",                        // كل بيانات الموقع تحت /usma فقط (لا تلمس بقية المشروع)
-  BUCKET: "YOUR_STORAGE_BUCKET"        // اختياري: لرفع الصور (يتطلب قواعد Storage تسمح بالرفع). اتركه كما هو لاستعمال روابط الصور فقط
+  ROOT: "usma",                        // كل بيانات الموقع تحت /usma فقط
+  BUCKET: "YOUR_STORAGE_BUCKET"        // اختياري: مثال academy-school-16d1b.appspot.com — إذا وُضع تُرفع الصور إلى Firebase Storage (يتطلب قواعد Storage تسمح بالكتابة على usma/**)، وإلا تُحفظ مضغوطة داخل القاعدة
 };
 const ADMIN_CODE = "usma2627";         // كود دخول الإدارة (نفس الكود في index.html)
 const LOGO="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png";
@@ -107,41 +112,103 @@ function logout(){sessionStorage.clear();location.href="index.html";}
 
 /* ================= SCHEMA ================= */
 // حقل: [المسار, التسمية, النوع, خيارات]   الأنواع: text number date datetime textarea image select check goals
+// حقل الصورة: الخيار {max:px} يحدد أكبر بُعد للصورة بعد التصغير
 const CATS=[["goalkeepers","حراس المرمى"],["defenders","المدافعون"],["midfielders","لاعبو الوسط"],["forwards","المهاجمون"],["coach","المدرب"]];
 const TABS=[["","(بدون)"],["fx","النتائج والرزنامة"],["st","الترتيب"]];
 const SOC=["Facebook","Instagram","YouTube","X"];
 const SECTIONS=[
  {g:"الموقع"},
- {id:"siteSettings",label:"الإعدادات العامة",kind:"single",path:"siteSettings",fields:[["clubName","اسم النادي (عربي)"],["clubNameEn","اسم النادي (EN)"],["shortName","الاختصار"],["since","سنة التأسيس","number"],["logo","الشعار","image"],["topTag","عبارة الشريط العلوي"],["slogan","الشعار النصي"],["about","نبذة (الفوتر)","textarea"],...SOC.map((s,i)=>[`social.${i}.url`,"رابط "+s])]},
- {id:"hero",label:"الواجهة (Hero)",kind:"single",path:"hero",fields:[["image","صورة الخلفية","image"],["title","العنوان"],["highlight","الجزء الملوّن"],["subtitle","السطر الفرعي"],["buttons.0.text","نص الزر 1"],["buttons.0.target","رابط الزر 1"],["buttons.1.text","نص الزر 2"],["buttons.1.target","رابط الزر 2"]]},
+ {id:"siteSettings",label:"الإعدادات العامة",kind:"single",path:"siteSettings",fields:[["clubName","اسم النادي (عربي)"],["clubNameEn","اسم النادي (EN)"],["shortName","الاختصار"],["since","سنة التأسيس","number"],["logo","الشعار","image",{max:500}],["topTag","عبارة الشريط العلوي"],["slogan","الشعار النصي"],["about","نبذة (الفوتر)","textarea"],...SOC.map((s,i)=>[`social.${i}.url`,"رابط "+s])]},
+ {id:"hero",label:"الواجهة (Hero)",kind:"single",path:"hero",fields:[["image","صورة الخلفية","image",{max:1600}],["title","العنوان"],["highlight","الجزء الملوّن"],["subtitle","السطر الفرعي"],["buttons.0.text","نص الزر 1"],["buttons.0.target","رابط الزر 1"],["buttons.1.text","نص الزر 2"],["buttons.1.target","رابط الزر 2"]]},
  {id:"navigation",label:"القائمة (Navbar)",kind:"list",path:"navigation",cols:["order","label","target"],fields:[["label","النص"],["target","الهدف (#team ...)"],["tab","تبويب",'select',TABS],["order","الترتيب","number"],["cta","زر مميّز","check"]]},
  {id:"services",label:"الخدمات السريعة",kind:"list",path:"services",cols:["order","icon","title"],fields:[["icon","أيقونة (Emoji)"],["title","العنوان"],["desc","الوصف"],["target","الهدف"],["tab","تبويب","select",TABS],["order","الترتيب","number"]]},
  {g:"الفريق والمباريات"},
- {id:"players",label:"اللاعبون",kind:"list",path:"players",cols:["image","name","position","number","category"],fields:[["name","الاسم"],["position","المركز"],["category","الفئة","select",CATS],["number","رقم القميص","number"],["image","الصورة","image"],["description","الوصف","textarea"]]},
- {id:"nextMatch",label:"المباراة القادمة",kind:"single",path:"nextMatch",fields:[["home.name","الفريق 1 (EN)"],["home.nameAr","الفريق 1 (عربي)"],["home.logo","شعار الفريق 1","image"],["away.name","الفريق 2 (EN)"],["away.nameAr","الفريق 2 (عربي)"],["away.logo","شعار الفريق 2 (JSK)","image"],["competition","البطولة"],["season","الموسم"],["round","الجولة","number"],["datetime","التاريخ والساعة (العد التنازلي)","datetime"],["stadium","الملعب"],["durationMinutes","مدة المباراة (دقيقة)","number"]]},
- {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date"],fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image"],["awayLogo","شعار الضيف","image"],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals",{full:1}],["info","معلومات إضافية","textarea"]]},
- {id:"standings",label:"الترتيب",kind:"list",path:"standings",sort:(a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf,cols:["logo","team","p","w","d","l","gf","ga","gd","pts"],pre:x=>{x.p=x.w+x.d+x.l;x.gd=x.gf-x.ga;x.pts=x.w*3+x.d;},hint:"P وGD وPTS تُحسب تلقائيًا (فوز=3، تعادل=1).",fields:[["team","الفريق"],["logo","الشعار","image"],["w","فوز","number"],["d","تعادل","number"],["l","خسارة","number"],["gf","له","number"],["ga","عليه","number"]]},
+ {id:"players",label:"اللاعبون",kind:"list",path:"players",cols:["image","name","position","number","category"],fields:[["name","الاسم"],["position","المركز"],["category","الفئة","select",CATS],["number","رقم القميص","number"],["image","صورة اللاعب","image",{max:900}],["description","الوصف","textarea"]]},
+ {id:"nextMatch",label:"المباراة القادمة",kind:"single",path:"nextMatch",fields:[["home.name","الفريق 1 (EN)"],["home.nameAr","الفريق 1 (عربي)"],["home.logo","شعار الفريق 1","image",{max:500}],["away.name","الفريق 2 (EN)"],["away.nameAr","الفريق 2 (عربي)"],["away.logo","شعار الفريق 2 (JSK)","image",{max:500}],["competition","البطولة"],["season","الموسم"],["round","الجولة","number"],["datetime","التاريخ والساعة (العد التنازلي)","datetime"],["stadium","الملعب"],["durationMinutes","مدة المباراة (دقيقة)","number"]]},
+ {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date"],fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image",{max:500}],["awayLogo","شعار الضيف","image",{max:500}],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals",{full:1}],["info","معلومات إضافية","textarea"]]},
+ {id:"standings",label:"الترتيب",kind:"list",path:"standings",sort:(a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf,cols:["logo","team","p","w","d","l","gf","ga","gd","pts"],pre:x=>{x.p=x.w+x.d+x.l;x.gd=x.gf-x.ga;x.pts=x.w*3+x.d;},hint:"P وGD وPTS تُحسب تلقائيًا (فوز=3، تعادل=1).",fields:[["team","الفريق"],["logo","شعار الفريق","image",{max:500}],["w","فوز","number"],["d","تعادل","number"],["l","خسارة","number"],["gf","له","number"],["ga","عليه","number"]]},
  {id:"fixturesConfig",label:"إعدادات الموسم",kind:"single",path:"fixturesConfig",fields:[["competition","البطولة"],["season","الموسم"],["rounds","عدد الجولات","number"]]},
  {g:"التذاكر والمتجر"},
  {id:"ticket",label:"تذكرة المباراة",kind:"single",path:"tickets/match",fields:[["title","العنوان"],["ticketType","نوع التذكرة"],["matchRound","الجولة","number"],["price","السعر","number"],["currency","العملة"],["stadium","الملعب"],["capacity","عدد التذاكر","number"],["sold","المباعة","number"],["active","الحجز مفتوح","check"]]},
  {id:"offers",label:"الاشتراكات والبطاقات",kind:"list",path:"tickets/offers",cols:["title","price","period","vip"],fields:[["title","العنوان"],["price","السعر","number"],["period","المدة"],["desc","الوصف","textarea"],["vip","VIP","check"]]},
- {id:"products",label:"المنتجات",kind:"list",path:"products",cols:["image","name","price","active"],fields:[["name","الاسم"],["price","السعر","number"],["currency","العملة"],["image","الصورة","image"],["short","وصف قصير"],["description","الوصف الكامل","textarea"],["active","ظاهر في المتجر","check"]]},
+ {id:"products",label:"المنتجات",kind:"list",path:"products",cols:["image","name","price","active"],fields:[["name","الاسم"],["price","السعر","number"],["currency","العملة"],["image","صورة المنتج","image",{max:900}],["short","وصف قصير"],["description","الوصف الكامل","textarea"],["active","ظاهر في المتجر","check"]]},
  {g:"المحتوى"},
- {id:"academy",label:"مدرسة كرة القدم",kind:"single",path:"academy",fields:[["image","صورة الخلفية","image"],["title","العنوان"],["text","النص","textarea"],["categories","الفئات (سطر لكل فئة)","textarea"],...[0,1,2].flatMap(i=>[[`points.${i}.icon`,`ميزة ${i+1}: أيقونة`],[`points.${i}.title`,`ميزة ${i+1}: عنوان`],[`points.${i}.desc`,`ميزة ${i+1}: وصف`]])]},
- {id:"news",label:"الأخبار",kind:"list",path:"news",sort:(a,b)=>(b.date||"").localeCompare(a.date||""),cols:["image","title","category","date"],fields:[["title","العنوان"],["category","التصنيف"],["date","التاريخ","date"],["author","الكاتب"],["image","الصورة","image"],["summary","الملخص","textarea"],["content","النص الكامل (فقرة في كل سطر)","textarea"],["demo","محتوى تجريبي","check"]]},
+ {id:"academy",label:"مدرسة كرة القدم",kind:"single",path:"academy",fields:[["image","صورة الخلفية","image",{max:1600}],["title","العنوان"],["text","النص","textarea"],["categories","الفئات (سطر لكل فئة)","textarea"],...[0,1,2].flatMap(i=>[[`points.${i}.icon`,`ميزة ${i+1}: أيقونة`],[`points.${i}.title`,`ميزة ${i+1}: عنوان`],[`points.${i}.desc`,`ميزة ${i+1}: وصف`]])]},
+ {id:"news",label:"الأخبار",kind:"list",path:"news",sort:(a,b)=>(b.date||"").localeCompare(a.date||""),cols:["image","title","category","date"],fields:[["title","العنوان"],["category","التصنيف"],["date","التاريخ","date"],["author","الكاتب"],["image","صورة الخبر","image",{max:1400}],["summary","الملخص","textarea"],["content","النص الكامل (فقرة في كل سطر)","textarea"],["demo","محتوى تجريبي","check"]]},
  {g:"الطلبات الواردة"},
  {id:"ticketBookings",label:"حجوزات التذاكر",kind:"inbox",path:"ticketBookings",cols:["id","name","lastName","phone","email","match","createdAt"]},
  {id:"subscriptionRequests",label:"طلبات الاشتراك",kind:"inbox",path:"subscriptionRequests",cols:["id","offer","name","lastName","phone","email","createdAt"]},
  {id:"orders",label:"طلبات المتجر",kind:"inbox",path:"orders",cols:["orderId","productId","customerName","customerLastName","phone","address","quantity","createdAt"]},
  {id:"academyApplications",label:"تسجيلات المدرسة",kind:"inbox",path:"academyApplications",cols:["id","childName","childLastName","age","category","parentName","parentPhone","email","createdAt"]}
 ];
+const INBOXES=SECTIONS.filter(s=>s.kind==="inbox");
 const LBL={id:"المعرّف",orderId:"رقم الطلب",productId:"المنتج",name:"الاسم",lastName:"اللقب",phone:"الهاتف",email:"البريد",match:"المباراة",createdAt:"التاريخ",offer:"العرض",customerName:"الاسم",customerLastName:"اللقب",address:"العنوان",quantity:"الكمية",childName:"الطفل",childLastName:"اللقب",age:"العمر",category:"الفئة",parentName:"الولي",parentPhone:"هاتف الولي",order:"الترتيب",label:"النص",target:"الهدف",icon:"أيقونة",title:"العنوان",image:"صورة",position:"المركز",number:"الرقم",round:"الجولة",homeTeam:"المضيف",awayTeam:"الضيف",scoreHome:"هـ",scoreAway:"ض",date:"التاريخ",logo:"شعار",team:"الفريق",p:"P",w:"W",d:"D",l:"L",gf:"GF",ga:"GA",gd:"GD",pts:"PTS",price:"السعر",period:"المدة",vip:"VIP",active:"ظاهر"};
 const get=(path)=>getP(DB,path.replace(/\//g,"."));
 const arr=p=>Object.entries(get(p)||{}).map(([k,v])=>({...v,_k:k}));
 
+/* ================= IMAGE UPLOAD (مباشر من الجهاز) ================= */
+// تصغير وضغط الصورة داخل المتصفح ثم تحويلها إلى data URL (PNG للشفافية، JPEG للصور)
+function fileToData(file,max=1000){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const png=/png|webp|gif|svg/.test(file.type);
+      let m=png?Math.min(max,600):max, out;
+      for(let i=0;i<6;i++){
+        const k=Math.min(1,m/Math.max(img.width,img.height)), w=Math.max(1,Math.round(img.width*k)), h=Math.max(1,Math.round(img.height*k));
+        const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");
+        if(!png){x.fillStyle="#fff";x.fillRect(0,0,w,h);}
+        x.drawImage(img,0,0,w,h);
+        out=c.toDataURL(png?"image/png":"image/jpeg",.82);
+        if(out.length<650000||m<=300)break;      // الحد المقبول ~650KB لكل صورة
+        m=Math.round(m*.75);
+      }
+      res(out);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("الملف ليس صورة صالحة"));};
+    img.src=url;
+  });
+}
+async function uploadStorage(file){
+  const name=`usma/${Date.now()}-${file.name.replace(/[^\w.-]/g,"_")}`;
+  const r=await fetch(`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o?name=${encodeURIComponent(name)}`,{method:"POST",headers:{"Content-Type":file.type},body:file});
+  const d=await r.json(); if(!r.ok)throw new Error("storage");
+  return`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o/${encodeURIComponent(d.name)}?alt=media&token=${d.downloadTokens}`;
+}
+async function pickImage(file,max){
+  if(!file.type.startsWith("image/"))throw new Error("اختر ملف صورة فقط");
+  if(!CFG.BUCKET.startsWith("YOUR")){try{return await uploadStorage(file);}catch(_){/* تراجع إلى الحفظ داخل القاعدة */}}
+  return fileToData(file,max);
+}
+// واجهة حقل الصورة: معاينة + زر اختيار + زر حذف + حقل مخفي يحمل القيمة
+function imgInner(id,n,v,max){
+  return`<div class="pv">${v?`<img src="${esc(v)}" alt="معاينة">`:"📷"}</div>
+  <div class="ia"><label class="btn s red" style="cursor:pointer">📷 ${v?"تغيير الصورة":"اختيار صورة"}<input type="file" accept="image/*" hidden data-up="${id}"></label>
+  ${v?`<button type="button" class="btn s d" data-rm="${id}">حذف</button>`:""}<span class="hint" id="${id}_i">${v?"":"اضغط لاختيار صورة من جهازك"}</span></div>
+  <input type="hidden" id="${id}" name="${n}" data-t="image" value="${esc(v)}">`;
+}
+document.addEventListener("change",async e=>{
+  const id=e.target.dataset?.up; if(!id)return;
+  const file=e.target.files[0]; if(!file)return;
+  const wrap=document.querySelector(`[data-if="${id}"]`), n=wrap.dataset.n, max=+wrap.dataset.max||1000;
+  const hint=$("#"+id+"_i"); hint.textContent="⏳ جارٍ معالجة الصورة…";
+  try{
+    const val=await pickImage(file,max);
+    wrap.innerHTML=imgInner(id,n,val,max);
+    $("#"+id+"_i").textContent="✓ تم اختيار الصورة — اضغط «حفظ» لتثبيتها ("+(val.startsWith("data:")?Math.round(val.length*.75/1024)+" KB":"مرفوعة")+")";
+  }catch(er){hint.textContent="";toast(er.message);}
+});
+document.addEventListener("click",e=>{
+  const id=e.target.dataset?.rm; if(!id)return;
+  const wrap=document.querySelector(`[data-if="${id}"]`);
+  wrap.innerHTML=imgInner(id,wrap.dataset.n,"",+wrap.dataset.max||1000);
+  $("#"+id+"_i").textContent="تم حذف الصورة — اضغط «حفظ» للتأكيد";
+});
+
 /* ================= FIELD ENGINE ================= */
 function fieldHTML([n,l,t="text",o],val){
-  const id="x_"+n.replace(/\W/g,"_"), full=(t==="textarea"||t==="goals"||(o&&o.full))?" full":"";
+  const id="x_"+n.replace(/\W/g,"_"), full=(t==="textarea"||t==="goals"||t==="image"||(o&&o.full))?" full":"";
   let v=val, inp;
   if(t==="goals")v=(val||[]).map(g=>`${g.scorer}|${g.minute}|${g.team}`).join("\n");
   if((n==="content"||n==="categories")&&Array.isArray(val))v=val.join("\n");
@@ -149,10 +216,10 @@ function fieldHTML([n,l,t="text",o],val){
   if(t==="textarea"||t==="goals")inp=`<textarea id="${id}" name="${n}" data-t="${t}">${esc(v)}</textarea>`;
   else if(t==="select")inp=`<select id="${id}" name="${n}" data-t="select">${o.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}" ${a==v?"selected":""}>${esc(b)}</option>`}).join("")}</select>`;
   else if(t==="check")inp=`<input id="${id}" type="checkbox" name="${n}" data-t="check" ${val?"checked":""}>`;
-  else if(t==="image")inp=`<div class="img-f">${v?`<img src="${esc(v)}" alt="">`:""}<input id="${id}" name="${n}" data-t="image" value="${esc(v)}" placeholder="رابط الصورة">${CFG.BUCKET.startsWith("YOUR")?"":`<label class="btn s">رفع<input type="file" accept="image/*" hidden data-up="${id}"></label>`}</div>`;
+  else if(t==="image"){const max=(o&&o.max)||1000;return`<div class="f${full}"><label class="lb">${esc(l)}</label><div class="img-f" data-if="${id}" data-n="${esc(n)}" data-max="${max}">${imgInner(id,n,v,max)}</div></div>`;}
   else if(t==="datetime")inp=`<input id="${id}" type="datetime-local" name="${n}" data-t="datetime" value="${esc(String(v).slice(0,16))}">`;
   else inp=`<input id="${id}" type="${t==="number"?"number":t==="date"?"date":"text"}" ${t==="number"?'step="any"':""} name="${n}" data-t="${t}" value="${esc(v)}">`;
-  return`<div class="f${full}"><label for="${id}">${esc(l)}</label>${inp}</div>`;
+  return`<div class="f${full}"><label class="lb" for="${id}">${esc(l)}</label>${inp}</div>`;
 }
 function collect(form,fields,base){
   const o=structuredClone(base||{});
@@ -169,16 +236,6 @@ function collect(form,fields,base){
   return o;
 }
 const deleteP=(o,p)=>{const k=p.split("."),t=k.slice(0,-1).reduce((a,x)=>a?.[x],o);if(t)delete t[k.at(-1)];};
-async function upload(file){
-  const name=`usma/${Date.now()}-${file.name.replace(/[^\w.-]/g,"_")}`;
-  const r=await fetch(`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o?name=${encodeURIComponent(name)}`,{method:"POST",headers:{"Content-Type":file.type},body:file});
-  const d=await r.json(); if(!r.ok)throw new Error("فشل رفع الصورة (تحقق من قواعد Storage)");
-  return`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o/${encodeURIComponent(d.name)}?alt=media&token=${d.downloadTokens}`;
-}
-document.addEventListener("change",async e=>{
-  const u=e.target.dataset?.up; if(!u||!e.target.files[0])return;
-  try{toast("جارٍ رفع الصورة…");$("#"+u).value=await upload(e.target.files[0]);toast("تم الرفع ✓");}catch(er){toast(er.message);}
-});
 
 /* ================= VIEWS ================= */
 const secOf=id=>SECTIONS.find(s=>s.id===id);
@@ -186,11 +243,20 @@ function buildNav(){
   $("#nav").innerHTML=SECTIONS.map(s=>s.g?`<div class="nav-g">${s.g}</div>`:`<button class="nav-b" data-s="${s.id}">${s.label}${s.kind==="inbox"?`<span class="bd" id="bd-${s.id}" hidden></span>`:""}</button>`).join("")+`<div class="nav-g">النظام</div><button class="nav-b" id="sd">⚙ تجهيز البيانات الافتراضية</button><a class="nav-b" href="index.html" target="_blank" rel="noopener">↗ عرض الموقع</a><button class="nav-b" id="lo">تسجيل الخروج</button>`;
   $("#lo").onclick=logout; $("#sd").onclick=seed;
 }
-async function reload(){DB=await api("")||{};SECTIONS.filter(s=>s.kind==="inbox").forEach(s=>{const n=arr(s.path).filter(x=>x.status==="pending").length,b=$("#bd-"+s.id);if(b){b.hidden=!n;b.textContent=n;}});}
+// تحميل القسم الحالي فقط (أسرع لأن الصور قد تكون مخزنة داخل القاعدة)
+async function load(path){const v=await api(path);setP(DB,path.replace(/\//g,"."),v);return v;}
+async function badges(){
+  await Promise.all(INBOXES.map(async s=>{
+    try{await load(s.path);}catch(_){}
+    const n=arr(s.path).filter(x=>x.status==="pending").length,b=$("#bd-"+s.id);
+    if(b){b.hidden=!n;b.textContent=n;}
+  }));
+}
 async function show(id){
   cur=id;const s=secOf(id);$("#ttl").textContent=s.label;$("#side").classList.remove("on");
   document.querySelectorAll(".nav-b").forEach(b=>b.classList.toggle("on",b.dataset.s===id));
-  try{await reload();}catch(e){toast(e.message);}
+  $("#view").innerHTML=`<div class="empty">⏳ جارٍ التحميل…</div>`;
+  try{await load(s.path);}catch(e){toast(e.message);}
   $("#topActs").innerHTML=s.kind==="list"?`<button class="btn red" id="addB">＋ إضافة</button>`:"";
   if(s.kind==="single")single(s);else if(s.kind==="list"){list(s);$("#addB").onclick=()=>editItem(s);}else inbox(s);
 }
@@ -198,7 +264,7 @@ function single(s){
   const data=get(s.path)||{};
   $("#view").onclick=null;$("#view").onchange=null;
   $("#view").innerHTML=`<form class="card" id="sf"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,getP(data,f[0]))).join("")}</div><div class="mf"><button class="btn red">حفظ التغييرات</button></div></form>`;
-  $("#sf").onsubmit=async e=>{e.preventDefault();try{await api(s.path,"PUT",collect(e.target,s.fields,data));toast("تم الحفظ ✓ (يظهر في الموقع فورًا)");await reload();}catch(er){toast(er.message);}};
+  $("#sf").onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{await api(s.path,"PUT",collect(e.target,s.fields,data));toast("تم الحفظ ✓ (يظهر في الموقع فورًا)");await load(s.path);}catch(er){toast(er.message);}b.disabled=false;};
 }
 function cell(x,c){
   const v=x[c]; if(c==="image"||c==="logo")return v?`<img src="${esc(v)}" alt="">`:"—";
@@ -220,19 +286,20 @@ function editItem(s,item){
   const it=item||{};
   openM(`<h3>${item?"تعديل":"إضافة"} — ${s.label}</h3><form id="ef"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,it[f[0]])).join("")}</div><div class="mf"><button type="button" class="btn" data-c>إلغاء</button><button class="btn red">حفظ</button></div></form>`);
   $("#ef").onsubmit=async e=>{
-    e.preventDefault();const k=it._k||uid(),base={...it};delete base._k;
+    e.preventDefault();const b=e.submitter;b.disabled=true;
+    const k=it._k||uid(),base={...it};delete base._k;
     const o=collect(e.target,s.fields,base);o.id=k;
     if(s.pre){["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0);s.pre(o);}
     if(s.id==="players"&&!o.details)o.details={};
-    try{await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);}catch(er){toast(er.message);}
+    try{await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);}catch(er){toast(er.message);b.disabled=false;}
   };
 }
 const ST=[["pending","قيد الانتظار"],["confirmed","مؤكد"],["completed","مكتمل"],["cancelled","ملغى"]];
 function inbox(s){
   const rows=arr(s.path).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
   $("#view").innerHTML=rows.length?`<div class="tw"><table><thead><tr>${s.cols.map(c=>`<th>${LBL[c]||c}</th>`).join("")}<th>الحالة</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr>${s.cols.map(c=>`<td>${cell(x,c)}</td>`).join("")}<td><select data-st="${x._k}" aria-label="الحالة">${ST.map(([v,l])=>`<option value="${v}" ${x.status===v?"selected":""}>${l}</option>`).join("")}</select></td><td><button class="btn s d" data-x="${x._k}">حذف</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">لا توجد طلبات بعد</div>`;
-  $("#view").onchange=async e=>{const k=e.target.dataset.st;if(!k)return;try{await api(`${s.path}/${k}/status`,"PUT",e.target.value);toast("تم تحديث الحالة ✓");reload();}catch(er){toast(er.message);}};
-  $("#view").onclick=async e=>{const x=e.target.dataset.x;if(x&&confirm("حذف هذا الطلب؟")){try{await api(`${s.path}/${x}`,"DELETE");show(cur);}catch(er){toast(er.message);}}};
+  $("#view").onchange=async e=>{const k=e.target.dataset.st;if(!k)return;try{await api(`${s.path}/${k}/status`,"PUT",e.target.value);toast("تم تحديث الحالة ✓");badges();}catch(er){toast(er.message);}};
+  $("#view").onclick=async e=>{const x=e.target.dataset.x;if(x&&confirm("حذف هذا الطلب؟")){try{await api(`${s.path}/${x}`,"DELETE");show(cur);badges();}catch(er){toast(er.message);}}};
 }
 function openM(h){$("#mb").innerHTML=h;$("#md").classList.add("on");}
 function closeM(){$("#md").classList.remove("on");}
@@ -271,7 +338,7 @@ async function seed(){
 
 /* ================= START ================= */
 function start(){
-  $("#login").style.display="none";$("#app").hidden=false;buildNav();show("hero");
+  $("#login").style.display="none";$("#app").hidden=false;buildNav();show("hero");badges();
 }
 if(sessionStorage.getItem("usmaAdmin")==="1")start();
 else{$("#login").style.display="grid";$("#cd").focus();}
