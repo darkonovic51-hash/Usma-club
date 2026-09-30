@@ -51,10 +51,29 @@ main{padding:24px clamp(14px,3vw,36px);min-width:0}
 .gal-f .gx:hover{background:var(--red)}
 .gal-f .gadd{width:88px;height:88px;display:grid;place-items:center;border:1px dashed var(--gold);border-radius:var(--r);color:var(--gold);font-size:1.8rem;cursor:pointer}
 .gal-f .gadd:hover{background:var(--red);color:#fff;border-color:var(--red)}
-/* People editor (لاعبو التشكيلة) */
+/* People editor (لاعبو التشكيلة التاريخية) */
 .pp-row{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));padding:10px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px;background:#0b0c0e}
 .pp-row .img-f{grid-column:1/-1}
 .pp-row input,.pp-row select{background:#121417;border:1px solid #2b2f36;border-radius:var(--r);padding:8px 10px;width:100%}
+/* STARTING XI editor — اختيار التشكيلة الأساسية */
+.xi-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.xi-top select{background:#0b0c0e;border:1px solid #2b2f36;border-radius:var(--r);padding:8px 14px;font-weight:800;width:auto}
+.xi-cnt{background:#0b0c0e;border:1px solid var(--line);padding:4px 16px;border-radius:100px;font-weight:900}
+.xi-cnt.ok{border-color:#3ddc84;color:#3ddc84}
+.xi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px;margin-top:10px}
+.xc{position:relative;border:1px solid var(--line);border-radius:var(--r);background:#0b0c0e;overflow:hidden;transition:.2s}
+.xc:hover{border-color:var(--gold)}
+.xc.sel{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 0 18px rgba(200,16,46,.4)}
+.xc .xt{display:block;width:100%;text-align:start;background:none;padding:0}
+.xc .xim{aspect-ratio:3/4;background:repeating-linear-gradient(45deg,#14171b,#14171b 8px,#101215 8px,#101215 16px);display:grid;place-items:center;font-size:1.6rem;overflow:hidden;position:relative}
+.xc .xim img{width:100%;height:100%;object-fit:cover;object-position:top}
+.xc .xn{position:absolute;top:4px;inset-inline-start:7px;font-weight:900;font-size:1.3rem;color:transparent;-webkit-text-stroke:1px var(--gold)}
+.xc .xnm{padding:6px 8px 4px;font-weight:800;font-size:.82rem;line-height:1.3;overflow-wrap:anywhere}
+.xc .xps{padding:0 8px 6px;color:var(--muted);font-size:.7rem}
+.xc .tick{position:absolute;top:6px;inset-inline-end:6px;background:var(--red);border-radius:50%;width:24px;height:24px;display:none;place-items:center;font-size:.8rem;font-weight:900}
+.xc.sel .tick{display:grid}
+.xc select{display:block;margin:0 6px 8px;width:calc(100% - 12px);background:#121417;border:1px solid var(--gold);border-radius:var(--r);padding:5px 6px;font-size:.75rem}
+.xc select.miss{border-color:#ff6b7f}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
 table{width:100%;border-collapse:collapse;min-width:560px;background:var(--b2)}
 th{background:#000;color:var(--gold);font-size:.8rem;padding:11px 10px;text-align:start}
@@ -108,7 +127,7 @@ const getP=(o,p)=>p.split(".").reduce((a,k)=>a==null?a:a[k],o);
 const setP=(o,p,v)=>{const k=p.split(".");k.slice(0,-1).reduce((a,x)=>a[x]??(a[x]={}),o)[k.at(-1)]=v;};
 const deleteP=(o,p)=>{const k=p.split("."),t=k.slice(0,-1).reduce((a,x)=>a?.[x],o);if(t)delete t[k.at(-1)];};
 let DB={}, cur=null;
-function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",3200);}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",3800);}
 async function api(p,m="GET",b){
   const r=await fetch(`${CFG.DB}/${CFG.ROOT}/${p}.json`,{method:m,body:b===undefined?undefined:JSON.stringify(b)});
   if(!r.ok)throw new Error(r.status===401||r.status===403?"غير مصرح — تحقق من قواعد Firebase":"خطأ "+r.status);
@@ -123,9 +142,26 @@ $("#lf").addEventListener("submit",e=>{
 });
 function logout(){sessionStorage.clear();location.href="index.html";}
 
+/* ================= FORMATIONS (نفس تعريفات الموقع index.html — يجب أن تبقى متطابقة) ================= */
+const POS_AR={GK:"حارس مرمى",LB:"ظهير أيسر",RB:"ظهير أيمن",CB:"قلب دفاع",LWB:"ظهير جناح أيسر",RWB:"ظهير جناح أيمن",DM:"وسط مدافع",CM:"وسط",AM:"صانع ألعاب",LM:"وسط أيسر",RM:"وسط أيمن",LW:"جناح أيسر",RW:"جناح أيمن",ST:"مهاجم"};
+const FORMATIONS={
+  "4-3-3":[["GK"],["LB","CB","CB","RB"],["CM","CM"],["DM"],["LW","ST","RW"]],
+  "4-2-3-1":[["GK"],["LB","CB","CB","RB"],["DM","DM"],["LW","AM","RW"],["ST"]],
+  "4-4-2":[["GK"],["LB","CB","CB","RB"],["LM","CM","CM","RM"],["ST","ST"]],
+  "4-1-4-1":[["GK"],["LB","CB","CB","RB"],["DM"],["LM","CM","CM","RM"],["ST"]],
+  "3-4-3":[["GK"],["CB","CB","CB"],["LM","CM","CM","RM"],["LW","ST","RW"]],
+  "3-5-2":[["GK"],["CB","CB","CB"],["LWB","CM","DM","CM","RWB"],["ST","ST"]],
+  "5-3-2":[["GK"],["LWB","CB","CB","CB","RWB"],["CM","CM","CM"],["ST","ST"]]
+};
+function slotsOf(f){
+  const cnt={}, out=[];
+  (FORMATIONS[f]||[]).forEach((row,ri)=>row.forEach(pos=>{ cnt[pos]=(cnt[pos]||0)+1; out.push({id:pos+cnt[pos],pos,row:ri}); }));
+  return out;
+}
+
 /* ================= SCHEMA ================= */
 // حقل: [المسار, التسمية, النوع, خيارات]
-// الأنواع: text number date datetime textarea lines(سطر لكل عنصر → مصفوفة) image gallery(عدة صور) people(لاعبو التشكيلة) select check goals
+// الأنواع: text number date datetime textarea lines(سطر لكل عنصر → مصفوفة) image gallery(عدة صور) people(لاعبو التشكيلة التاريخية) xi(التشكيلة الأساسية) select check goals
 // خيارات الصور: {max:px}   خيارات check: {def:true} = مفعّل افتراضيًا
 const CATS=[["goalkeepers","حراس المرمى"],["defenders","المدافعون"],["midfielders","لاعبو الوسط"],["forwards","المهاجمون"],["coach","المدرب"]];
 const ACATS=[["photo","صور"],["article","مقالات"],["document","وثائق"],["historic-match","مباريات تاريخية"],["trophy","بطولات"],["squad","تشكيلات تاريخية"],["legend","شخصيات"],["event","أحداث تاريخية"]];
@@ -140,9 +176,13 @@ const SECTIONS=[
  {id:"navigation",label:"القائمة (Navbar)",kind:"list",path:"navigation",cols:["order","label","target"],fields:[["label","النص"],["target","الهدف (#team ...)"],["tab","تبويب",'select',TABS],ORD,["cta","زر مميّز","check"]]},
  {id:"services",label:"الخدمات السريعة",kind:"list",path:"services",cols:["order","icon","title"],fields:[["icon","أيقونة (Emoji)"],["title","العنوان"],["desc","الوصف"],["target","الهدف"],["tab","تبويب","select",TABS],ORD]},
  {g:"الفريق والمباريات"},
- {id:"players",label:"اللاعبون",kind:"list",path:"players",cols:["image","name","position","number","category"],fields:[["name","الاسم"],["position","المركز"],["category","الفئة","select",CATS],["number","رقم القميص","number"],["image","صورة اللاعب","image",{max:900}],["description","الوصف","textarea"]]},
+ {id:"players",label:"اللاعبون",kind:"list",path:"players",cols:["image","name","position","number","category"],hint:"الإحصائيات تظهر على الوجه الخلفي لبطاقة اللاعب في STARTING XI. اترك الحقل فارغًا إن لم تتوفر البيانات (يظهر «--» في الموقع) واكتب 0 للصفر الفعلي.",
+  fields:[["name","الاسم"],["position","المركز"],["category","الفئة","select",CATS],["number","رقم القميص","number"],["image","صورة اللاعب","image",{max:900}],["description","الوصف","textarea"],
+   ["stats.appearances","المباريات (Appearances)","number"],["stats.goals","الأهداف (Goals)","number"],["stats.assists","التمريرات الحاسمة (Assists)","number"],["stats.minutes","الدقائق (Minutes)","number"],["stats.yellowCards","البطاقات الصفراء","number"],["stats.redCards","البطاقات الحمراء","number"],["stats.cleanSheets","الشباك النظيفة (للحراس)","number"]]},
  {id:"nextMatch",label:"المباراة القادمة",kind:"single",path:"nextMatch",fields:[["home.name","الفريق 1 (EN)"],["home.nameAr","الفريق 1 (عربي)"],["home.logo","شعار الفريق 1","image",{max:500}],["away.name","الفريق 2 (EN)"],["away.nameAr","الفريق 2 (عربي)"],["away.logo","شعار الفريق 2 (JSK)","image",{max:500}],["competition","البطولة"],["season","الموسم"],["round","الجولة","number"],["datetime","التاريخ والساعة (العد التنازلي)","datetime"],["stadium","الملعب"],["durationMinutes","مدة المباراة (دقيقة)","number"]]},
- {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date"],fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image",{max:500}],["awayLogo","شعار الضيف","image",{max:500}],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals"],["info","معلومات إضافية","textarea"]]},
+ {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date","formation"],
+  fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image",{max:500}],["awayLogo","شعار الضيف","image",{max:500}],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals"],["info","معلومات إضافية","textarea"],
+   ["startingXI","التشكيلة الأساسية (STARTING XI)","xi"]]},
  {id:"standings",label:"الترتيب",kind:"list",path:"standings",sort:(a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf,cols:["logo","team","p","w","d","l","gf","ga","gd","pts"],pre:x=>{x.p=x.w+x.d+x.l;x.gd=x.gf-x.ga;x.pts=x.w*3+x.d;},hint:"P وGD وPTS تُحسب تلقائيًا (فوز=3، تعادل=1).",fields:[["team","الفريق"],["logo","شعار الفريق","image",{max:500}],["w","فوز","number"],["d","تعادل","number"],["l","خسارة","number"],["gf","له","number"],["ga","عليه","number"]]},
  {id:"fixturesConfig",label:"إعدادات الموسم",kind:"single",path:"fixturesConfig",fields:[["competition","البطولة"],["season","الموسم"],["rounds","عدد الجولات","number"]]},
  {g:"التذاكر والمتجر"},
@@ -172,12 +212,11 @@ const SECTIONS=[
  {id:"academyApplications",label:"تسجيلات المدرسة",kind:"inbox",path:"academyApplications",cols:["id","childName","childLastName","age","category","parentName","parentPhone","email","createdAt"]}
 ];
 const INBOXES=SECTIONS.filter(s=>s.kind==="inbox");
-const LBL={id:"المعرّف",orderId:"رقم الطلب",productId:"المنتج",name:"الاسم",lastName:"اللقب",phone:"الهاتف",email:"البريد",match:"المباراة",createdAt:"التاريخ",offer:"العرض",customerName:"الاسم",customerLastName:"اللقب",address:"العنوان",quantity:"الكمية",childName:"الطفل",childLastName:"اللقب",age:"العمر",category:"الفئة",parentName:"الولي",parentPhone:"هاتف الولي",order:"الترتيب",label:"النص",target:"الهدف",icon:"أيقونة",title:"العنوان",image:"صورة",position:"المركز",number:"الرقم",round:"الجولة",homeTeam:"المضيف",awayTeam:"الضيف",scoreHome:"هـ",scoreAway:"ض",date:"التاريخ",logo:"شعار",team:"الفريق",p:"P",w:"W",d:"D",l:"L",gf:"GF",ga:"GA",gd:"GD",pts:"PTS",price:"السعر",period:"المدة",vip:"VIP",active:"ظاهر",year:"السنة",from:"من",to:"إلى",featured:"بارز",visible:"الحالة",opponent:"الخصم",scoreUsma:"USMA",scoreOpp:"الخصم",competition:"البطولة",coach:"المدرب",role:"الصفة",value:"القيمة"};
+const LBL={id:"المعرّف",orderId:"رقم الطلب",productId:"المنتج",name:"الاسم",lastName:"اللقب",phone:"الهاتف",email:"البريد",match:"المباراة",createdAt:"التاريخ",offer:"العرض",customerName:"الاسم",customerLastName:"اللقب",address:"العنوان",quantity:"الكمية",childName:"الطفل",childLastName:"اللقب",age:"العمر",category:"الفئة",parentName:"الولي",parentPhone:"هاتف الولي",order:"الترتيب",label:"النص",target:"الهدف",icon:"أيقونة",title:"العنوان",image:"صورة",position:"المركز",number:"الرقم",round:"الجولة",homeTeam:"المضيف",awayTeam:"الضيف",scoreHome:"هـ",scoreAway:"ض",date:"التاريخ",logo:"شعار",team:"الفريق",p:"P",w:"W",d:"D",l:"L",gf:"GF",ga:"GA",gd:"GD",pts:"PTS",price:"السعر",period:"المدة",vip:"VIP",active:"ظاهر",year:"السنة",from:"من",to:"إلى",featured:"بارز",visible:"الحالة",opponent:"الخصم",scoreUsma:"USMA",scoreOpp:"الخصم",competition:"البطولة",coach:"المدرب",role:"الصفة",value:"القيمة",formation:"التشكيلة الأساسية"};
 const get=(path)=>getP(DB,path.replace(/\//g,"."));
 const arr=p=>Object.entries(get(p)||{}).map(([k,v])=>({...v,_k:k}));
 
 /* ================= IMAGE UPLOAD (مباشر من الجهاز) ================= */
-// تصغير وضغط الصورة داخل المتصفح ثم تحويلها إلى data URL (PNG للشفافية، JPEG للصور)
 function fileToData(file,max=1000){
   return new Promise((res,rej)=>{
     const url=URL.createObjectURL(file), img=new Image();
@@ -213,21 +252,18 @@ async function pickImage(file,max){
 }
 const sizeTxt=val=>val.startsWith("data:")?Math.round(val.length*.75/1024)+" KB":"مرفوعة";
 
-/* --- حقل صورة واحدة --- */
 function imgInner(id,n,v,max){
   return`<div class="pv">${v?`<img src="${esc(v)}" alt="معاينة">`:"📷"}</div>
   <div class="ia"><label class="btn s red" style="cursor:pointer">📷 ${v?"تغيير الصورة":"اختيار صورة"}<input type="file" accept="image/*" hidden data-up="${id}"></label>
   ${v?`<button type="button" class="btn s d" data-rm="${id}">حذف</button>`:""}<span class="hint" id="${id}_i">${v?"":"اضغط لاختيار صورة من جهازك"}</span></div>
   <input type="hidden" id="${id}" name="${esc(n)}" data-t="image" value="${esc(v)}">`;
 }
-/* --- حقل معرض صور (عدة صور) --- */
 function galInner(id,n,a,max){
   return`<div class="gal-f">${a.map((u,i)=>`<div class="gi"><img src="${esc(u)}" alt=""><button type="button" class="gx" data-gdel="${id}:${i}" aria-label="حذف">✕</button></div>`).join("")}
   <label class="gadd" title="إضافة صور">＋<input type="file" accept="image/*" multiple hidden data-gup="${id}"></label></div>
   <div class="hint" id="${id}_i">يمكن اختيار عدة صور دفعة واحدة</div>
   <input type="hidden" id="${id}" name="${esc(n)}" data-t="gallery" value="${esc(JSON.stringify(a))}">`;
 }
-/* --- صف لاعب داخل التشكيلة --- */
 function pplRow(p={}){
   const id="pp"+uid();
   return`<div class="pp-row"><div class="img-f" data-if="${id}" data-n="" data-max="600">${imgInner(id,"",p.image||"",600)}</div>
@@ -273,20 +309,76 @@ document.addEventListener("click",e=>{
     list.splice(+i,1); wrap.innerHTML=galInner(id,wrap.dataset.n,list,+wrap.dataset.max||1400);
     $("#"+id+"_i").textContent="تم حذف الصورة — اضغط «حفظ» للتأكيد";
   }
-  if(t.dataset?.ppadd!==undefined){
-    t.previousElementSibling.insertAdjacentHTML("beforeend",pplRow());
-  }
+  if(t.dataset?.ppadd!==undefined){ t.previousElementSibling.insertAdjacentHTML("beforeend",pplRow()); }
   if(t.dataset?.ppdel!==undefined){ t.closest(".pp-row").remove(); }
+});
+
+/* ================= STARTING XI EDITOR ================= */
+// الحالة: XI.formation + XI.sel = { playerId: slotId|"" }  → يُحفظ في المباراة: formation + startingXI[{playerId,slot,position}]
+// لا تُخزَّن بيانات اللاعب (الاسم/الصورة/الرقم) — فقط المعرّف والمركز
+let XI={formation:"4-3-3",sel:{}};
+function xiInit(it){
+  XI={formation:FORMATIONS[it.formation]?it.formation:"4-3-3",sel:{}};
+  const list=Array.isArray(it.startingXI)?it.startingXI:Object.values(it.startingXI||{});
+  const slots=slotsOf(XI.formation);
+  list.forEach(e=>{ if(e&&e.playerId) XI.sel[e.playerId]=slots.some(s=>s.id===e.slot)?e.slot:""; });
+}
+function slotLabel(s,slots){
+  const multi=slots.filter(x=>x.pos===s.pos).length>1;
+  return `${POS_AR[s.pos]||s.pos}${multi?" "+s.id.slice(s.pos.length):""} (${s.pos})`;
+}
+function xiRender(){
+  const box=$("#xiEd"); if(!box)return;
+  const pl=arr("players").map(p=>({...p,id:p.id||p._k})).sort((a,b)=>String(a.category).localeCompare(b.category)||String(a.name).localeCompare(b.name,"ar"));
+  const slots=slotsOf(XI.formation), used=Object.values(XI.sel).filter(Boolean), n=Object.keys(XI.sel).length;
+  box.innerHTML=`<div class="xi-top">
+    <select id="xiF" aria-label="الخطة (Formation)">${Object.keys(FORMATIONS).map(f=>`<option ${f===XI.formation?"selected":""}>${f}</option>`).join("")}</select>
+    <b class="xi-cnt ${n===11?"ok":""}">${n}/11</b>
+    <button type="button" class="btn s d" data-xi-clear>مسح التشكيلة</button></div>
+  <p class="hint">اختر 11 لاعبًا بالضغط على بطاقاتهم، ثم حدّد مركز كل لاعب من القائمة أسفل بطاقته. لا يمكن استعمال خانة المركز نفسها لأكثر من لاعب. اترك الاختيار فارغًا لمباراة بلا تشكيلة. تُحفظ معرّفات اللاعبين فقط.</p>
+  ${pl.length?`<div class="xi-grid">${pl.map(p=>{
+    const on=p.id in XI.sel;
+    return `<div class="xc ${on?"sel":""}"><button type="button" class="xt" data-xi-t="${esc(p.id)}" aria-pressed="${on}" aria-label="${esc(p.name)}">
+      <div class="xim">${p.image?`<img src="${esc(p.image)}" alt="">`:"👤"}<span class="xn">${p.number??""}</span><span class="tick">✓</span></div>
+      <div class="xnm">${esc(p.name)}</div><div class="xps">${esc(p.position||"")}</div></button>
+      ${on?`<select class="xi-slot ${XI.sel[p.id]?"":"miss"}" data-pid="${esc(p.id)}" aria-label="مركز ${esc(p.name)}"><option value="">— المركز —</option>${slots.map(s=>`<option value="${s.id}" ${XI.sel[p.id]===s.id?"selected":""} ${used.includes(s.id)&&XI.sel[p.id]!==s.id?"disabled":""}>${esc(slotLabel(s,slots))}</option>`).join("")}</select>`:""}</div>`;}).join("")}</div>`
+   :`<div class="empty" style="margin-top:10px">لا يوجد لاعبون بعد — أضفهم من قسم «اللاعبون» أولًا.</div>`}`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-xi-t],[data-xi-clear]"); if(!t||!$("#xiEd"))return;
+  if(t.dataset.xiClear!==undefined){ XI.sel={}; xiRender(); return; }
+  const pid=t.dataset.xiT;
+  if(pid in XI.sel){ delete XI.sel[pid]; }
+  else{
+    if(Object.keys(XI.sel).length>=11){ toast("لا يمكن اختيار أكثر من 11 لاعبًا"); return; }
+    const p=arr("players").find(x=>(x.id||x._k)===pid), slots=slotsOf(XI.formation), used=Object.values(XI.sel);
+    XI.sel[pid]=(p&&p.category==="goalkeepers"&&slots.find(s=>s.pos==="GK"&&!used.includes(s.id))||{}).id||"";   // الحارس يُسند تلقائيًا لخانة GK
+  }
+  xiRender();
+});
+document.addEventListener("change",e=>{
+  const t=e.target; if(!$("#xiEd"))return;
+  if(t.id==="xiF"){
+    XI.formation=t.value; const ids=slotsOf(XI.formation).map(s=>s.id);
+    Object.keys(XI.sel).forEach(k=>{ if(!ids.includes(XI.sel[k])) XI.sel[k]=""; });
+    xiRender();
+  }
+  if(t.classList.contains("xi-slot")){
+    const v=t.value;
+    if(v&&Object.entries(XI.sel).some(([k,s])=>s===v&&k!==t.dataset.pid)){ toast("هذه الخانة مستعملة للاعب آخر"); xiRender(); return; }
+    XI.sel[t.dataset.pid]=v; xiRender();
+  }
 });
 
 /* ================= FIELD ENGINE ================= */
 function fieldHTML([n,l,t="text",o],val){
   const id="x_"+n.replace(/\W/g,"_");
-  const full=(["textarea","goals","lines","image","gallery","people"].includes(t)||(o&&o.full))?" full":"";
+  const full=(["textarea","goals","lines","image","gallery","people","xi"].includes(t)||(o&&o.full))?" full":"";
   let v=val, inp;
   if(t==="goals")v=(val||[]).map(g=>`${g.scorer}|${g.minute}|${g.team}`).join("\n");
   if(t==="lines")v=Array.isArray(val)?val.join("\n"):(val&&typeof val==="object"?Object.values(val).join("\n"):(val??""));
   v=v??"";
+  if(t==="xi")return`<div class="f full"><label class="lb">${esc(l)}</label><div id="xiEd"></div></div>`;
   if(t==="textarea"||t==="goals"||t==="lines")inp=`<textarea id="${id}" name="${n}" data-t="${t}">${esc(v)}</textarea>`;
   else if(t==="select")inp=`<select id="${id}" name="${n}" data-t="select">${o.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}" ${a==v?"selected":""}>${esc(b)}</option>`}).join("")}</select>`;
   else if(t==="check"){const on=(val===undefined||val===null)?!!(o&&o.def):!!val;inp=`<input id="${id}" type="checkbox" name="${n}" data-t="check" ${on?"checked":""}>`;}
@@ -297,10 +389,22 @@ function fieldHTML([n,l,t="text",o],val){
   else inp=`<input id="${id}" type="${t==="number"?"number":t==="date"?"date":"text"}" ${t==="number"?'step="any"':""} name="${n}" data-t="${t}" value="${esc(v)}">`;
   return`<div class="f${full}"><label class="lb" for="${id}">${esc(l)}</label>${inp}</div>`;
 }
+/* ترجع الكائن بعد التحقق — وترمي Error عند وجود تشكيلة أساسية غير صالحة */
 function collect(form,fields,base){
   const o=structuredClone(base||{});
   fields.forEach(([n,,t="text"])=>{
     let v;
+    if(t==="xi"){
+      const sel=Object.entries(XI.sel);
+      if(sel.length===0){ delete o.startingXI; delete o.formation; return; }          // مباراة بلا تشكيلة
+      if(sel.length!==11) throw new Error(`التشكيلة الأساسية يجب أن تضم 11 لاعبًا بالضبط (المحدد الآن: ${sel.length})`);
+      if(sel.some(([,s])=>!s)) throw new Error("حدّد مركز كل لاعب مختار في التشكيلة الأساسية");
+      const slots=slotsOf(XI.formation), ids=slots.map(s=>s.id);
+      if(new Set(sel.map(([,s])=>s)).size!==11) throw new Error("لا يمكن وضع لاعبين في خانة المركز نفسها");
+      o.formation=XI.formation;
+      o.startingXI=sel.sort((a,b)=>ids.indexOf(a[1])-ids.indexOf(b[1])).map(([playerId,slot])=>({playerId,slot,position:slots.find(s=>s.id===slot).pos}));
+      return;
+    }
     if(t==="people"){
       v=[...form.querySelectorAll(`[data-people="${n}"] .pp-row`)].map(r=>({
         name:r.querySelector(".pp-name").value.trim(),category:r.querySelector(".pp-cat").value,
@@ -327,7 +431,6 @@ function buildNav(){
   $("#nav").innerHTML=SECTIONS.map(s=>s.g?`<div class="nav-g">${s.g}</div>`:`<button class="nav-b" data-s="${s.id}">${s.label}${s.kind==="inbox"?`<span class="bd" id="bd-${s.id}" hidden></span>`:""}</button>`).join("")+`<div class="nav-g">النظام</div><button class="nav-b" id="sd">⚙ تجهيز البيانات الافتراضية</button><a class="nav-b" href="index.html" target="_blank" rel="noopener">↗ عرض الموقع</a><button class="nav-b" id="lo">تسجيل الخروج</button>`;
   $("#lo").onclick=logout; $("#sd").onclick=seed;
 }
-// تحميل القسم الحالي فقط (أسرع لأن الصور قد تكون مخزنة داخل القاعدة)
 async function load(path){const v=await api(path);setP(DB,path.replace(/\//g,"."),v);return v;}
 async function badges(){
   await Promise.all(INBOXES.map(async s=>{
@@ -354,6 +457,7 @@ function cell(x,c){
   const v=x[c];
   if(c==="image"||c==="logo")return v?`<img src="${esc(v)}" alt="">`:"—";
   if(c==="visible")return v===false?"🚫 مخفي":"ظاهر";
+  if(c==="formation"){const n=(Array.isArray(x.startingXI)?x.startingXI:Object.values(x.startingXI||{})).length;return n===11?`✓ ${esc(x.formation||"")}`:"—";}
   if(c==="date"||c==="createdAt")return v?esc(String(v).slice(0,16).replace("T"," ")):"—";
   if(c==="category"){const f=CATS.find(k=>k[0]===v)||ACATS.find(k=>k[0]===v);return esc(f?f[1]:v??"—");}
   if(typeof v==="boolean")return v?"✓":"—"; return esc(v??"—");
@@ -368,17 +472,21 @@ function list(s){
     if(x&&confirm("هل تريد الحذف نهائيًا؟")){try{await api(`${s.path}/${x}`,"DELETE");toast("تم الحذف");show(cur);}catch(er){toast(er.message);}}
   };
 }
-function editItem(s,item){
-  const it=item||{};
+async function editItem(s,item){
+  const it=item||{}, hasXI=s.fields.some(f=>f[2]==="xi");
+  if(hasXI){ try{await load("players");}catch(_){} }                  // قائمة اللاعبين مطلوبة لاختيار التشكيلة الأساسية
   openM(`<h3>${item?"تعديل":"إضافة"} — ${s.label}</h3><form id="ef"><div class="fgrid">${s.fields.map(f=>fieldHTML(f,it[f[0]])).join("")}</div><div class="mf"><button type="button" class="btn" data-c>إلغاء</button><button class="btn red">حفظ</button></div></form>`);
+  if(hasXI){ xiInit(it); xiRender(); }
   $("#ef").onsubmit=async e=>{
     e.preventDefault();const b=e.submitter;b.disabled=true;
-    const k=it._k||uid(),base={...it};delete base._k;
-    const o=collect(e.target,s.fields,base);o.id=k;
-    if(s.pre){["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0);s.pre(o);}
-    if(s.id==="players"&&!o.details)o.details={};
-    if(!item&&o.order==null&&s.fields.some(f=>f[0]==="order"))o.order=Date.now()%1e6;   // عنصر جديد يظهر في آخر القائمة
-    try{await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);}catch(er){toast(er.message);b.disabled=false;}
+    try{
+      const k=it._k||uid(),base={...it};delete base._k;
+      const o=collect(e.target,s.fields,base);o.id=k;
+      if(s.pre){["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0);s.pre(o);}
+      if(s.id==="players"&&!o.details)o.details={};
+      if(!item&&o.order==null&&s.fields.some(f=>f[0]==="order"))o.order=Date.now()%1e6;
+      await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);
+    }catch(er){toast(er.message);b.disabled=false;}
   };
 }
 const ST=[["pending","قيد الانتظار"],["confirmed","مؤكد"],["completed","مكتمل"],["cancelled","ملغى"]];
@@ -404,7 +512,6 @@ async function seed(){
   for(let r=1;r<=30;r++){const h=r%2===0,o=opp[(r-1)%15];matches.push({round:r,homeTeam:h?"USM Alger":o,awayTeam:h?o:"USM Alger",homeLogo:h?LOGO:"",awayLogo:h?"":LOGO,date:r===2?"2026-10-03T18:00:00+01:00":"",stadium:h?ST5:"",goals:[],info:""});}
   const gk=(n,img)=>({name:n,position:"حارس مرمى",category:"goalkeepers",image:img,description:"حارس مرمى في الفريق الأول لاتحاد العاصمة."});
   const B="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/";
-  /* الأرشيف — محطات وبطولات أولية من قائمتك، قابلة للتعديل والحذف */
   const H=[[1937,"التأسيس","تأسس النادي في 5 يوليو 1937."],[1963,"أول لقب بطولة وطنية"],[1981,"كأس الجزائر"],[1988,"كأس الجزائر"],[1997,"كأس الجزائر"],[1999,"كأس الجزائر"],[2001,"كأس الجزائر"],[2003,"البطولة والكأس"],[2004,"كأس الجزائر"],[2013,"كأس الجزائر"],[2013,"لقب عربي"],[2014,"بطولة الجزائر"],[2016,"بطولة الجزائر"],[2019,"بطولة الجزائر"],[2023,"كأس الكونفدرالية الإفريقية"],[2023,"كأس السوبر الإفريقي"],[2025,"كأس الجزائر"],[2026,"كأس الجزائر"]];
   const T=[[1963,"بطولة الجزائر","أول لقب بطولة وطنية"],[1981,"كأس الجزائر"],[1988,"كأس الجزائر"],[1997,"كأس الجزائر"],[1999,"كأس الجزائر"],[2001,"كأس الجزائر"],[2003,"بطولة الجزائر"],[2003,"كأس الجزائر"],[2004,"كأس الجزائر"],[2013,"كأس الجزائر"],[2013,"بطولة عربية","اللقب العربي"],[2014,"بطولة الجزائر"],[2016,"بطولة الجزائر"],[2019,"بطولة الجزائر"],[2023,"كأس الكونفدرالية الإفريقية","",true],[2023,"كأس السوبر الإفريقي","",true],[2025,"كأس الجزائر"],[2026,"كأس الجزائر"]];
   const tl=[{label:"1937",from:1937,to:1939,title:"التأسيس",description:"تأسس النادي في 5 يوليو 1937."},...[1940,1950,1960,1970,1980,1990,2000,2010,2020].map(y=>({label:y+"s",from:y,to:y+9,title:"",description:""})),{label:"اليوم",from:2026,to:9999,title:"الحاضر",description:""}];
