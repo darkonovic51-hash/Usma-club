@@ -1324,4 +1324,290 @@ function openNews(id){
    ${(n.images||[]).map(u=>`<img class="cover" src="${esc(u)}" alt="صورة من المقال" loading="lazy">`).join("")}</article>`,true);
 }
 
-/* =========================================================
+/* =====================================================================
+   ARCHIVE — أرشيف النادي (نظام أرشيف رقمي Data-Driven)
+   الحالة: AS.q (بحث) · AS.cat (تصنيف) · AS.period (فترة زمنية) · AS.limit · AS.squad
+   FEED: قائمة موحدة لكل المواد (مواد الأرشيف + المباريات + البطولات + التشكيلات + الشخصيات + الوثائق)
+   ===================================================================== */
+const AS = {q:"",cat:"all",period:null,limit:12,squad:null};
+let FEED = [];
+const A = () => siteData.archive;
+const norm = s => String(s??"").toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");
+const catLabel = k => { const c=A().categories.find(x=>x[0]===k); return c?c[1]:k; };
+const inPeriod = y => !AS.period || (y!=null && y>=AS.period.from && y<=AS.period.to);
+const qMatch = t => !AS.q || norm(t).includes(norm(AS.q));
+
+/* عند فشل تحميل الصورة أو غيابها: Placeholder بدل الأيقونة المكسورة */
+function archErr(el){ const d=document.createElement("div"); d.className="arch-ph"; d.innerHTML="<span>ARCHIVE IMAGE</span>"; el.replaceWith(d); }
+const archImg = (url,alt) => url ? `<img src="${esc(url)}" alt="${esc(alt)}" loading="lazy" onerror="archErr(this)">` : `<div class="arch-ph" role="img" aria-label="${esc(alt||"ARCHIVE IMAGE")}"><span>ARCHIVE IMAGE</span></div>`;
+
+const mSub = m => [m.competition,m.season].filter(Boolean).join(" · ") + (m.scoreUsma!=null&&m.scoreOpp!=null ? ` — ${m.scoreUsma} - ${m.scoreOpp}` : "");
+const mText = m => [m.opponent,m.competition,m.season,m.stadium,m.coach,m.description,m.lineup,m.date,m.year,...(m.goalsUsma||[]).map(g=>g.player),...(m.goalsOpp||[]).map(g=>g.player)].join(" ");
+
+function buildFeed(){
+  const a = A(), f = [], P = o => f.push({tags:[],text:"",...o});
+  a.items.forEach(i=>P({kind:"item",id:i.id,title:i.title,cat:i.category,year:i.year,desc:i.description,img:i.image,tags:i.tags,text:[i.date,...toList(i.content),i.sources].join(" "),featured:i.featured,order:i.order,demo:i.demo}));
+  a.matches.forEach(m=>P({kind:"match",id:m.id,title:"USMA ضد "+m.opponent,cat:"historic-match",year:m.year,desc:mSub(m),img:m.image,text:mText(m),order:m.order,demo:m.demo,featured:m.featured}));
+  a.trophies.forEach(t=>P({kind:"trophy",id:t.id,title:t.title,cat:"trophy",year:t.year,desc:[t.competition,t.season].filter(Boolean).join(" · ")||t.description,img:t.trophyImage||t.image,text:[t.competition,t.season,t.description].join(" "),featured:t.featured,order:t.order}));
+  a.squads.filter(s=>s.image||s.players.length).forEach(s=>P({kind:"squad",id:s.id,title:"تشكيلة "+s.year,cat:"squad",year:s.year,desc:s.description||(s.coach?"المدرب: "+s.coach:""),img:s.image,text:[s.coach,s.description,...s.players.map(p=>p.name)].join(" "),order:s.order}));
+  a.legends.forEach(l=>P({kind:"legend",id:l.id,title:l.name,cat:"legend",year:l.year,desc:[l.role,l.period].filter(Boolean).join(" · "),img:l.image,text:[l.bio,l.role,l.period].join(" "),demo:l.demo,order:l.order}));
+  a.documents.forEach(d=>P({kind:"doc",id:d.id,title:d.title,cat:"document",year:d.year,desc:d.description,img:d.image,text:d.category,demo:d.demo,order:d.order}));
+  return f.sort((x,y)=>(x.year??9999)-(y.year??9999)||(x.order||0)-(y.order||0));
+}
+
+/* ---------- Hero ---------- */
+function renderArchiveHero(){
+  const s = A().settings;
+  $("#ahBg").innerHTML = archImg(s.heroImage,"أرشيف اتحاد العاصمة");
+  $("#ahYear").textContent = s.foundedYear;
+  $("#ahKicker").textContent = s.kicker; $("#ahTitle").textContent = s.title;
+  $("#ahSub").textContent = s.subtitle; $("#ahTag").textContent = s.tagline;
+  $("#ahPill").textContent = s.foundedLabel || s.foundedDate;
+  $("#ahBtn").textContent = s.buttonText;
+  $("#aSearch").placeholder = s.searchPlaceholder;
+}
+
+/* ---------- Timeline (فترات) ---------- */
+const countIn = p => FEED.filter(x=>x.year!=null && x.year>=p.from && x.year<=p.to).length;
+function renderTimeline(){
+  $("#tlNodes").innerHTML = A().timeline.map(p=>{ const n=countIn(p);
+    return `<button class="tl-node" type="button" data-period="${esc(p.id)}" aria-pressed="${AS.period?.id===p.id}"><i></i><b>${esc(p.label)}</b><small>${n?n+" مادة":"—"}</small></button>`; }).join("");
+  const p = AS.period;
+  $("#tlPanel").innerHTML = p
+    ? `<div><b class="tp-t">${esc(p.title||p.label)}</b>${p.description?`<p>${esc(p.description)}</p>`:""}<small>${countIn(p)} مادة أرشيفية في هذه الفترة</small></div><button class="btn btn-ghost" id="pClear" type="button">إلغاء التحديد</button>`
+    : `<p class="muted">اختر فترة زمنية لاستعراض موادها التاريخية، أو ابحث في الأرشيف بالأسفل.</p>`;
+}
+function togglePeriod(id){
+  const p = A().timeline.find(x=>x.id===id);
+  AS.period = (AS.period && AS.period.id===id) ? null : p; AS.limit = 12;
+  renderTimeline(); renderArchiveAll();
+}
+
+/* ---------- Filters + Grid ---------- */
+function renderFilters(){
+  $("#aFilters").innerHTML = [["all","الكل"],...A().categories].map(([k,l])=>`<button class="a-f" type="button" data-acat="${k}" aria-pressed="${AS.cat===k}">${esc(l)}</button>`).join("");
+}
+function renderArchiveItems(){
+  const rows = FEED.filter(x=>(AS.cat==="all"||x.cat===AS.cat) && inPeriod(x.year) && qMatch([x.title,x.year,x.desc,catLabel(x.cat),x.tags.join(" "),x.text].join(" ")));
+  $("#aCount").textContent = `${rows.length} مادة`;
+  $("#aGrid").innerHTML = rows.slice(0,AS.limit).map(x=>`<button class="a-card" type="button" data-feed="${x.kind}:${esc(x.id)}" aria-label="${esc(x.title)}">
+    <div class="a-img arch-img">${archImg(x.img,x.title)}<span class="a-cat">${esc(catLabel(x.cat))}</span></div>
+    <div class="a-body"><div class="a-meta">${x.year?`<span class="a-year">${x.year}</span>`:""}${x.demo?`<span class="demo-tag">DEMO</span>`:""}</div>
+    <h4>${esc(x.title)}</h4><p>${esc(x.desc)}</p><span class="a-go" aria-hidden="true">←</span></div></button>`).join("")
+    || `<div class="empty" style="grid-column:1/-1">لا توجد مواد مطابقة. جرّب كلمة أخرى أو ألغِ التصفية.</div>`;
+  $("#aMore").hidden = rows.length <= AS.limit;
+}
+
+/* ---------- Featured story ---------- */
+function renderFeatured(){
+  const f = FEED.filter(x=>x.featured).sort((a,b)=>(a.order||0)-(b.order||0))[0], sec = $("#archive-featured");
+  sec.hidden = !f; if(!f) return;
+  $("#featBox").innerHTML = `<article class="fs"><div class="fs-img arch-img">${archImg(f.img,f.title)}</div>
+    <div class="fs-body"><span class="kicker">${esc(A().settings.featuredKicker)}</span>${f.year?`<div class="fs-year">${f.year}</div>`:""}
+    <h3>${esc(f.title)}</h3><p>${esc(f.desc)}</p><div><button class="btn btn-red" type="button" data-feed="${f.kind}:${esc(f.id)}">اقرأ التفاصيل</button></div></div></article>`;
+}
+
+/* ---------- Club history (محطات) ---------- */
+function renderClubHistory(){
+  const list = A().history.filter(h=>h.visible!==false);
+  $("#chList").innerHTML = list.length ? list.map((m,i)=>{ const n=FEED.filter(x=>x.year===m.year).length;
+    return `<li class="ch-item ${i%2?"alt":""}"><div class="ch-year">${esc(m.year??"")}</div><div class="ch-card"><h4>${esc(m.title)}</h4>${m.description?`<p>${esc(m.description)}</p>`:""}
+    ${n?`<button class="link-more" type="button" data-year="${esc(m.year)}">استعرض ${n} مادة ←</button>`:`<small>لا توجد مواد أرشيفية بعد</small>`}</div></li>`; }).join("")
+    : `<li class="empty">ستُضاف محطات التاريخ من لوحة التحكم.</li>`;
+}
+
+/* ---------- Historical squads ---------- */
+function renderSquads(){
+  const list = A().squads.filter(s=>s.visible!==false).sort((a,b)=>a.year-b.year), box = $("#sqBox");
+  if(!list.length){ box.innerHTML = `<div class="empty">ستُضاف تشكيلات الفريق عبر لوحة التحكم.</div>`; return; }
+  const cur = list.find(s=>s.year===AS.squad) || list[0]; AS.squad = cur.year;
+  const groups = siteData.playerCategories.filter(c=>c.key!=="coach");
+  box.innerHTML = `<div class="a-filters sq-years" role="group" aria-label="اختيار السنة">${list.map(s=>`<button class="a-f" type="button" data-sq="${s.year}" aria-pressed="${s.year===cur.year}">${s.year}</button>`).join("")}</div>
+   <div class="sq-view"><div class="sq-photo arch-img">${archImg(cur.image,"تشكيلة "+cur.year)}</div>
+    <div class="sq-info"><div class="fs-year">${cur.year}</div><h3>تشكيلة ${cur.year}</h3>${cur.coach?`<p class="sq-coach">المدرب: <b>${esc(cur.coach)}</b></p>`:""}${cur.description?`<p>${esc(cur.description)}</p>`:""}</div></div>
+   ${cur.players.length ? groups.map(g=>{ const ps=cur.players.filter(p=>p.category===g.key);
+     return ps.length?`<h4 class="cat-title">${esc(g.label)}</h4><div class="sq-players">${ps.map(p=>`<div class="pl-mini"><div class="pm-img arch-img">${archImg(p.image,p.name)}</div><b>${esc(p.name)}</b><small>${esc(p.position||"")}${p.number?" · "+esc(p.number):""}</small></div>`).join("")}</div>`:""; }).join("")
+     : `<div class="empty" style="margin-top:18px">ستُضاف أسماء لاعبي هذه التشكيلة من لوحة التحكم.</div>`}`;
+}
+
+/* ---------- Historic matches ---------- */
+function renderHistoricMatches(){
+  const rows = A().matches.filter(m=>inPeriod(m.year) && qMatch(mText(m))), lg = siteData.siteSettings.logo;
+  $("#hmGrid").innerHTML = rows.length ? rows.map(m=>{ const sc=m.scoreUsma!=null&&m.scoreOpp!=null;
+    return `<button class="hm-card" type="button" data-hm="${esc(m.id)}" aria-label="USMA ضد ${esc(m.opponent)}">
+    <div class="hm-top">${m.competition?`<span class="chip">${esc(m.competition)}</span>`:""}${m.season?`<span>${esc(m.season)}</span>`:""}${m.demo?`<span class="demo-tag">DEMO</span>`:""}</div>
+    <div class="hm-teams"><div class="hm-team">${logoBox(m.usmaLogo||lg,"USMA")}USMA</div><div class="hm-score">${sc?`${m.scoreUsma} - ${m.scoreOpp}`:"VS"}</div><div class="hm-team">${logoBox(m.opponentLogo,m.opponent)}${esc(m.opponent)}</div></div>
+    <div class="hm-foot">${m.date?`<span>📅 ${esc(m.date)}</span>`:""}${m.stadium?`<span>🏟️ ${esc(m.stadium)}</span>`:""}${m.round?`<span>الجولة ${esc(m.round)}</span>`:""}</div></button>`; }).join("")
+    : `<div class="empty" style="grid-column:1/-1">لا توجد مباريات مطابقة.</div>`;
+}
+function openHistMatch(id){
+  const m = A().matches.find(x=>x.id===id); if(!m) return;
+  const sc = m.scoreUsma!=null&&m.scoreOpp!=null, lg = siteData.siteSettings.logo;
+  const rows = [["التاريخ",m.date],["البطولة",m.competition],["الموسم",m.season],["الجولة",m.round],["الملعب",m.stadium],["المدرب",m.coach]].filter(r=>r[1]);
+  const gl = arr => arr.length ? arr.map(g=>`<div class="goal-row"><span>⚽ ${esc(g.player)}</span><span>${g.minute?esc(g.minute)+"'":""}</span></div>`).join("") : `<p class="muted">—</p>`;
+  const imgs = [m.image,...m.images].filter(Boolean);
+  openModal(`<span class="chip red">${esc(m.competition||"مباراة تاريخية")}</span>
+   <div class="match-teams" style="margin:20px 0"><div class="m-team">${logoBox(m.usmaLogo||lg,"USMA")}<h3>USMA</h3></div>
+    <div class="vs">${sc?`${m.scoreUsma} - ${m.scoreOpp}`:"VS"}</div><div class="m-team">${logoBox(m.opponentLogo,m.opponent)}<h3>${esc(m.opponent)}</h3></div></div>
+   ${rows.length?`<ul class="md-list">${rows.map(r=>`<li>${r[0]}<span>${esc(r[1])}</span></li>`).join("")}</ul>`:""}
+   <div class="fgrid"><div><h4 style="color:var(--gold);margin-bottom:8px">أهداف USMA</h4>${gl(m.goalsUsma)}</div><div><h4 style="color:var(--gold);margin-bottom:8px">أهداف ${esc(m.opponent)}</h4>${gl(m.goalsOpp)}</div></div>
+   ${m.lineup?`<h4 style="color:var(--gold);margin:16px 0 6px">التشكيلة</h4><p style="color:#d6d6d2;white-space:pre-line">${esc(m.lineup)}</p>`:""}
+   ${m.description?`<h4 style="color:var(--gold);margin:16px 0 6px">وصف المباراة</h4><p style="color:#d6d6d2">${esc(m.description)}</p>`:""}
+   <div class="gal">${imgs.length?imgs.map(u=>`<div class="arch-img">${archImg(u,"صورة من المباراة")}</div>`).join(""):`<div class="arch-img">${archImg("","صورة من المباراة")}</div>`}</div>`,true);
+}
+
+/* ---------- Trophies ---------- */
+function renderTrophies(){
+  const rows = A().trophies.filter(t=>inPeriod(t.year) && qMatch([t.competition,t.season,t.year,t.title,t.description].join(" "))).sort((a,b)=>(b.year??0)-(a.year??0)||(a.order||0)-(b.order||0));
+  $("#trGrid").innerHTML = rows.length ? rows.map(t=>`<button class="tr-card ${t.featured?"feat":""}" type="button" data-feed="trophy:${esc(t.id)}" aria-label="${esc(t.title)} ${esc(t.year??"")}">
+    <div class="tr-img arch-img">${archImg(t.trophyImage||t.image,t.title)}</div>
+    <div class="tr-body"><div class="tr-year">${esc(t.year??"")}</div><h4>${esc(t.title)}</h4>${t.competition&&t.competition!==t.title?`<span class="chip">${esc(t.competition)}</span>`:""}${t.season?`<p>الموسم ${esc(t.season)}</p>`:""}</div></button>`).join("")
+    : `<div class="empty" style="grid-column:1/-1">لا توجد بطولات مطابقة.</div>`;
+}
+
+/* ---------- Legends & documents ---------- */
+function renderLegends(){
+  const rows = A().legends.filter(l=>inPeriod(l.year) && qMatch([l.name,l.role,l.period,l.bio,l.year].join(" ")));
+  $("#lgGrid").innerHTML = rows.length ? rows.map(l=>`<button class="lg-card" type="button" data-feed="legend:${esc(l.id)}" aria-label="${esc(l.name)}">
+    <div class="lg-img arch-img">${archImg(l.image,l.name)}</div>
+    <div class="lg-body"><div class="role">${esc(l.role||"")}${l.period?" · "+esc(l.period):""}</div><h4>${esc(l.name)}</h4><p>${esc(l.bio||"")}</p>${l.demo?'<span class="demo-tag">DEMO</span>':""}</div></button>`).join("")
+    : `<div class="empty" style="grid-column:1/-1">لا توجد شخصيات مطابقة.</div>`;
+}
+function renderDocuments(){
+  const rows = A().documents.filter(d=>inPeriod(d.year) && qMatch([d.title,d.category,d.description,d.year].join(" ")));
+  $("#dcGrid").innerHTML = rows.length ? rows.map(d=>`<button class="dc-card" type="button" data-feed="doc:${esc(d.id)}" aria-label="${esc(d.title)}">
+    <div class="dc-img arch-img">${archImg(d.image,d.title)}</div><h4>${esc(d.title)}</h4><small>${esc(d.category||"")}${d.year?" · "+d.year:""}</small><p>${esc(d.description||"")}</p></button>`).join("")
+    : `<div class="empty" style="grid-column:1/-1">لا توجد وثائق مطابقة.</div>`;
+}
+
+/* ---------- Stats (clubStats) ---------- */
+function renderClubStats(){
+  $("#statsGrid").innerHTML = A().stats.map((s,i)=>{ const n=Number(s.value), cnt=!isNaN(n)&&n>=0&&n<1000;
+    return `<div class="stt reveal" style="--d:${i*.06}s"><b ${cnt?`data-count="${n}"`:""}>${esc(s.value)}</b><span>${esc(s.label)}</span>${s.note?`<small>${esc(s.note)}</small>`:""}</div>`; }).join("");
+}
+
+/* ---------- Detail view ---------- */
+function openDetail(o){
+  const body = toList(o.content).map(p=>`<p>${esc(p)}</p>`).join("");
+  openModal(`<article class="article"><div class="ad-img arch-img">${archImg(o.image,o.title)}</div>
+   <div class="ad-meta">${o.catLabel?`<span class="chip red">${esc(o.catLabel)}</span>`:""}${o.year?`<span class="chip">${esc(o.year)}</span>`:""}${o.date?`<span class="chip">${esc(o.date)}</span>`:""}</div>
+   <h3 class="md-title">${esc(o.title)}</h3>
+   <div class="body">${body||`<p class="muted">لا يوجد نص تفصيلي بعد.</p>`}</div>
+   ${o.sources?`<div class="ad-src"><b>المصادر / ملاحظات</b><p>${esc(o.sources)}</p></div>`:""}
+   ${o.tags&&o.tags.length?`<div class="tags">${o.tags.map(t=>`<span>#${esc(t)}</span>`).join("")}</div>`:""}</article>`,true);
+}
+function openFeed(k,id){
+  const a = A(); let o;
+  if(k==="item"){ o=a.items.find(x=>x.id===id); o&&openDetail({...o,catLabel:catLabel(o.category)}); }
+  else if(k==="match") openHistMatch(id);
+  else if(k==="trophy"){ o=a.trophies.find(x=>x.id===id); o&&openDetail({title:o.title,image:o.trophyImage||o.image,year:o.year,catLabel:o.competition||"بطولة",content:[[o.competition,o.season].filter(Boolean).join(" · "),o.description].filter(Boolean)}); }
+  else if(k==="legend"){ o=a.legends.find(x=>x.id===id); o&&openDetail({title:o.name,image:o.image,year:o.year,catLabel:o.role||"شخصية",content:[o.period,o.bio].filter(Boolean)}); }
+  else if(k==="doc"){ o=a.documents.find(x=>x.id===id); o&&openDetail({title:o.title,image:o.image,year:o.year,catLabel:o.category||"وثيقة",content:[o.description].filter(Boolean)}); }
+  else if(k==="squad"){ o=a.squads.find(x=>x.id===id); if(o){ AS.squad=o.year; renderSquads(); $("#archive-squads").scrollIntoView({behavior:"smooth"}); } }
+}
+
+/* ---------- Orchestration ---------- */
+function renderArchiveAll(){
+  renderArchiveItems(); renderHistoricMatches(); renderTrophies(); renderLegends(); renderDocuments();
+}
+function initArchive(){
+  FEED = buildFeed();
+  renderArchiveHero(); renderFilters(); renderTimeline(); renderArchiveAll();
+  renderFeatured(); renderClubHistory(); renderSquads(); renderClubStats();
+}
+function setSearch(v){
+  AS.q = v.trim(); AS.limit = 12; $("#aClear").hidden = !AS.q; renderArchiveAll();
+}
+$("#aSearch").addEventListener("input",e=>setSearch(e.target.value));
+$("#aClear").addEventListener("click",()=>{ $("#aSearch").value=""; setSearch(""); $("#aSearch").focus(); });
+
+/* =====================================================================
+   ADMIN ENTRY — خانة دخول الإدارة (كود الدخول)
+   ===================================================================== */
+const ADMIN_CODE = "usma2627";
+$("#adminBtn").addEventListener("click",()=>{
+  openModal(`<h3 class="md-title">دخول الإدارة</h3>
+    <form id="adminForm" autocomplete="off"><div class="fgrid">${field("code","كود الدخول","password",{full:true})}</div>
+    <p class="admin-err" id="adminErr" role="alert"></p>
+    <button class="btn btn-red btn-block">دخول</button></form>`);
+  $("#adminForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    if($("#f-code").value.trim()===ADMIN_CODE){
+      sessionStorage.setItem("usmaAdmin","1");
+      location.href="dashboard.html";
+    }else{
+      $("#adminErr").textContent="كود الدخول غير صحيح";
+      $("#f-code").value=""; $("#f-code").focus();
+    }
+  });
+});
+
+/* =====================================================================
+   UI BEHAVIOR — nav, scroll, reveal, counters, events
+   ===================================================================== */
+function closeMenu(){ $("#navMenu").classList.remove("open"); $("#navBack").classList.remove("on"); $("#burger").setAttribute("aria-expanded","false"); }
+$("#burger").addEventListener("click",()=>{
+  const o=$("#navMenu").classList.toggle("open");
+  $("#navBack").classList.toggle("on",o); $("#burger").setAttribute("aria-expanded",o);
+});
+$("#navBack").addEventListener("click",closeMenu);
+window.addEventListener("resize",()=>{ if(innerWidth>900) closeMenu(); });
+window.addEventListener("scroll",()=>$("#navbar").classList.toggle("scrolled",scrollY>30),{passive:true});
+$("#langSel").addEventListener("change",e=>{ document.documentElement.lang=e.target.value; });
+
+function spy(){
+  const links=$$("#navMenu a:not(.nav-cta)");
+  const io=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting) links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+en.target.id&&!a.dataset.tab)); }),{rootMargin:"-45% 0px -50% 0px"});
+  ["home","team","fixtures","store","academy","news","archive"].forEach(id=>{const el=document.getElementById(id); el&&io.observe(el);});
+}
+let revealIO;
+function observeReveal(){
+  revealIO = revealIO || new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); $$("[data-count]",en.target).forEach(countUp); revealIO.unobserve(en.target);} }),{threshold:.08});
+  $$(".reveal:not(.in)").forEach(el=>revealIO.observe(el));
+}
+function countUp(el){
+  const to=+el.dataset.count, t0=performance.now(), dur=1400;
+  (function f(t){ const k=Math.min(1,(t-t0)/dur); el.textContent=fmtNum(Math.round(to*(1-Math.pow(1-k,3)))); if(k<1) requestAnimationFrame(f); })(t0);
+}
+
+/* Event delegation */
+document.addEventListener("click",e=>{
+  const t = e.target;
+  const a = t.closest("a[data-tab]"); if(a){ switchTab(a.dataset.tab); }
+  if(t.closest("#navMenu a")) closeMenu();
+  let el;
+  if((el=t.closest("[data-player]"))) openPlayer(el.dataset.player);
+  else if((el=t.closest("[data-match]"))) openMatch(el.dataset.match);
+  else if((el=t.closest("[data-round]"))){ currentRound=+el.dataset.round; renderMatches(); $(`[data-round="${currentRound}"]`).scrollIntoView({inline:"center",block:"nearest"}); }
+  else if(t.closest("#bookBtn")) openBooking();
+  else if((el=t.closest("[data-offer]"))) openOffer(el.dataset.offer);
+  else if((el=t.closest("[data-product]"))) openProduct(el.dataset.product);
+  else if((el=t.closest("[data-news]"))) openNews(el.dataset.news);
+  else if(t.id==="tab-fx") switchTab("fx");
+  else if(t.id==="tab-st") switchTab("st");
+  /* --- Archive --- */
+  else if((el=t.closest("[data-feed]"))){ const i=el.dataset.feed.indexOf(":"); openFeed(el.dataset.feed.slice(0,i),el.dataset.feed.slice(i+1)); }
+  else if((el=t.closest("[data-hm]"))) openHistMatch(el.dataset.hm);
+  else if((el=t.closest("[data-period]"))) togglePeriod(el.dataset.period);
+  else if(t.closest("#pClear")){ AS.period=null; renderTimeline(); renderArchiveAll(); }
+  else if((el=t.closest("[data-acat]"))){ AS.cat=el.dataset.acat; AS.limit=12; renderFilters(); renderArchiveItems(); }
+  else if(t.closest("#aMore")){ AS.limit+=12; renderArchiveItems(); }
+  else if((el=t.closest("[data-sq]"))){ AS.squad=+el.dataset.sq; renderSquads(); }
+  else if((el=t.closest("[data-year]"))){ $("#aSearch").value=el.dataset.year; setSearch(el.dataset.year); $("#archive-explore").scrollIntoView({behavior:"smooth"}); }
+});
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+async function initSite(){
+  await DataService.loadSiteData();
+  currentRound = siteData.nextMatch.round;
+  renderGlobal(); renderNextMatch(); renderServices(); renderPlayers();
+  renderMatches(); renderStandings(); renderTickets(); renderProducts();
+  renderAcademy(); renderNews(); initArchive();
+  observeReveal(); spy();
+}
+initSite();
+</script>
+</body>
+</html>
