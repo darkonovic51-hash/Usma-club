@@ -133,23 +133,77 @@ padding:34px clamp(14px,4vw,50px);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px
 .service:hover .ico{background:var(--red);transform:rotate(-6deg) scale(1.08)}
 .service h3{font-size:1.2rem;font-weight:800}
 .service p{color:var(--muted);font-size:.9rem}
-/* ============ Team ============ */
+/* ============ Team — PlayerCard (مصدر واحد لبطاقة اللاعب) ============ */
 .cat-title{display:flex;align-items:center;gap:14px;font-size:1.4rem;font-weight:900;margin:38px 0 18px;color:var(--gold)}
 .cat-title::after{content:"";flex:1;height:1px;background:var(--line)}
 .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:20px}
-.player{position:relative;background:var(--black2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;text-align:start;display:block;width:100%;transition:.4s var(--ease)}
-.player:hover{transform:translateY(-8px);border-color:var(--red);box-shadow:0 20px 45px rgba(0,0,0,.6),0 0 35px rgba(200,16,46,.3)}
+.pc{position:relative;display:block;width:100%;text-align:start;perspective:1100px;direction:rtl}
+.pc-in{position:relative;height:100%;transform-style:preserve-3d;transition:transform .75s var(--ease)}
+.pc-face{background:var(--black2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+-webkit-backface-visibility:hidden;backface-visibility:hidden;transition:border-color .3s,box-shadow .3s}
+.pc-front{position:relative}
+.pc.flipped .pc-in{transform:rotateY(180deg)}
+.pc.flipped{z-index:6}
 .p-img{aspect-ratio:3/4;overflow:hidden;position:relative;background:#0d0f12}
-.p-img img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .7s var(--ease)}
-.player:hover .p-img img{transform:scale(1.08)}
-.p-img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,9,11,.95),transparent 55%)}
+.p-img img.ph{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .7s var(--ease),filter .5s}
+.p-img>img:first-child{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .7s var(--ease),filter .5s}
+.p-img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,9,11,.95),transparent 55%);pointer-events:none}
 .p-num{position:absolute;top:8px;inset-inline-start:12px;z-index:2;font-size:2.6rem;font-weight:900;color:transparent;-webkit-text-stroke:1.5px var(--gold);line-height:1}
+.pc-wm{position:absolute;top:8px;inset-inline-end:8px;width:28px;height:auto;opacity:.38;z-index:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.pc-slot{position:absolute;top:40px;inset-inline-end:8px;z-index:3;background:rgba(8,9,11,.85);border:1px solid var(--gold);color:var(--gold);font-size:.62rem;font-weight:900;padding:0 7px;border-radius:100px;letter-spacing:.06em;line-height:1.6}
 .p-body{padding:14px 16px 18px;position:relative;margin-top:-56px;z-index:2}
 .p-pos{color:var(--red);font-weight:800;font-size:.8rem;letter-spacing:.08em}
 .p-body h4{font-size:1.25rem;font-weight:900}
 .p-body p{color:var(--muted);font-size:.85rem}
+/* الوجه الخلفي: PLAYER STATS */
+.pc-back{position:absolute;inset:0;transform:rotateY(180deg);display:flex;flex-direction:column;padding:12px 11px;border-color:var(--gold);
+background:radial-gradient(circle at 50% 0%,rgba(200,16,46,.28),transparent 62%),linear-gradient(170deg,#16233a,#0b1220)}
+.pb-t{color:var(--gold);font-weight:900;letter-spacing:.14em;font-size:.72rem;text-align:center;border-bottom:1px solid var(--line);padding-bottom:6px}
+.pb-n{font-weight:900;text-align:center;margin:6px 0 2px;font-size:.92rem;line-height:1.25;overflow-wrap:anywhere}
+.pb-rows{display:grid;gap:2px;flex:1;align-content:space-evenly}
+.pb-r{display:flex;justify-content:space-between;align-items:center;gap:4px;font-size:.7rem;color:#c4cad6;border-bottom:1px dashed rgba(183,154,98,.16);padding:1px 0}
+.pb-r span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb-r b{color:var(--white);font-size:.95rem;font-variant-numeric:tabular-nums;flex-shrink:0}
+.pb-r b.na{color:#6d7686}
+.pc-miss{aspect-ratio:3/4;display:grid;place-items:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r);font-size:.8rem}
+@media(hover:hover){
+.pc:not(.flipped):hover .pc-in{transform:translateY(-8px)}
+.pc:not(.flipped):hover .pc-front{border-color:var(--red);box-shadow:0 20px 45px rgba(0,0,0,.6),0 0 0 1px rgba(183,154,98,.35),0 0 35px rgba(200,16,46,.3)}
+.pc:not(.flipped):hover .p-img>img:first-child{transform:scale(1.07);filter:brightness(1.1) contrast(1.04)}}
 .img-ph{width:100%;height:100%;display:grid;place-items:center;text-align:center;color:var(--gold);font-weight:700;font-size:.85rem;padding:12px;
 background:repeating-linear-gradient(45deg,#14171b,#14171b 10px,#101215 10px,#101215 20px)}
+/* ============ STARTING XI ============ */
+.xi{margin-top:26px;border:1px solid var(--gold);background:#0a1020;border-radius:var(--r);overflow:hidden}
+.xi-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:16px 20px;background:linear-gradient(90deg,#0b1424,var(--navy));border-bottom:1px solid var(--line);opacity:0}
+.xi-head h4{font-size:1.5rem;font-weight:900;line-height:1.15}
+.xi-head .kicker{display:block}
+.xi-pitch{position:relative;direction:ltr;padding:26px clamp(6px,2vw,24px) 30px;display:flex;flex-direction:column;gap:clamp(10px,2.4vw,22px);opacity:0;
+background:radial-gradient(ellipse at 50% 0%,rgba(200,16,46,.2),transparent 60%),repeating-linear-gradient(180deg,rgba(255,255,255,.022) 0 56px,transparent 56px 112px),linear-gradient(180deg,#0e1830,#09101f)}
+.xi-decor{position:absolute;inset:12px;pointer-events:none;border:1.5px solid rgba(183,154,98,.2)}
+.xi-decor span{position:absolute;border:1.5px solid rgba(183,154,98,.17)}
+.xi-decor .a{left:50%;top:0;width:46%;height:15%;margin-left:-23%;border-top:0}
+.xi-decor .b{left:50%;bottom:0;width:46%;height:15%;margin-left:-23%;border-bottom:0}
+.xi-decor .c{left:0;right:0;top:50%;height:0;border-width:1.5px 0 0}
+.xi-decor .d{left:50%;top:50%;width:24%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%}
+.xi-row{position:relative;z-index:1;display:flex;justify-content:center;gap:var(--g)}
+.xi-row{--g:clamp(6px,1.6vw,18px)}
+.xi-c{position:relative;opacity:0;flex:0 0 auto;width:calc((100% - (var(--k) - 1)*var(--g))/var(--k));max-width:122px;min-width:0}
+.xi-note{text-align:center;position:relative;z-index:1;direction:rtl;color:#8d96a6;font-size:.78rem;margin-top:2px}
+.xi .p-img{aspect-ratio:4/5}
+.xi .p-num{font-size:clamp(1.3rem,3.2vw,2.1rem);top:6px;inset-inline-start:9px}
+.xi .p-body{padding:10px 8px 10px;margin-top:-50px;text-align:center}
+.xi .p-body p{display:none}
+.xi .p-body h4{font-size:clamp(.74rem,1.5vw,.98rem);line-height:1.25;overflow-wrap:anywhere}
+.xi .p-pos{font-size:.62rem}
+.xi .pc-wm{width:22px;top:6px}
+.xi .pc-slot{top:32px}
+/* حركة الظهور المتتابع (Cinematic / Staggered) */
+.xi.in .xi-head{opacity:1;animation:fade .6s ease backwards}
+.xi.in .xi-pitch{opacity:1;animation:fade .9s ease .25s backwards}
+.xi.in .xi-c{opacity:1;animation:xiIn .75s var(--ease) backwards;animation-delay:calc(var(--i)*.11s + .6s)}
+.xi.in .xi-c .pc-front{animation:xiGlow 1.5s ease-out backwards;animation-delay:calc(var(--i)*.11s + 1.2s)}
+@keyframes xiIn{from{opacity:0;transform:translateY(22px) scale(.92);filter:blur(7px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes xiGlow{0%{box-shadow:0 0 0 rgba(200,16,46,0)}45%{box-shadow:0 0 30px rgba(200,16,46,.55),0 0 0 1px rgba(183,154,98,.6)}100%{box-shadow:0 0 0 rgba(200,16,46,0)}}
 /* ============ Fixtures ============ */
 .tabs{display:inline-flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:30px;max-width:100%}
 .tab{padding:13px 30px;font-weight:800;transition:.3s;white-space:nowrap}
@@ -175,6 +229,7 @@ border-radius:var(--r);padding:18px 22px;text-align:center;box-shadow:0 8px 24px
 .fx-score{font-size:1.9rem;font-weight:900;min-width:110px;font-variant-numeric:tabular-nums;color:var(--black)}
 .fx-score small{display:block;font-size:.75rem;color:#8a6f36;font-weight:700}
 .fx-foot{grid-column:1/-1;display:flex;justify-content:center;gap:8px 18px;flex-wrap:wrap;color:#555a63;font-size:.82rem;border-top:1px solid rgba(8,9,11,.14);padding-top:10px}
+.fx-xi{background:var(--red);color:#fff;font-weight:800;font-size:.72rem;padding:0 10px;border-radius:100px}
 /* ============ Standings ============ */
 .table-wrap{overflow-x:auto;border:1px solid rgba(183,154,98,.6);border-radius:var(--r);background:#F5F5F3;box-shadow:0 12px 34px rgba(0,0,0,.35);-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:600px;color:var(--black)}
@@ -276,7 +331,6 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 .a-sec.dark{background:linear-gradient(180deg,#0a0d14,var(--black))}
 .a-sec.navy{background:transparent}
 .a-sec .sec-head p{color:#b9c0cc;margin-top:12px;max-width:640px}
-/* placeholder + vintage image treatment */
 .arch-ph{width:100%;height:100%;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
 background:repeating-linear-gradient(135deg,rgba(183,154,98,.07) 0 12px,transparent 12px 24px),linear-gradient(160deg,#16233a,#0b1220);
 color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;border:1px solid rgba(183,154,98,.22)}
@@ -285,7 +339,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .arch-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) sepia(.35) contrast(1.06);transition:filter .5s,transform .7s var(--ease)}
 .arch-img::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(8,9,11,.7),transparent 55%),linear-gradient(135deg,rgba(200,16,46,.16),transparent 60%)}
 .arch-img>.arch-ph{position:absolute;inset:0}
-/* hero */
 .arch-hero{position:relative;min-height:88vh;min-height:88svh;display:flex;align-items:center;overflow:hidden;isolation:isolate;background:var(--navy)}
 .arch-hero-bg{position:absolute;inset:0;z-index:-3}
 .arch-hero-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) sepia(.3) contrast(1.05) brightness(.65)}
@@ -304,7 +357,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .a-subnav::-webkit-scrollbar{display:none}
 .a-subnav a{flex:0 0 auto;padding:7px 16px;border:1px solid var(--line);border-radius:100px;font-size:.85rem;font-weight:700;color:#d4d9e2;transition:.25s}
 .a-subnav a:hover{border-color:var(--gold);color:var(--gold)}
-/* timeline */
 .tl-nodes{overflow-x:auto;padding:8px 4px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--gold) transparent}
 .tl-track{position:relative;display:flex;width:max-content;min-width:100%}
 .tl-track::before{content:"";position:absolute;top:10px;inset-inline:0;height:2px;background:linear-gradient(90deg,var(--gold),rgba(183,154,98,.15))}
@@ -319,7 +371,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .tl-panel b.tp-t{font-size:1.25rem}
 .tl-panel p{color:#b9c0cc;margin:2px 0}
 .tl-panel small{color:var(--gold);font-weight:700}
-/* tools */
 .a-tools{display:grid;gap:14px;margin:38px 0 24px}
 .a-search{position:relative}
 .a-search input{width:100%;background:#0b1424;border:1px solid var(--line);border-radius:var(--r);padding:15px 50px;font-size:1rem}
@@ -332,7 +383,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .a-f:hover{border-color:var(--gold)}
 .a-f[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
 .a-count{color:#9aa3b2;font-size:.85rem}
-/* cards */
 .a-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
 .a-card{position:relative;display:block;width:100%;text-align:start;background:linear-gradient(180deg,#14213a,#0e1727);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.4s var(--ease);animation:slideUp .5s var(--ease) both}
 .a-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 40px rgba(0,0,0,.5)}
@@ -347,14 +397,12 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .a-go{position:absolute;bottom:14px;inset-inline-end:14px;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:900;transition:.3s}
 .a-card:hover .a-go{box-shadow:0 0 20px rgba(200,16,46,.7)}
 .a-more{text-align:center;margin-top:28px}
-/* featured story */
 .fs{display:grid;grid-template-columns:1.3fr 1fr;border:1px solid var(--gold);background:#0b1424;min-height:440px;box-shadow:0 30px 70px rgba(0,0,0,.45)}
 .fs-img{min-height:340px}
 .fs-body{padding:clamp(24px,4vw,54px);display:flex;flex-direction:column;justify-content:center;gap:12px}
 .fs-year{font-size:clamp(3.6rem,10vw,7.5rem);font-weight:900;line-height:.9;color:transparent;-webkit-text-stroke:2px var(--gold)}
 .fs-body h3{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;line-height:1.25}
 .fs-body p{color:#c2c8d3}
-/* club history timeline */
 .ch-list{list-style:none;position:relative;display:grid;gap:26px}
 .ch-list::before{content:"";position:absolute;inset-block:0;left:50%;width:2px;margin-left:-1px;background:linear-gradient(var(--gold),rgba(183,154,98,.12))}
 .ch-item{display:grid;grid-template-columns:1fr 1fr;align-items:center;position:relative}
@@ -365,7 +413,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .ch-card p{color:#b9c0cc;font-size:.9rem}
 .ch-card small{color:#7f8899}
 .ch-item.alt .ch-year{order:2;text-align:start}
-/* squads */
 .sq-years{margin-bottom:22px}
 .sq-view{display:grid;grid-template-columns:1.4fr 1fr;gap:0;border:1px solid var(--line);background:#0b1424}
 .sq-photo{min-height:300px;aspect-ratio:16/9}
@@ -378,7 +425,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .pm-img{aspect-ratio:1/1;margin-bottom:8px}
 .pl-mini b{display:block;font-size:.95rem;line-height:1.3}
 .pl-mini small{color:#9aa3b2}
-/* historic matches */
 .hm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:18px}
 .hm-card{width:100%;background:linear-gradient(160deg,#16233a,#0b1220);border:1px solid var(--line);border-top:3px solid var(--gold);padding:18px;text-align:center;border-radius:var(--r);transition:.4s var(--ease);animation:slideUp .5s var(--ease) both}
 .hm-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 40px rgba(0,0,0,.5)}
@@ -389,7 +435,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .hm-team .logo-ph{font-size:.9rem}
 .hm-score{font-size:2rem;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
 .hm-foot{display:flex;justify-content:center;gap:6px 16px;flex-wrap:wrap;color:#9aa3b2;font-size:.8rem;border-top:1px solid var(--line);padding-top:10px}
-/* trophies */
 .tr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:18px}
 .tr-card{width:100%;text-align:start;background:linear-gradient(180deg,#171f30,#0b0f18);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:var(--r);overflow:hidden;transition:.4s var(--ease);animation:slideUp .5s var(--ease) both}
 .tr-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 30px rgba(183,154,98,.15)}
@@ -401,7 +446,6 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .tr-body h4{font-size:1.1rem;font-weight:900;margin-top:4px}
 .tr-body p{color:#aab2c0;font-size:.85rem}
 .tr-body .chip{display:inline-block;margin-top:6px;font-size:.72rem}
-/* legends & documents */
 .lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:18px}
 .lg-card{width:100%;text-align:start;background:#0e1727;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.4s var(--ease);animation:slideUp .5s var(--ease) both}
 .lg-card:hover{transform:translateY(-6px);border-color:var(--gold)}
@@ -418,13 +462,11 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .dc-card h4{font-size:1.05rem;font-weight:900;margin:10px 0 2px}
 .dc-card small{color:var(--gold);font-weight:700}
 .dc-card p{color:#aab2c0;font-size:.85rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-/* stats */
 .stt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:16px}
 .stt{padding:26px 16px;text-align:center;border:1px solid var(--line);border-bottom:3px solid var(--gold);background:linear-gradient(180deg,#14213a,#0b1220);border-radius:var(--r)}
 .stt b{display:block;font-size:clamp(2.6rem,6vw,3.8rem);font-weight:900;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
 .stt span{display:block;margin-top:8px;font-weight:800}
 .stt small{color:#9aa3b2;font-size:.75rem}
-/* detail modal */
 .ad-img{aspect-ratio:16/9;margin-bottom:16px;border:1px solid var(--line)}
 .ad-meta{display:flex;gap:8px;flex-wrap:wrap}
 .ad-src{margin-top:14px;padding:12px 16px;border-inline-start:3px solid var(--gold);background:#0b1220;color:#b9c0cc;font-size:.88rem}
@@ -453,7 +495,7 @@ color:rgba(183,154,98,.75);letter-spacing:.25em;font-size:.7rem;font-weight:800;
 .modal.open{display:flex;animation:fade .25s}
 .modal-box{background:var(--black2);border:1px solid var(--gold);border-top:4px solid var(--red);border-radius:var(--r);width:min(760px,100%);max-height:92vh;overflow:auto;position:relative;animation:slideUp .4s var(--ease);padding:30px}
 .modal-box.wide{width:min(900px,100%)}
-.modal-x{position:absolute;top:10px;inset-inline-start:10px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;font-size:1.2rem;z-index:3;background:var(--black);transition:.3s}
+.modal-x{position:absolute;top:10px;inset-inline-start:10px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;font-size:1.2rem;z-index:8;background:var(--black);transition:.3s}
 .modal-x:hover{background:var(--red)}
 .md-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:26px}
 .md-img{border-radius:var(--r);overflow:hidden;aspect-ratio:3/4;background:#0d0f12}
@@ -496,7 +538,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
 .topbar .tag{display:none}
 .scroll-hint{display:none}}
 @media(max-width:700px){
-/* Timeline يتحول إلى Vertical Timeline على الهاتف */
 .tl-nodes{overflow:visible}
 .tl-track{flex-direction:column;width:100%;min-width:0}
 .tl-track::before{top:0;bottom:0;height:auto;width:2px;inset-inline:auto;inset-inline-start:9px;background:linear-gradient(var(--gold),rgba(183,154,98,.15))}
@@ -532,7 +573,7 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
 .foot-brand img{margin-inline:auto}.social{justify-content:center}
 .foot-bottom{flex-direction:column;text-align:center}
 .foot-links a:hover{padding-inline-start:0}
-.modal{padding:10px}.modal-box{padding:22px 16px}.md-title{font-size:1.5rem}
+.modal{padding:8px}.modal-box{padding:22px 14px}.md-title{font-size:1.5rem}
 .topbar .social{display:none}
 .nav-logo .nm{font-size:.98rem}
 .logo-sq{width:56px;height:56px}.logo-sq img{width:41px;height:41px}
@@ -540,12 +581,21 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
 .a-grid,.tr-grid,.lg-grid,.dc-grid{gap:14px}
 .a-body{padding:14px 14px 56px}
 .tr-grid,.lg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.stt{padding:20px 10px}}
+.stt{padding:20px 10px}
+/* Starting XI على الهاتف: ملعب رأسي وبطاقات مقروءة */
+.xi-head{padding:14px}.xi-head h4{font-size:1.25rem}
+.xi-pitch{padding:20px 6px 24px;gap:10px}
+.xi-row{--g:5px}
+.xi-c{max-width:none}
+.xi .pc.flipped .pc-in{transform:rotateY(180deg) scale(1.2)}
+.xi .pb-r{font-size:.6rem}.xi .pb-r b{font-size:.78rem}.xi .pb-t{font-size:.58rem}.xi .pb-n{font-size:.68rem}
+.xi .pc-back{padding:8px 7px}}
 @media(max-width:380px){
 .players,.tr-grid,.lg-grid{grid-template-columns:minmax(0,1fr)}
 .cd-box span{font-size:.58rem;letter-spacing:.05em}
 .nav-logo .nm{display:none}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}
+.xi-c,.xi-head,.xi-pitch{opacity:1!important}}
 </style>
 </head>
 <body>
@@ -666,7 +716,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
        ===================================================================== -->
   <section class="arch" id="archive" aria-label="أرشيف النادي">
 
-    <!-- Archive Hero -->
     <div class="arch-hero">
       <div class="arch-hero-bg" id="ahBg"></div>
       <div class="bg-year" id="ahYear" aria-hidden="true"></div>
@@ -686,7 +735,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       <a href="#archive-docs">الوثائق</a><a href="#archive-stats">الأرقام</a>
     </nav>
 
-    <!-- Timeline + Search + Filters + Grid -->
     <div class="a-sec navy" id="archive-explore">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">TIMELINE</span><h2>رحلة عبر الزمن</h2><p>اختر فترة تاريخية لاستعراض موادها، أو ابحث في كامل الأرشيف.</p></div>
@@ -707,12 +755,10 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Featured historical story -->
     <div class="a-sec dark" id="archive-featured" hidden>
       <div class="container" id="featBox"></div>
     </div>
 
-    <!-- Club history milestones -->
     <div class="a-sec navy" id="archive-history">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">CLUB HISTORY</span><h2>محطات من تاريخ النادي</h2></div>
@@ -720,7 +766,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Historical squads -->
     <div class="a-sec dark" id="archive-squads">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">SQUADS</span><h2>تشكيلات من التاريخ</h2></div>
@@ -728,7 +773,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Historic matches -->
     <div class="a-sec navy" id="archive-matches">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">HISTORIC MATCHES</span><h2>المباريات التاريخية</h2></div>
@@ -736,7 +780,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Trophies -->
     <div class="a-sec dark" id="archive-trophies">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">TROPHIES & ACHIEVEMENTS</span><h2>البطولات والإنجازات</h2></div>
@@ -744,7 +787,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Legends -->
     <div class="a-sec navy" id="archive-legends">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">CLUB LEGENDS</span><h2>شخصيات صنعت التاريخ</h2></div>
@@ -752,7 +794,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Documents -->
     <div class="a-sec dark" id="archive-docs">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">DOCUMENTS</span><h2>الوثائق</h2></div>
@@ -760,7 +801,6 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="a-sec navy" id="archive-stats">
       <div class="container">
         <div class="sec-head reveal"><span class="kicker">BY THE NUMBERS</span><h2>أرقام من تاريخ USMA</h2></div>
@@ -790,11 +830,10 @@ transform:translateX(100%);visibility:hidden;pointer-events:none;transition:tran
 /* =====================================================================
    FIREBASE REALTIME DATABASE
    كل بيانات الموقع تحت العقدة /usma (نفس العقدة التي تديرها لوحة التحكم dashboard.html)
-   مسارات الأرشيف (تقابل Collections المقترحة):
-   archiveSettings · archiveItems · archiveTimeline · clubHistory · historicMatches
-   trophies · historicSquads · clubLegends · archiveDocuments · clubStats
-   الصور: لوحة التحكم ترفع الصورة (Firebase Storage: /archive/...) وتحفظ الرابط في حقل image،
-   والموقع يعرضها تلقائيًا دون أي تعديل في index.html.
+   التشكيلة الأساسية: داخل كل مباراة في /usma/matches/<id>:
+     formation: "4-3-3"
+     startingXI: [{playerId:"pl1", slot:"GK1", position:"GK"}, ...]   ← معرّفات اللاعبين فقط
+   بيانات اللاعب (الاسم، الصورة، الرقم، الإحصائيات) تُجلب دائمًا من /usma/players عبر playerId.
    ===================================================================== */
 const RTDB = "https://academy-school-16d1b-default-rtdb.firebaseio.com/usma";
 
@@ -845,13 +884,13 @@ const siteData = {
   players: [
     {id:"p1",name:"أسامة بن بوط",position:"حارس مرمى",category:"goalkeepers",number:null,
      image:"https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/4e6aee7709112029c91b4a3b972ba87a8596f217/1790674350714.jpg",
-     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{}},
+     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{},stats:{}},
     {id:"p2",name:"سيفور",position:"حارس مرمى",category:"goalkeepers",number:null,
      image:"https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/516895d4dedcc00948111ceae87d5241055662ad/1790674354583.jpg",
-     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{}},
+     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{},stats:{}},
     {id:"p3",name:"إيدير حديد",position:"حارس مرمى",category:"goalkeepers",number:null,
      image:"https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/df25839a93ae5c80edcdb43ae84b6afb519058d1/1790674357913.jpg",
-     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{}}
+     description:"حارس مرمى في الفريق الأول لاتحاد العاصمة.",details:{},stats:{}}
   ],
   fixturesConfig: { rounds: 30, season: "2026/2027", competition: "الدوري الجزائري - القسم المحترف الأول" },
   matches: [],
@@ -885,12 +924,10 @@ const siteData = {
 
   /* ---------------------------------------------------------------
      ARCHIVE — بيانات تجريبية لعرض طريقة عمل النظام (كل image فارغ = Placeholder)
-     الحقول المطلوبة لكل مادة: id, title, category, year, date, description, image, tags, content, featured, order
-     مفاتيح التصنيف: photo · article · document · historic-match · trophy · squad · legend · event
      --------------------------------------------------------------- */
   archive: {
     settings: {
-      heroImage: "",                                   // صورة الـHero الكبيرة: تُرفع من لوحة التحكم
+      heroImage: "",
       kicker: "USMA ARCHIVE", title: "أرشيف النادي",
       subtitle: "رحلة عبر تاريخ اتحاد العاصمة",
       tagline: "من التأسيس إلى اليوم، من الذكريات إلى الإنجازات.",
@@ -906,7 +943,7 @@ const siteData = {
       {id:"archive-002",title:"صورة تاريخية (مثال)",category:"photo",year:1937,date:"",description:"مساحة مخصصة لصورة تاريخية تُرفع من لوحة التحكم.",image:"",tags:["صورة"],content:["مادة تجريبية."],sources:"",featured:false,order:2,demo:true},
       {id:"archive-003",title:"مقال تاريخي (مثال)",category:"article",year:1937,date:"",description:"مساحة مخصصة لمقال تاريخي كامل يُكتب من لوحة التحكم.",image:"",tags:["مقال"],content:["مادة تجريبية."],sources:"",featured:false,order:3,demo:true}
     ],
-    timeline: [], history: [], trophies: [], squads: [],      // تُولَّد أدناه كبيانات افتراضية قابلة للتعديل
+    timeline: [], history: [], trophies: [], squads: [],
     matches: [
       {id:"hm-001",opponent:"اسم الخصم",opponentLogo:"",usmaLogo:"",scoreUsma:null,scoreOpp:null,date:"",year:null,competition:"البطولة",season:"الموسم",stadium:"الملعب",round:"",coach:"",lineup:"",
        goalsUsma:[],goalsOpp:[],description:"مباراة تجريبية لعرض طريقة عمل النظام. تُضاف المباريات التاريخية الحقيقية من لوحة التحكم.",image:"",images:[],order:1,demo:true}
@@ -943,13 +980,12 @@ const siteData = {
     const oppLogo = o==="JS Kabylie" ? nm.away.logo : "";
     siteData.matches.push({
       id:"m"+r, round:r, homeTeam:home?"USM Alger":o, awayTeam:home?o:"USM Alger", homeLogo:home?LOGO:oppLogo, awayLogo:home?oppLogo:LOGO,
-      date:isNext?nm.datetime:"", stadium:home?HOME_STADIUM:"", scoreHome:null, scoreAway:null, goals:[], info:""
+      date:isNext?nm.datetime:"", stadium:home?HOME_STADIUM:"", scoreHome:null, scoreAway:null, goals:[], info:"", formation:"", startingXI:[]
     });
   }
   ["USM Alger",...opp].forEach((t,i)=>siteData.standings.push({id:"st"+i,team:t,logo:t==="USM Alger"?LOGO:"",p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0}));
 })();
-/* بيانات الأرشيف الافتراضية: الجدول الزمني (فترات) + محطات التاريخ + البطولات + التشكيلات
-   المحطات والبطولات مأخوذة من القائمة التي زوّدتَ بها الموقع، وهي أولية وقابلة للتعديل/الحذف من لوحة التحكم — راجعها قبل النشر. */
+/* بيانات الأرشيف الافتراضية: المحطات والبطولات مأخوذة من القائمة التي زوّدتَ بها الموقع، وهي أولية وقابلة للتعديل/الحذف من لوحة التحكم — راجعها قبل النشر. */
 (function seedArchive(){
   const A_ = siteData.archive;
   A_.timeline = [{id:"p-1937",label:"1937",from:1937,to:1939,title:"التأسيس",description:"تأسس النادي في 5 يوليو 1937."},
@@ -961,6 +997,26 @@ const siteData = {
   A_.trophies = T.map((t,i)=>({id:"tr-"+(i+1),competition:t[1],season:"",year:t[0],title:t[2]||t[1],description:"بيانات افتراضية قابلة للتعديل من لوحة التحكم.",image:"",trophyImage:"",featured:!!t[3],order:i+1}));
   A_.squads = [1963,1981,1988,1997,2003,2013,2019,2023].map((y,i)=>({id:"sq-"+y,year:y,image:"",coach:"",description:"",players:[],order:i+1}));
 })();
+
+/* =====================================================================
+   FORMATIONS — الخطط (كل خطة = صفوف من الحارس إلى خط الهجوم)
+   slot = المركز + رقم ظهوره في الخطة (GK1, CB1, CB2...) ← يضمن عدم تكرار نفس الخانة
+   ===================================================================== */
+const POS_AR={GK:"حارس مرمى",LB:"ظهير أيسر",RB:"ظهير أيمن",CB:"قلب دفاع",LWB:"ظهير جناح أيسر",RWB:"ظهير جناح أيمن",DM:"وسط مدافع",CM:"وسط",AM:"صانع ألعاب",LM:"وسط أيسر",RM:"وسط أيمن",LW:"جناح أيسر",RW:"جناح أيمن",ST:"مهاجم"};
+const FORMATIONS={
+  "4-3-3":[["GK"],["LB","CB","CB","RB"],["CM","CM"],["DM"],["LW","ST","RW"]],
+  "4-2-3-1":[["GK"],["LB","CB","CB","RB"],["DM","DM"],["LW","AM","RW"],["ST"]],
+  "4-4-2":[["GK"],["LB","CB","CB","RB"],["LM","CM","CM","RM"],["ST","ST"]],
+  "4-1-4-1":[["GK"],["LB","CB","CB","RB"],["DM"],["LM","CM","CM","RM"],["ST"]],
+  "3-4-3":[["GK"],["CB","CB","CB"],["LM","CM","CM","RM"],["LW","ST","RW"]],
+  "3-5-2":[["GK"],["CB","CB","CB"],["LWB","CM","DM","CM","RWB"],["ST","ST"]],
+  "5-3-2":[["GK"],["LWB","CB","CB","CB","RWB"],["CM","CM","CM"],["ST","ST"]]
+};
+function slotsOf(f){
+  const cnt={}, out=[];
+  (FORMATIONS[f]||[]).forEach((row,ri)=>row.forEach(pos=>{ cnt[pos]=(cnt[pos]||0)+1; out.push({id:pos+cnt[pos],pos,row:ri}); }));
+  return out;
+}
 
 /* =====================================================================
    DATA SERVICE — الربط مع Firebase Realtime Database (REST)
@@ -978,9 +1034,10 @@ const DataService = {
       if(d.tickets?.offers) siteData.tickets.offers = L(d.tickets.offers);
       if(d.navigation) siteData.navigation = L(d.navigation);
       if(d.services)   siteData.services   = L(d.services);
-      if(d.players)    siteData.players    = L(d.players).map(p=>({...p,number:p.number??null,details:p.details||{}}));
+      if(d.players)    siteData.players    = L(d.players).map(p=>({...p,number:p.number??null,details:p.details||{},stats:p.stats||{}}));
       if(d.matches)    siteData.matches    = L(d.matches).sort((a,b)=>a.round-b.round)
-        .map(m=>({...m,scoreHome:m.scoreHome??null,scoreAway:m.scoreAway??null,goals:m.goals||[],date:m.date||""}));
+        .map(m=>({...m,scoreHome:m.scoreHome??null,scoreAway:m.scoreAway??null,goals:m.goals||[],date:m.date||"",
+          formation:m.formation||"",startingXI:Array.isArray(m.startingXI)?m.startingXI:Object.values(m.startingXI||{})}));
       if(d.standings)  siteData.standings  = L(d.standings);
       if(d.products)   siteData.products   = L(d.products);
       if(d.news)       siteData.news       = L(d.news).map(n=>({...n,images:n.images||[],content:Array.isArray(n.content)?n.content:[n.content||""]}));
@@ -1001,7 +1058,6 @@ const DataService = {
       if((v=vis(d.archiveDocuments))) AR.documents = v.map(x=>({...x,year:num(x.year)}));
       if((v=vis(d.clubStats))) AR.stats = v;
     }catch(e){ console.warn("RTDB load failed, using default data:", e); }
-    /* يضمن ظهور رابط «الأرشيف» في القائمة حتى لو كانت القائمة المحفوظة في القاعدة قديمة */
     const nav = siteData.navigation;
     if(!nav.some(n=>n.target==="#archive")){ const i=nav.findIndex(n=>n.cta); nav.splice(i<0?nav.length:i,0,{label:"الأرشيف",target:"#archive"}); }
     return siteData;
@@ -1062,6 +1118,30 @@ document.addEventListener("keydown",e=>{
     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();} else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
   }
 });
+
+/* =====================================================================
+   PLAYER CARD — المصدر الوحيد لبطاقة اللاعب
+   يُستخدم في: قائمة الفريق الأول (flip:false → النقر يفتح نافذة اللاعب)
+               و STARTING XI (flip:true → النقر يقلب البطاقة لعرض PLAYER STATS)
+   البيانات تُقرأ دائمًا من كائن اللاعب في siteData.players (لا نسخ)
+   ===================================================================== */
+const STAT_ROWS = [
+  ["goals","⚽","الأهداف","Goals"],["assists","🅰","التمريرات الحاسمة","Assists"],["appearances","👕","المباريات","Appearances"],
+  ["minutes","⏱","الدقائق","Minutes"],["yellowCards","🟨","البطاقات الصفراء","Yellow Cards"],["redCards","🟥","البطاقات الحمراء","Red Cards"],
+  ["cleanSheets","🧤","شباك نظيفة","Clean Sheets",true]        // للحارس فقط
+];
+const statVal = v => (v===undefined||v===null||v==="") ? null : v;   // 0 يُعرض 0 — الغائب يُعرض --
+function playerCard(p,o={}){
+  const lg = esc(siteData.siteSettings.logo), st = p.stats||{}, gk = p.category==="goalkeepers", flip = !!o.flip;
+  const front = `<div class="pc-face pc-front"><div class="p-img">${imgOrPh(p.image,p.name)}<span class="p-num" aria-hidden="true">${p.number??""}</span>
+    <img class="pc-wm" src="${lg}" alt="" aria-hidden="true">${o.slot?`<span class="pc-slot" title="${esc(POS_AR[o.slot]||"")}">${esc(o.slot)}</span>`:""}</div>
+    <div class="p-body"><div class="p-pos">${esc(p.position)}</div><h4>${esc(p.name)}</h4><p>${esc(p.description)}</p></div></div>`;
+  const back = !flip ? "" : `<div class="pc-face pc-back"><div class="pb-t">PLAYER STATS</div><div class="pb-n">${esc(p.name)}</div><div class="pb-rows">${
+    STAT_ROWS.filter(r=>!r[4]||gk).map(r=>{ const v=statVal(st[r[0]]); return `<div class="pb-r" title="${r[3]}"><span>${r[1]} ${r[2]}</span><b class="${v===null?"na":""}">${v===null?"--":esc(v)}</b></div>`; }).join("")}</div></div>`;
+  const attrs = flip ? `data-flip aria-pressed="false" aria-label="${esc(p.name)} — اضغط لعرض الإحصائيات"` : `data-player="${esc(p.id)}" aria-label="${esc(p.name)} - ${esc(p.position)}"`;
+  return `<button type="button" class="pc ${o.cls||""}" ${o.style?`style="${o.style}"`:""} ${attrs}><div class="pc-in">${front}${back}</div></button>`;
+}
+function toggleFlip(btn){ const on = btn.classList.toggle("flipped"); btn.setAttribute("aria-pressed",on); }
 
 /* =====================================================================
    RENDER — GLOBAL (top bar, nav, hero, footer)
@@ -1130,16 +1210,14 @@ function renderServices(){
 }
 
 /* =====================================================================
-   RENDER — PLAYERS
+   RENDER — PLAYERS (تستعمل playerCard)
    ===================================================================== */
 function renderPlayers(){
   $("#playersWrap").innerHTML = siteData.playerCategories.map(c=>{
     const list = siteData.players.filter(p=>p.category===c.key);
-    return `<h3 class="cat-title reveal">${esc(c.label)}</h3>` + (list.length ? `<div class="players">${list.map((p,i)=>`
-      <button class="player reveal" style="--d:${i*.07}s" data-player="${esc(p.id)}" aria-label="${esc(p.name)} - ${esc(p.position)}">
-        <div class="p-img">${imgOrPh(p.image,p.name)}<span class="p-num" aria-hidden="true">${p.number??""}</span></div>
-        <div class="p-body"><div class="p-pos">${esc(p.position)}</div><h4>${esc(p.name)}</h4><p>${esc(p.description)}</p></div>
-      </button>`).join("")}</div>` : `<div class="empty reveal">سيتم إضافة ${esc(c.label)} قريبًا</div>`);
+    return `<h3 class="cat-title reveal">${esc(c.label)}</h3>` + (list.length
+      ? `<div class="players">${list.map((p,i)=>playerCard(p,{cls:"reveal",style:`--d:${i*.07}s`})).join("")}</div>`
+      : `<div class="empty reveal">سيتم إضافة ${esc(c.label)} قريبًا</div>`);
   }).join("");
 }
 function openPlayer(id){
@@ -1149,6 +1227,37 @@ function openPlayer(id){
     <span class="chip red">${esc(p.position)}</span><h3 class="md-title">${esc(p.name)}</h3>
     <ul class="md-list"><li>رقم القميص<span>${p.number??"—"}</span></li><li>المركز<span>${esc(p.position)}</span></li>${extra}</ul>
     <p style="color:#d6d6d2">${esc(p.description)}</p></div></div>`);
+}
+
+/* =====================================================================
+   STARTING XI — التشكيلة الأساسية الرسمية (واحدة لكل مباراة)
+   Match → startingXI[{playerId,slot,position}] → players (بطاقة اللاعب الأصلية)
+   ===================================================================== */
+function xiHTML(m){
+  const xi = m.startingXI||[], rowsDef = FORMATIONS[m.formation];
+  if(xi.length!==11 || !rowsDef) return "";
+  const slots = slotsOf(m.formation), by = {};
+  xi.forEach(e=>{ if(e.slot && slots.some(s=>s.id===e.slot) && !by[e.slot]) by[e.slot]=e; });
+  xi.filter(e=>by[e.slot]!==e).forEach(e=>{ const s=slots.find(s=>!by[s.id]&&s.pos===e.position)||slots.find(s=>!by[s.id]); if(s) by[s.id]=e; });
+  let i = 0;
+  const rows = rowsDef.map((_,ri)=>{
+    const rs = slots.filter(s=>s.row===ri);
+    return `<div class="xi-row" style="--k:${Math.max(rs.length,4)}">${rs.map(s=>{
+      const e = by[s.id], p = e && siteData.players.find(x=>x.id===e.playerId);
+      return `<div class="xi-c" style="--i:${i++}">${p?playerCard(p,{flip:true,slot:s.pos}):`<div class="pc-miss">—</div>`}</div>`;
+    }).join("")}</div>`;
+  }).join("");
+  return `<section class="xi" aria-label="التشكيلة الأساسية">
+    <div class="xi-head"><div><span class="kicker">STARTING XI</span><h4>التشكيلة الأساسية</h4></div><span class="chip red">الخطة ${esc(m.formation)}</span></div>
+    <div class="xi-pitch"><div class="xi-decor" aria-hidden="true"><span class="a"></span><span class="b"></span><span class="c"></span><span class="d"></span></div>${rows}
+      <p class="xi-note">اضغط على أي بطاقة لعرض إحصائيات اللاعب</p></div></section>`;
+}
+/* تبدأ الحركة عندما يدخل القسم إلى الشاشة */
+function observeXI(){
+  const els = $$(".xi:not(.in)");
+  if(!("IntersectionObserver" in window)){ els.forEach(e=>e.classList.add("in")); return; }
+  const io = new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } }),{threshold:.12});
+  els.forEach(e=>io.observe(e));
 }
 
 /* =====================================================================
@@ -1166,7 +1275,7 @@ function renderMatches(){
       <div class="fx-team">${logoBox(m.homeLogo,m.homeTeam)}<span>${esc(m.homeTeam)}</span></div>
       <div class="fx-score">${done?`${m.scoreHome} - ${m.scoreAway}<small>النتيجة النهائية</small>`:`VS<small>${fmtTime(m.date)}</small>`}</div>
       <div class="fx-team">${logoBox(m.awayLogo,m.awayTeam)}<span>${esc(m.awayTeam)}</span></div>
-      <div class="fx-foot"><span>📅 ${fmtDate(m.date,{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}</span><span>🏟️ ${esc(m.stadium||"يُحدد لاحقًا")}</span><span>الجولة ${m.round}</span></div></button>`;}).join("")}</div>`
+      <div class="fx-foot"><span>📅 ${fmtDate(m.date,{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}</span><span>🏟️ ${esc(m.stadium||"يُحدد لاحقًا")}</span><span>الجولة ${m.round}</span>${(m.startingXI||[]).length===11?`<span class="fx-xi">STARTING XI</span>`:""}</div></button>`;}).join("")}</div>`
    :`<div class="empty">لا توجد مباريات في هذه الجولة بعد</div>`);
 }
 function openMatch(id){
@@ -1181,7 +1290,9 @@ function openMatch(id){
     <li>الملعب<span>${esc(m.stadium||"يُحدد لاحقًا")}</span></li><li>البطولة<span>${esc(siteData.fixturesConfig.competition)}</span></li></ul>
    <h4 style="margin:16px 0 8px;color:var(--gold)">الأهداف</h4>
    ${m.goals&&m.goals.length?m.goals.map(g=>`<div class="goal-row"><span>⚽ ${esc(g.scorer)}</span><span>${esc(g.minute)}' · ${g.team==="home"?esc(m.homeTeam):esc(m.awayTeam)}</span></div>`).join(""):`<div class="empty">لا توجد أهداف مسجلة</div>`}
-   ${m.info?`<p style="margin-top:14px;color:#d6d6d2">${esc(m.info)}</p>`:""}`);
+   ${m.info?`<p style="margin-top:14px;color:#d6d6d2">${esc(m.info)}</p>`:""}
+   ${xiHTML(m)}`,true);
+  observeXI();
 }
 function renderStandings(){
   const rows = [...siteData.standings].sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
@@ -1326,8 +1437,6 @@ function openNews(id){
 
 /* =====================================================================
    ARCHIVE — أرشيف النادي (نظام أرشيف رقمي Data-Driven)
-   الحالة: AS.q (بحث) · AS.cat (تصنيف) · AS.period (فترة زمنية) · AS.limit · AS.squad
-   FEED: قائمة موحدة لكل المواد (مواد الأرشيف + المباريات + البطولات + التشكيلات + الشخصيات + الوثائق)
    ===================================================================== */
 const AS = {q:"",cat:"all",period:null,limit:12,squad:null};
 let FEED = [];
@@ -1337,7 +1446,6 @@ const catLabel = k => { const c=A().categories.find(x=>x[0]===k); return c?c[1]:
 const inPeriod = y => !AS.period || (y!=null && y>=AS.period.from && y<=AS.period.to);
 const qMatch = t => !AS.q || norm(t).includes(norm(AS.q));
 
-/* عند فشل تحميل الصورة أو غيابها: Placeholder بدل الأيقونة المكسورة */
 function archErr(el){ const d=document.createElement("div"); d.className="arch-ph"; d.innerHTML="<span>ARCHIVE IMAGE</span>"; el.replaceWith(d); }
 const archImg = (url,alt) => url ? `<img src="${esc(url)}" alt="${esc(alt)}" loading="lazy" onerror="archErr(this)">` : `<div class="arch-ph" role="img" aria-label="${esc(alt||"ARCHIVE IMAGE")}"><span>ARCHIVE IMAGE</span></div>`;
 
@@ -1355,7 +1463,6 @@ function buildFeed(){
   return f.sort((x,y)=>(x.year??9999)-(y.year??9999)||(x.order||0)-(y.order||0));
 }
 
-/* ---------- Hero ---------- */
 function renderArchiveHero(){
   const s = A().settings;
   $("#ahBg").innerHTML = archImg(s.heroImage,"أرشيف اتحاد العاصمة");
@@ -1366,8 +1473,6 @@ function renderArchiveHero(){
   $("#ahBtn").textContent = s.buttonText;
   $("#aSearch").placeholder = s.searchPlaceholder;
 }
-
-/* ---------- Timeline (فترات) ---------- */
 const countIn = p => FEED.filter(x=>x.year!=null && x.year>=p.from && x.year<=p.to).length;
 function renderTimeline(){
   $("#tlNodes").innerHTML = A().timeline.map(p=>{ const n=countIn(p);
@@ -1382,8 +1487,6 @@ function togglePeriod(id){
   AS.period = (AS.period && AS.period.id===id) ? null : p; AS.limit = 12;
   renderTimeline(); renderArchiveAll();
 }
-
-/* ---------- Filters + Grid ---------- */
 function renderFilters(){
   $("#aFilters").innerHTML = [["all","الكل"],...A().categories].map(([k,l])=>`<button class="a-f" type="button" data-acat="${k}" aria-pressed="${AS.cat===k}">${esc(l)}</button>`).join("");
 }
@@ -1397,8 +1500,6 @@ function renderArchiveItems(){
     || `<div class="empty" style="grid-column:1/-1">لا توجد مواد مطابقة. جرّب كلمة أخرى أو ألغِ التصفية.</div>`;
   $("#aMore").hidden = rows.length <= AS.limit;
 }
-
-/* ---------- Featured story ---------- */
 function renderFeatured(){
   const f = FEED.filter(x=>x.featured).sort((a,b)=>(a.order||0)-(b.order||0))[0], sec = $("#archive-featured");
   sec.hidden = !f; if(!f) return;
@@ -1406,8 +1507,6 @@ function renderFeatured(){
     <div class="fs-body"><span class="kicker">${esc(A().settings.featuredKicker)}</span>${f.year?`<div class="fs-year">${f.year}</div>`:""}
     <h3>${esc(f.title)}</h3><p>${esc(f.desc)}</p><div><button class="btn btn-red" type="button" data-feed="${f.kind}:${esc(f.id)}">اقرأ التفاصيل</button></div></div></article>`;
 }
-
-/* ---------- Club history (محطات) ---------- */
 function renderClubHistory(){
   const list = A().history.filter(h=>h.visible!==false);
   $("#chList").innerHTML = list.length ? list.map((m,i)=>{ const n=FEED.filter(x=>x.year===m.year).length;
@@ -1415,8 +1514,6 @@ function renderClubHistory(){
     ${n?`<button class="link-more" type="button" data-year="${esc(m.year)}">استعرض ${n} مادة ←</button>`:`<small>لا توجد مواد أرشيفية بعد</small>`}</div></li>`; }).join("")
     : `<li class="empty">ستُضاف محطات التاريخ من لوحة التحكم.</li>`;
 }
-
-/* ---------- Historical squads ---------- */
 function renderSquads(){
   const list = A().squads.filter(s=>s.visible!==false).sort((a,b)=>a.year-b.year), box = $("#sqBox");
   if(!list.length){ box.innerHTML = `<div class="empty">ستُضاف تشكيلات الفريق عبر لوحة التحكم.</div>`; return; }
@@ -1429,8 +1526,6 @@ function renderSquads(){
      return ps.length?`<h4 class="cat-title">${esc(g.label)}</h4><div class="sq-players">${ps.map(p=>`<div class="pl-mini"><div class="pm-img arch-img">${archImg(p.image,p.name)}</div><b>${esc(p.name)}</b><small>${esc(p.position||"")}${p.number?" · "+esc(p.number):""}</small></div>`).join("")}</div>`:""; }).join("")
      : `<div class="empty" style="margin-top:18px">ستُضاف أسماء لاعبي هذه التشكيلة من لوحة التحكم.</div>`}`;
 }
-
-/* ---------- Historic matches ---------- */
 function renderHistoricMatches(){
   const rows = A().matches.filter(m=>inPeriod(m.year) && qMatch(mText(m))), lg = siteData.siteSettings.logo;
   $("#hmGrid").innerHTML = rows.length ? rows.map(m=>{ const sc=m.scoreUsma!=null&&m.scoreOpp!=null;
@@ -1455,8 +1550,6 @@ function openHistMatch(id){
    ${m.description?`<h4 style="color:var(--gold);margin:16px 0 6px">وصف المباراة</h4><p style="color:#d6d6d2">${esc(m.description)}</p>`:""}
    <div class="gal">${imgs.length?imgs.map(u=>`<div class="arch-img">${archImg(u,"صورة من المباراة")}</div>`).join(""):`<div class="arch-img">${archImg("","صورة من المباراة")}</div>`}</div>`,true);
 }
-
-/* ---------- Trophies ---------- */
 function renderTrophies(){
   const rows = A().trophies.filter(t=>inPeriod(t.year) && qMatch([t.competition,t.season,t.year,t.title,t.description].join(" "))).sort((a,b)=>(b.year??0)-(a.year??0)||(a.order||0)-(b.order||0));
   $("#trGrid").innerHTML = rows.length ? rows.map(t=>`<button class="tr-card ${t.featured?"feat":""}" type="button" data-feed="trophy:${esc(t.id)}" aria-label="${esc(t.title)} ${esc(t.year??"")}">
@@ -1464,8 +1557,6 @@ function renderTrophies(){
     <div class="tr-body"><div class="tr-year">${esc(t.year??"")}</div><h4>${esc(t.title)}</h4>${t.competition&&t.competition!==t.title?`<span class="chip">${esc(t.competition)}</span>`:""}${t.season?`<p>الموسم ${esc(t.season)}</p>`:""}</div></button>`).join("")
     : `<div class="empty" style="grid-column:1/-1">لا توجد بطولات مطابقة.</div>`;
 }
-
-/* ---------- Legends & documents ---------- */
 function renderLegends(){
   const rows = A().legends.filter(l=>inPeriod(l.year) && qMatch([l.name,l.role,l.period,l.bio,l.year].join(" ")));
   $("#lgGrid").innerHTML = rows.length ? rows.map(l=>`<button class="lg-card" type="button" data-feed="legend:${esc(l.id)}" aria-label="${esc(l.name)}">
@@ -1479,14 +1570,10 @@ function renderDocuments(){
     <div class="dc-img arch-img">${archImg(d.image,d.title)}</div><h4>${esc(d.title)}</h4><small>${esc(d.category||"")}${d.year?" · "+d.year:""}</small><p>${esc(d.description||"")}</p></button>`).join("")
     : `<div class="empty" style="grid-column:1/-1">لا توجد وثائق مطابقة.</div>`;
 }
-
-/* ---------- Stats (clubStats) ---------- */
 function renderClubStats(){
   $("#statsGrid").innerHTML = A().stats.map((s,i)=>{ const n=Number(s.value), cnt=!isNaN(n)&&n>=0&&n<1000;
     return `<div class="stt reveal" style="--d:${i*.06}s"><b ${cnt?`data-count="${n}"`:""}>${esc(s.value)}</b><span>${esc(s.label)}</span>${s.note?`<small>${esc(s.note)}</small>`:""}</div>`; }).join("");
 }
-
-/* ---------- Detail view ---------- */
 function openDetail(o){
   const body = toList(o.content).map(p=>`<p>${esc(p)}</p>`).join("");
   openModal(`<article class="article"><div class="ad-img arch-img">${archImg(o.image,o.title)}</div>
@@ -1505,8 +1592,6 @@ function openFeed(k,id){
   else if(k==="doc"){ o=a.documents.find(x=>x.id===id); o&&openDetail({title:o.title,image:o.image,year:o.year,catLabel:o.category||"وثيقة",content:[o.description].filter(Boolean)}); }
   else if(k==="squad"){ o=a.squads.find(x=>x.id===id); if(o){ AS.squad=o.year; renderSquads(); $("#archive-squads").scrollIntoView({behavior:"smooth"}); } }
 }
-
-/* ---------- Orchestration ---------- */
 function renderArchiveAll(){
   renderArchiveItems(); renderHistoricMatches(); renderTrophies(); renderLegends(); renderDocuments();
 }
@@ -1576,7 +1661,8 @@ document.addEventListener("click",e=>{
   const a = t.closest("a[data-tab]"); if(a){ switchTab(a.dataset.tab); }
   if(t.closest("#navMenu a")) closeMenu();
   let el;
-  if((el=t.closest("[data-player]"))) openPlayer(el.dataset.player);
+  if((el=t.closest("[data-flip]"))) toggleFlip(el);                       // قلب بطاقة اللاعب في STARTING XI
+  else if((el=t.closest("[data-player]"))) openPlayer(el.dataset.player);
   else if((el=t.closest("[data-match]"))) openMatch(el.dataset.match);
   else if((el=t.closest("[data-round]"))){ currentRound=+el.dataset.round; renderMatches(); $(`[data-round="${currentRound}"]`).scrollIntoView({inline:"center",block:"nearest"}); }
   else if(t.closest("#bookBtn")) openBooking();
@@ -1585,7 +1671,6 @@ document.addEventListener("click",e=>{
   else if((el=t.closest("[data-news]"))) openNews(el.dataset.news);
   else if(t.id==="tab-fx") switchTab("fx");
   else if(t.id==="tab-st") switchTab("st");
-  /* --- Archive --- */
   else if((el=t.closest("[data-feed]"))){ const i=el.dataset.feed.indexOf(":"); openFeed(el.dataset.feed.slice(0,i),el.dataset.feed.slice(i+1)); }
   else if((el=t.closest("[data-hm]"))) openHistMatch(el.dataset.hm);
   else if((el=t.closest("[data-period]"))) togglePeriod(el.dataset.period);
