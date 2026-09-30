@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 /* Variables */
-:root{--red:#C8102E;--black:#08090B;--b2:#121417;--b3:#1a1d22;--gold:#B79A62;--white:#F5F5F3;--muted:#9a9ea6;--line:rgba(183,154,98,.22);--r:6px}
+:root{--red:#C8102E;--black:#08090B;--b2:#121417;--b3:#1a1d22;--navy:#101A2B;--gold:#B79A62;--white:#F5F5F3;--muted:#9a9ea6;--line:rgba(183,154,98,.22);--r:6px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cairo',Tahoma,sans-serif;background:var(--black);color:var(--white);min-height:100vh}
 button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0}
@@ -31,7 +31,7 @@ main{padding:24px clamp(14px,3vw,36px);min-width:0}
 .btn.s{padding:5px 14px;font-size:.85rem}.btn.d{color:#ff6b7f}.btn:disabled{opacity:.5;cursor:wait}
 .card{background:var(--b2);border:1px solid var(--line);border-radius:var(--r);padding:22px}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.f{display:flex;flex-direction:column;gap:5px}.f.full{grid-column:1/-1}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}.f.full{grid-column:1/-1}
 .f label.lb{font-size:.82rem;color:var(--gold);font-weight:700}
 .f input:not([type=checkbox]):not([type=hidden]),.f select,.f textarea{background:#0b0c0e;border:1px solid #2b2f36;border-radius:var(--r);padding:10px 12px;width:100%}
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--red);outline:0}
@@ -43,6 +43,18 @@ main{padding:24px clamp(14px,3vw,36px);min-width:0}
 .img-f .ia{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .img-f .hint{flex-basis:100%}
 .hint{color:var(--muted);font-size:.75rem}
+/* Gallery */
+.gal-f{display:flex;flex-wrap:wrap;gap:10px;background:#0b0c0e;border:1px dashed var(--gold);border-radius:var(--r);padding:10px}
+.gal-f .gi{position:relative;width:88px;height:88px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.gal-f .gi img{width:100%;height:100%;object-fit:cover}
+.gal-f .gx{position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.8);color:#fff;font-size:.8rem}
+.gal-f .gx:hover{background:var(--red)}
+.gal-f .gadd{width:88px;height:88px;display:grid;place-items:center;border:1px dashed var(--gold);border-radius:var(--r);color:var(--gold);font-size:1.8rem;cursor:pointer}
+.gal-f .gadd:hover{background:var(--red);color:#fff;border-color:var(--red)}
+/* People editor (لاعبو التشكيلة) */
+.pp-row{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));padding:10px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px;background:#0b0c0e}
+.pp-row .img-f{grid-column:1/-1}
+.pp-row input,.pp-row select{background:#121417;border:1px solid #2b2f36;border-radius:var(--r);padding:8px 10px;width:100%}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
 table{width:100%;border-collapse:collapse;min-width:560px;background:var(--b2)}
 th{background:#000;color:var(--gold);font-size:.8rem;padding:11px 10px;text-align:start}
@@ -52,7 +64,7 @@ td .acts{display:flex;gap:6px}
 .empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
 /* Modal + toast + login */
 .md{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:14px;z-index:50}.md.on{display:flex}
-.mb{background:var(--b2);border:1px solid var(--gold);border-top:4px solid var(--red);border-radius:var(--r);width:min(760px,100%);max-height:92vh;overflow:auto;padding:24px}
+.mb{background:var(--b2);border:1px solid var(--gold);border-top:4px solid var(--red);border-radius:var(--r);width:min(780px,100%);max-height:92vh;overflow:auto;padding:24px}
 .mb h3{margin-bottom:16px;font-size:1.3rem}.mf{display:flex;gap:10px;margin-top:18px;justify-content:flex-end}
 #toast{position:fixed;bottom:20px;inset-inline-start:20px;background:#000;border:1px solid var(--gold);border-inline-start:4px solid var(--red);padding:12px 18px;border-radius:var(--r);z-index:99;display:none;max-width:90vw}
 #login{position:fixed;inset:0;z-index:80;background:var(--black) radial-gradient(ellipse at top,rgba(200,16,46,.3),transparent 60%);display:none;place-items:center;padding:16px}
@@ -83,7 +95,7 @@ td .acts{display:flex;gap:6px}
 const CFG = {
   DB: "https://academy-school-16d1b-default-rtdb.firebaseio.com", // Realtime Database
   ROOT: "usma",                        // كل بيانات الموقع تحت /usma فقط
-  BUCKET: "YOUR_STORAGE_BUCKET"        // اختياري: مثال academy-school-16d1b.appspot.com — إذا وُضع تُرفع الصور إلى Firebase Storage (يتطلب قواعد Storage تسمح بالكتابة على usma/**)، وإلا تُحفظ مضغوطة داخل القاعدة
+  BUCKET: "YOUR_STORAGE_BUCKET"        // موصى به للأرشيف: مثال academy-school-16d1b.appspot.com — يرفع الصور إلى Firebase Storage (مجلد usma/archive/...) بدل حفظها داخل القاعدة
 };
 const ADMIN_CODE = "usma2627";         // كود دخول الإدارة (نفس الكود في index.html)
 const LOGO="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/7c0dc5e27e968bef9e32f6eddc4c5d0e4db1603c/1000025944-removebg-preview.png";
@@ -94,6 +106,7 @@ const $=s=>document.querySelector(s), esc=v=>String(v??"").replace(/[&<>"']/g,c=
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const getP=(o,p)=>p.split(".").reduce((a,k)=>a==null?a:a[k],o);
 const setP=(o,p,v)=>{const k=p.split(".");k.slice(0,-1).reduce((a,x)=>a[x]??(a[x]={}),o)[k.at(-1)]=v;};
+const deleteP=(o,p)=>{const k=p.split("."),t=k.slice(0,-1).reduce((a,x)=>a?.[x],o);if(t)delete t[k.at(-1)];};
 let DB={}, cur=null;
 function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",3200);}
 async function api(p,m="GET",b){
@@ -111,30 +124,47 @@ $("#lf").addEventListener("submit",e=>{
 function logout(){sessionStorage.clear();location.href="index.html";}
 
 /* ================= SCHEMA ================= */
-// حقل: [المسار, التسمية, النوع, خيارات]   الأنواع: text number date datetime textarea image select check goals
-// حقل الصورة: الخيار {max:px} يحدد أكبر بُعد للصورة بعد التصغير
+// حقل: [المسار, التسمية, النوع, خيارات]
+// الأنواع: text number date datetime textarea lines(سطر لكل عنصر → مصفوفة) image gallery(عدة صور) people(لاعبو التشكيلة) select check goals
+// خيارات الصور: {max:px}   خيارات check: {def:true} = مفعّل افتراضيًا
 const CATS=[["goalkeepers","حراس المرمى"],["defenders","المدافعون"],["midfielders","لاعبو الوسط"],["forwards","المهاجمون"],["coach","المدرب"]];
+const ACATS=[["photo","صور"],["article","مقالات"],["document","وثائق"],["historic-match","مباريات تاريخية"],["trophy","بطولات"],["squad","تشكيلات تاريخية"],["legend","شخصيات"],["event","أحداث تاريخية"]];
 const TABS=[["","(بدون)"],["fx","النتائج والرزنامة"],["st","الترتيب"]];
 const SOC=["Facebook","Instagram","YouTube","X"];
+const VIS=["visible","ظاهر في الموقع","check",{def:true}], ORD=["order","الترتيب","number"];
+const byOrder=(a,b)=>(a.order??0)-(b.order??0);
 const SECTIONS=[
  {g:"الموقع"},
  {id:"siteSettings",label:"الإعدادات العامة",kind:"single",path:"siteSettings",fields:[["clubName","اسم النادي (عربي)"],["clubNameEn","اسم النادي (EN)"],["shortName","الاختصار"],["since","سنة التأسيس","number"],["logo","الشعار","image",{max:500}],["topTag","عبارة الشريط العلوي"],["slogan","الشعار النصي"],["about","نبذة (الفوتر)","textarea"],...SOC.map((s,i)=>[`social.${i}.url`,"رابط "+s])]},
  {id:"hero",label:"الواجهة (Hero)",kind:"single",path:"hero",fields:[["image","صورة الخلفية","image",{max:1600}],["title","العنوان"],["highlight","الجزء الملوّن"],["subtitle","السطر الفرعي"],["buttons.0.text","نص الزر 1"],["buttons.0.target","رابط الزر 1"],["buttons.1.text","نص الزر 2"],["buttons.1.target","رابط الزر 2"]]},
- {id:"navigation",label:"القائمة (Navbar)",kind:"list",path:"navigation",cols:["order","label","target"],fields:[["label","النص"],["target","الهدف (#team ...)"],["tab","تبويب",'select',TABS],["order","الترتيب","number"],["cta","زر مميّز","check"]]},
- {id:"services",label:"الخدمات السريعة",kind:"list",path:"services",cols:["order","icon","title"],fields:[["icon","أيقونة (Emoji)"],["title","العنوان"],["desc","الوصف"],["target","الهدف"],["tab","تبويب","select",TABS],["order","الترتيب","number"]]},
+ {id:"navigation",label:"القائمة (Navbar)",kind:"list",path:"navigation",cols:["order","label","target"],fields:[["label","النص"],["target","الهدف (#team ...)"],["tab","تبويب",'select',TABS],ORD,["cta","زر مميّز","check"]]},
+ {id:"services",label:"الخدمات السريعة",kind:"list",path:"services",cols:["order","icon","title"],fields:[["icon","أيقونة (Emoji)"],["title","العنوان"],["desc","الوصف"],["target","الهدف"],["tab","تبويب","select",TABS],ORD]},
  {g:"الفريق والمباريات"},
  {id:"players",label:"اللاعبون",kind:"list",path:"players",cols:["image","name","position","number","category"],fields:[["name","الاسم"],["position","المركز"],["category","الفئة","select",CATS],["number","رقم القميص","number"],["image","صورة اللاعب","image",{max:900}],["description","الوصف","textarea"]]},
  {id:"nextMatch",label:"المباراة القادمة",kind:"single",path:"nextMatch",fields:[["home.name","الفريق 1 (EN)"],["home.nameAr","الفريق 1 (عربي)"],["home.logo","شعار الفريق 1","image",{max:500}],["away.name","الفريق 2 (EN)"],["away.nameAr","الفريق 2 (عربي)"],["away.logo","شعار الفريق 2 (JSK)","image",{max:500}],["competition","البطولة"],["season","الموسم"],["round","الجولة","number"],["datetime","التاريخ والساعة (العد التنازلي)","datetime"],["stadium","الملعب"],["durationMinutes","مدة المباراة (دقيقة)","number"]]},
- {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date"],fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image",{max:500}],["awayLogo","شعار الضيف","image",{max:500}],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals",{full:1}],["info","معلومات إضافية","textarea"]]},
+ {id:"matches",label:"المباريات والنتائج",kind:"list",path:"matches",sort:(a,b)=>a.round-b.round,cols:["round","homeTeam","scoreHome","scoreAway","awayTeam","date"],fields:[["round","الجولة","number"],["homeTeam","المضيف"],["awayTeam","الضيف"],["homeLogo","شعار المضيف","image",{max:500}],["awayLogo","شعار الضيف","image",{max:500}],["date","التاريخ والساعة","datetime"],["stadium","الملعب"],["scoreHome","أهداف المضيف","number"],["scoreAway","أهداف الضيف","number"],["goals","الأهداف (سطر لكل هدف: اللاعب|الدقيقة|home أو away)","goals"],["info","معلومات إضافية","textarea"]]},
  {id:"standings",label:"الترتيب",kind:"list",path:"standings",sort:(a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf,cols:["logo","team","p","w","d","l","gf","ga","gd","pts"],pre:x=>{x.p=x.w+x.d+x.l;x.gd=x.gf-x.ga;x.pts=x.w*3+x.d;},hint:"P وGD وPTS تُحسب تلقائيًا (فوز=3، تعادل=1).",fields:[["team","الفريق"],["logo","شعار الفريق","image",{max:500}],["w","فوز","number"],["d","تعادل","number"],["l","خسارة","number"],["gf","له","number"],["ga","عليه","number"]]},
  {id:"fixturesConfig",label:"إعدادات الموسم",kind:"single",path:"fixturesConfig",fields:[["competition","البطولة"],["season","الموسم"],["rounds","عدد الجولات","number"]]},
  {g:"التذاكر والمتجر"},
  {id:"ticket",label:"تذكرة المباراة",kind:"single",path:"tickets/match",fields:[["title","العنوان"],["ticketType","نوع التذكرة"],["matchRound","الجولة","number"],["price","السعر","number"],["currency","العملة"],["stadium","الملعب"],["capacity","عدد التذاكر","number"],["sold","المباعة","number"],["active","الحجز مفتوح","check"]]},
  {id:"offers",label:"الاشتراكات والبطاقات",kind:"list",path:"tickets/offers",cols:["title","price","period","vip"],fields:[["title","العنوان"],["price","السعر","number"],["period","المدة"],["desc","الوصف","textarea"],["vip","VIP","check"]]},
- {id:"products",label:"المنتجات",kind:"list",path:"products",cols:["image","name","price","active"],fields:[["name","الاسم"],["price","السعر","number"],["currency","العملة"],["image","صورة المنتج","image",{max:900}],["short","وصف قصير"],["description","الوصف الكامل","textarea"],["active","ظاهر في المتجر","check"]]},
+ {id:"products",label:"المنتجات",kind:"list",path:"products",cols:["image","name","price","active"],fields:[["name","الاسم"],["price","السعر","number"],["currency","العملة"],["image","صورة المنتج","image",{max:900}],["short","وصف قصير"],["description","الوصف الكامل","textarea"],["active","ظاهر في المتجر","check",{def:true}]]},
  {g:"المحتوى"},
- {id:"academy",label:"مدرسة كرة القدم",kind:"single",path:"academy",fields:[["image","صورة الخلفية","image",{max:1600}],["title","العنوان"],["text","النص","textarea"],["categories","الفئات (سطر لكل فئة)","textarea"],...[0,1,2].flatMap(i=>[[`points.${i}.icon`,`ميزة ${i+1}: أيقونة`],[`points.${i}.title`,`ميزة ${i+1}: عنوان`],[`points.${i}.desc`,`ميزة ${i+1}: وصف`]])]},
- {id:"news",label:"الأخبار",kind:"list",path:"news",sort:(a,b)=>(b.date||"").localeCompare(a.date||""),cols:["image","title","category","date"],fields:[["title","العنوان"],["category","التصنيف"],["date","التاريخ","date"],["author","الكاتب"],["image","صورة الخبر","image",{max:1400}],["summary","الملخص","textarea"],["content","النص الكامل (فقرة في كل سطر)","textarea"],["demo","محتوى تجريبي","check"]]},
+ {id:"academy",label:"مدرسة كرة القدم",kind:"single",path:"academy",fields:[["image","صورة الخلفية","image",{max:1600}],["title","العنوان"],["text","النص","textarea"],["categories","الفئات (سطر لكل فئة)","lines"],...[0,1,2].flatMap(i=>[[`points.${i}.icon`,`ميزة ${i+1}: أيقونة`],[`points.${i}.title`,`ميزة ${i+1}: عنوان`],[`points.${i}.desc`,`ميزة ${i+1}: وصف`]])]},
+ {id:"news",label:"الأخبار",kind:"list",path:"news",sort:(a,b)=>(b.date||"").localeCompare(a.date||""),cols:["image","title","category","date"],fields:[["title","العنوان"],["category","التصنيف"],["date","التاريخ","date"],["author","الكاتب"],["image","صورة الخبر","image",{max:1400}],["summary","الملخص","textarea"],["content","النص الكامل (فقرة في كل سطر)","lines"],["demo","محتوى تجريبي","check"]]},
+
+ {g:"أرشيف النادي"},
+ {id:"archiveSettings",label:"إعدادات الأرشيف (Hero)",kind:"single",path:"archiveSettings",fields:[["heroImage","صورة الـHero الكبيرة","image",{max:1600}],["kicker","العنوان الصغير (EN)"],["title","العنوان"],["subtitle","العنوان الفرعي"],["tagline","العبارة التعريفية"],["buttonText","نص الزر"],["foundedYear","سنة التأسيس","number"],["foundedDate","تاريخ التأسيس"],["foundedLabel","عبارة التأسيس"],["searchPlaceholder","نص خانة البحث"],["featuredKicker","عنوان «المحطة البارزة»"]]},
+ {id:"archiveItems",label:"المواد الأرشيفية",kind:"list",path:"archiveItems",sort:byOrder,cols:["image","title","category","year","featured","visible"],hint:"«محطة بارزة» تظهر في منطقة «محطة من التاريخ». أزل علامة «ظاهر في الموقع» لإخفاء مادة دون حذفها.",fields:[["title","العنوان"],["category","التصنيف","select",ACATS],["year","السنة","number"],["date","التاريخ (نص حر)"],["description","وصف قصير","textarea"],["image","الصورة","image",{max:1400}],["tags","الوسوم (افصل بفاصلة)"],["content","النص الكامل (فقرة في كل سطر)","lines"],["sources","المصادر / ملاحظات","textarea"],["featured","محطة بارزة (Featured)","check"],VIS,ORD]},
+ {id:"archiveTimeline",label:"الجدول الزمني (الفترات)",kind:"list",path:"archiveTimeline",sort:(a,b)=>(a.from??0)-(b.from??0),cols:["label","from","to","title","visible"],fields:[["label","التسمية (مثل 1960s)"],["from","من سنة","number"],["to","إلى سنة","number"],["title","عنوان الفترة"],["description","وصف الفترة","textarea"],VIS,ORD]},
+ {id:"clubHistory",label:"محطات تاريخ النادي",kind:"list",path:"clubHistory",sort:(a,b)=>(a.year??0)-(b.year??0)||byOrder(a,b),cols:["year","title","visible"],fields:[["year","السنة","number"],["title","المحطة"],["description","الوصف","textarea"],VIS,ORD]},
+ {id:"historicMatches",label:"المباريات التاريخية",kind:"list",path:"historicMatches",sort:(a,b)=>(a.year??0)-(b.year??0)||byOrder(a,b),cols:["year","opponent","scoreUsma","scoreOpp","competition","visible"],fields:[["opponent","اسم الخصم"],["opponentLogo","شعار الخصم","image",{max:500}],["usmaLogo","شعار USMA (اختياري — الافتراضي شعار النادي)","image",{max:500}],["scoreUsma","أهداف USMA","number"],["scoreOpp","أهداف الخصم","number"],["date","التاريخ"],["year","السنة","number"],["competition","البطولة"],["season","الموسم"],["round","الجولة"],["stadium","الملعب"],["coach","المدرب"],["lineup","التشكيلة (نص)","textarea"],["goalsUsma","أهداف USMA (سطر لكل هدف: اللاعب|الدقيقة)","lines"],["goalsOpp","أهداف الخصم (سطر لكل هدف: اللاعب|الدقيقة)","lines"],["description","وصف تاريخي للمباراة","textarea"],["image","الصورة الرئيسية","image",{max:1400}],["images","صور إضافية للمباراة","gallery",{max:1400}],["featured","محطة بارزة","check"],VIS,ORD]},
+ {id:"trophies",label:"البطولات والإنجازات",kind:"list",path:"trophies",sort:(a,b)=>(b.year??0)-(a.year??0)||byOrder(a,b),cols:["image","year","title","competition","featured","visible"],fields:[["competition","البطولة"],["season","الموسم"],["year","السنة","number"],["title","العنوان"],["description","الوصف","textarea"],["image","صورة البطولة","image",{max:1200}],["trophyImage","صورة الكأس","image",{max:900}],["featured","بارز","check"],VIS,ORD]},
+ {id:"historicSquads",label:"التشكيلات التاريخية",kind:"list",path:"historicSquads",sort:(a,b)=>(a.year??0)-(b.year??0),cols:["image","year","coach","visible"],fields:[["year","السنة","number"],["coach","المدرب"],["description","وصف","textarea"],["image","صورة الفريق","image",{max:1400}],["players","لاعبو التشكيلة","people"],VIS,ORD]},
+ {id:"clubLegends",label:"شخصيات النادي",kind:"list",path:"clubLegends",sort:byOrder,cols:["image","name","role","period","visible"],fields:[["name","الاسم"],["role","الصفة"],["period","الفترة"],["year","سنة مرجعية (للبحث والفترات)","number"],["bio","نبذة","textarea"],["image","الصورة","image",{max:900}],VIS,ORD]},
+ {id:"archiveDocuments",label:"الوثائق",kind:"list",path:"archiveDocuments",sort:byOrder,cols:["image","title","category","year","visible"],fields:[["title","العنوان"],["category","النوع (وثيقة، قصاصة، ملصق، تذكرة...)"],["year","السنة","number"],["description","الوصف","textarea"],["image","صورة الوثيقة","image",{max:1400}],VIS,ORD]},
+ {id:"clubStats",label:"إحصائيات النادي",kind:"list",path:"clubStats",sort:byOrder,cols:["order","value","label","visible"],hint:"تظهر في «أرقام من تاريخ USMA». غيّر القيم عند كل لقب جديد.",fields:[["value","القيمة (رقم أو نص)"],["label","العنوان"],["note","ملاحظة صغيرة"],VIS,ORD]},
+
  {g:"الطلبات الواردة"},
  {id:"ticketBookings",label:"حجوزات التذاكر",kind:"inbox",path:"ticketBookings",cols:["id","name","lastName","phone","email","match","createdAt"]},
  {id:"subscriptionRequests",label:"طلبات الاشتراك",kind:"inbox",path:"subscriptionRequests",cols:["id","offer","name","lastName","phone","email","createdAt"]},
@@ -142,7 +172,7 @@ const SECTIONS=[
  {id:"academyApplications",label:"تسجيلات المدرسة",kind:"inbox",path:"academyApplications",cols:["id","childName","childLastName","age","category","parentName","parentPhone","email","createdAt"]}
 ];
 const INBOXES=SECTIONS.filter(s=>s.kind==="inbox");
-const LBL={id:"المعرّف",orderId:"رقم الطلب",productId:"المنتج",name:"الاسم",lastName:"اللقب",phone:"الهاتف",email:"البريد",match:"المباراة",createdAt:"التاريخ",offer:"العرض",customerName:"الاسم",customerLastName:"اللقب",address:"العنوان",quantity:"الكمية",childName:"الطفل",childLastName:"اللقب",age:"العمر",category:"الفئة",parentName:"الولي",parentPhone:"هاتف الولي",order:"الترتيب",label:"النص",target:"الهدف",icon:"أيقونة",title:"العنوان",image:"صورة",position:"المركز",number:"الرقم",round:"الجولة",homeTeam:"المضيف",awayTeam:"الضيف",scoreHome:"هـ",scoreAway:"ض",date:"التاريخ",logo:"شعار",team:"الفريق",p:"P",w:"W",d:"D",l:"L",gf:"GF",ga:"GA",gd:"GD",pts:"PTS",price:"السعر",period:"المدة",vip:"VIP",active:"ظاهر"};
+const LBL={id:"المعرّف",orderId:"رقم الطلب",productId:"المنتج",name:"الاسم",lastName:"اللقب",phone:"الهاتف",email:"البريد",match:"المباراة",createdAt:"التاريخ",offer:"العرض",customerName:"الاسم",customerLastName:"اللقب",address:"العنوان",quantity:"الكمية",childName:"الطفل",childLastName:"اللقب",age:"العمر",category:"الفئة",parentName:"الولي",parentPhone:"هاتف الولي",order:"الترتيب",label:"النص",target:"الهدف",icon:"أيقونة",title:"العنوان",image:"صورة",position:"المركز",number:"الرقم",round:"الجولة",homeTeam:"المضيف",awayTeam:"الضيف",scoreHome:"هـ",scoreAway:"ض",date:"التاريخ",logo:"شعار",team:"الفريق",p:"P",w:"W",d:"D",l:"L",gf:"GF",ga:"GA",gd:"GD",pts:"PTS",price:"السعر",period:"المدة",vip:"VIP",active:"ظاهر",year:"السنة",from:"من",to:"إلى",featured:"بارز",visible:"الحالة",opponent:"الخصم",scoreUsma:"USMA",scoreOpp:"الخصم",competition:"البطولة",coach:"المدرب",role:"الصفة",value:"القيمة"};
 const get=(path)=>getP(DB,path.replace(/\//g,"."));
 const arr=p=>Object.entries(get(p)||{}).map(([k,v])=>({...v,_k:k}));
 
@@ -161,7 +191,7 @@ function fileToData(file,max=1000){
         if(!png){x.fillStyle="#fff";x.fillRect(0,0,w,h);}
         x.drawImage(img,0,0,w,h);
         out=c.toDataURL(png?"image/png":"image/jpeg",.82);
-        if(out.length<650000||m<=300)break;      // الحد المقبول ~650KB لكل صورة
+        if(out.length<650000||m<=300)break;
         m=Math.round(m*.75);
       }
       res(out);
@@ -171,7 +201,7 @@ function fileToData(file,max=1000){
   });
 }
 async function uploadStorage(file){
-  const name=`usma/${Date.now()}-${file.name.replace(/[^\w.-]/g,"_")}`;
+  const name=`usma/archive/${Date.now()}-${file.name.replace(/[^\w.-]/g,"_")}`;
   const r=await fetch(`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o?name=${encodeURIComponent(name)}`,{method:"POST",headers:{"Content-Type":file.type},body:file});
   const d=await r.json(); if(!r.ok)throw new Error("storage");
   return`https://firebasestorage.googleapis.com/v0/b/${CFG.BUCKET}/o/${encodeURIComponent(d.name)}?alt=media&token=${d.downloadTokens}`;
@@ -181,42 +211,88 @@ async function pickImage(file,max){
   if(!CFG.BUCKET.startsWith("YOUR")){try{return await uploadStorage(file);}catch(_){/* تراجع إلى الحفظ داخل القاعدة */}}
   return fileToData(file,max);
 }
-// واجهة حقل الصورة: معاينة + زر اختيار + زر حذف + حقل مخفي يحمل القيمة
+const sizeTxt=val=>val.startsWith("data:")?Math.round(val.length*.75/1024)+" KB":"مرفوعة";
+
+/* --- حقل صورة واحدة --- */
 function imgInner(id,n,v,max){
   return`<div class="pv">${v?`<img src="${esc(v)}" alt="معاينة">`:"📷"}</div>
   <div class="ia"><label class="btn s red" style="cursor:pointer">📷 ${v?"تغيير الصورة":"اختيار صورة"}<input type="file" accept="image/*" hidden data-up="${id}"></label>
   ${v?`<button type="button" class="btn s d" data-rm="${id}">حذف</button>`:""}<span class="hint" id="${id}_i">${v?"":"اضغط لاختيار صورة من جهازك"}</span></div>
-  <input type="hidden" id="${id}" name="${n}" data-t="image" value="${esc(v)}">`;
+  <input type="hidden" id="${id}" name="${esc(n)}" data-t="image" value="${esc(v)}">`;
+}
+/* --- حقل معرض صور (عدة صور) --- */
+function galInner(id,n,a,max){
+  return`<div class="gal-f">${a.map((u,i)=>`<div class="gi"><img src="${esc(u)}" alt=""><button type="button" class="gx" data-gdel="${id}:${i}" aria-label="حذف">✕</button></div>`).join("")}
+  <label class="gadd" title="إضافة صور">＋<input type="file" accept="image/*" multiple hidden data-gup="${id}"></label></div>
+  <div class="hint" id="${id}_i">يمكن اختيار عدة صور دفعة واحدة</div>
+  <input type="hidden" id="${id}" name="${esc(n)}" data-t="gallery" value="${esc(JSON.stringify(a))}">`;
+}
+/* --- صف لاعب داخل التشكيلة --- */
+function pplRow(p={}){
+  const id="pp"+uid();
+  return`<div class="pp-row"><div class="img-f" data-if="${id}" data-n="" data-max="600">${imgInner(id,"",p.image||"",600)}</div>
+  <input class="pp-name" placeholder="اسم اللاعب" value="${esc(p.name||"")}" aria-label="اسم اللاعب">
+  <select class="pp-cat" aria-label="الفئة">${CATS.map(([k,l])=>`<option value="${k}" ${k===p.category?"selected":""}>${l}</option>`).join("")}</select>
+  <input class="pp-pos" placeholder="المركز" value="${esc(p.position||"")}" aria-label="المركز">
+  <input class="pp-num" placeholder="الرقم" value="${esc(p.number??"")}" aria-label="الرقم">
+  <button type="button" class="btn s d" data-ppdel>حذف اللاعب</button></div>`;
 }
 document.addEventListener("change",async e=>{
-  const id=e.target.dataset?.up; if(!id)return;
-  const file=e.target.files[0]; if(!file)return;
-  const wrap=document.querySelector(`[data-if="${id}"]`), n=wrap.dataset.n, max=+wrap.dataset.max||1000;
-  const hint=$("#"+id+"_i"); hint.textContent="⏳ جارٍ معالجة الصورة…";
-  try{
-    const val=await pickImage(file,max);
-    wrap.innerHTML=imgInner(id,n,val,max);
-    $("#"+id+"_i").textContent="✓ تم اختيار الصورة — اضغط «حفظ» لتثبيتها ("+(val.startsWith("data:")?Math.round(val.length*.75/1024)+" KB":"مرفوعة")+")";
-  }catch(er){hint.textContent="";toast(er.message);}
+  const t=e.target, id=t.dataset?.up, gid=t.dataset?.gup;
+  if(id&&t.files[0]){
+    const wrap=document.querySelector(`[data-if="${id}"]`), n=wrap.dataset.n, max=+wrap.dataset.max||1000;
+    $("#"+id+"_i").textContent="⏳ جارٍ معالجة الصورة…";
+    try{
+      const val=await pickImage(t.files[0],max);
+      wrap.innerHTML=imgInner(id,n,val,max);
+      $("#"+id+"_i").textContent="✓ تم اختيار الصورة — اضغط «حفظ» لتثبيتها ("+sizeTxt(val)+")";
+    }catch(er){$("#"+id+"_i").textContent="";toast(er.message);}
+  }
+  if(gid&&t.files.length){
+    const wrap=document.querySelector(`[data-gf="${gid}"]`), n=wrap.dataset.n, max=+wrap.dataset.max||1400;
+    let list=[]; try{list=JSON.parse($("#"+gid).value||"[]");}catch(_){}
+    const files=[...t.files];
+    for(let i=0;i<files.length;i++){
+      $("#"+gid+"_i").textContent=`⏳ معالجة الصورة ${i+1} من ${files.length}…`;
+      try{list.push(await pickImage(files[i],max));}catch(er){toast(er.message);}
+    }
+    wrap.innerHTML=galInner(gid,n,list,max);
+    $("#"+gid+"_i").textContent="✓ تمت الإضافة — اضغط «حفظ» لتثبيتها";
+  }
 });
 document.addEventListener("click",e=>{
-  const id=e.target.dataset?.rm; if(!id)return;
-  const wrap=document.querySelector(`[data-if="${id}"]`);
-  wrap.innerHTML=imgInner(id,wrap.dataset.n,"",+wrap.dataset.max||1000);
-  $("#"+id+"_i").textContent="تم حذف الصورة — اضغط «حفظ» للتأكيد";
+  const t=e.target;
+  if(t.dataset?.rm){
+    const id=t.dataset.rm, wrap=document.querySelector(`[data-if="${id}"]`);
+    wrap.innerHTML=imgInner(id,wrap.dataset.n,"",+wrap.dataset.max||1000);
+    $("#"+id+"_i").textContent="تم حذف الصورة — اضغط «حفظ» للتأكيد";
+  }
+  if(t.dataset?.gdel){
+    const [id,i]=t.dataset.gdel.split(":"), wrap=document.querySelector(`[data-gf="${id}"]`);
+    let list=[]; try{list=JSON.parse($("#"+id).value||"[]");}catch(_){}
+    list.splice(+i,1); wrap.innerHTML=galInner(id,wrap.dataset.n,list,+wrap.dataset.max||1400);
+    $("#"+id+"_i").textContent="تم حذف الصورة — اضغط «حفظ» للتأكيد";
+  }
+  if(t.dataset?.ppadd!==undefined){
+    t.previousElementSibling.insertAdjacentHTML("beforeend",pplRow());
+  }
+  if(t.dataset?.ppdel!==undefined){ t.closest(".pp-row").remove(); }
 });
 
 /* ================= FIELD ENGINE ================= */
 function fieldHTML([n,l,t="text",o],val){
-  const id="x_"+n.replace(/\W/g,"_"), full=(t==="textarea"||t==="goals"||t==="image"||(o&&o.full))?" full":"";
+  const id="x_"+n.replace(/\W/g,"_");
+  const full=(["textarea","goals","lines","image","gallery","people"].includes(t)||(o&&o.full))?" full":"";
   let v=val, inp;
   if(t==="goals")v=(val||[]).map(g=>`${g.scorer}|${g.minute}|${g.team}`).join("\n");
-  if((n==="content"||n==="categories")&&Array.isArray(val))v=val.join("\n");
+  if(t==="lines")v=Array.isArray(val)?val.join("\n"):(val&&typeof val==="object"?Object.values(val).join("\n"):(val??""));
   v=v??"";
-  if(t==="textarea"||t==="goals")inp=`<textarea id="${id}" name="${n}" data-t="${t}">${esc(v)}</textarea>`;
+  if(t==="textarea"||t==="goals"||t==="lines")inp=`<textarea id="${id}" name="${n}" data-t="${t}">${esc(v)}</textarea>`;
   else if(t==="select")inp=`<select id="${id}" name="${n}" data-t="select">${o.map(x=>{const[a,b]=Array.isArray(x)?x:[x,x];return`<option value="${esc(a)}" ${a==v?"selected":""}>${esc(b)}</option>`}).join("")}</select>`;
-  else if(t==="check")inp=`<input id="${id}" type="checkbox" name="${n}" data-t="check" ${val?"checked":""}>`;
+  else if(t==="check"){const on=(val===undefined||val===null)?!!(o&&o.def):!!val;inp=`<input id="${id}" type="checkbox" name="${n}" data-t="check" ${on?"checked":""}>`;}
   else if(t==="image"){const max=(o&&o.max)||1000;return`<div class="f${full}"><label class="lb">${esc(l)}</label><div class="img-f" data-if="${id}" data-n="${esc(n)}" data-max="${max}">${imgInner(id,n,v,max)}</div></div>`;}
+  else if(t==="gallery"){const max=(o&&o.max)||1400,a=Array.isArray(val)?val:(val&&typeof val==="object"?Object.values(val):(val?String(val).split("\n").filter(Boolean):[]));return`<div class="f${full}"><label class="lb">${esc(l)}</label><div data-gf="${id}" data-n="${esc(n)}" data-max="${max}">${galInner(id,n,a,max)}</div></div>`;}
+  else if(t==="people"){const a=Array.isArray(val)?val:Object.values(val||{});return`<div class="f${full}"><label class="lb">${esc(l)}</label><div data-people="${esc(n)}">${a.map(pplRow).join("")}</div><button type="button" class="btn s" data-ppadd>＋ إضافة لاعب</button></div>`;}
   else if(t==="datetime")inp=`<input id="${id}" type="datetime-local" name="${n}" data-t="datetime" value="${esc(String(v).slice(0,16))}">`;
   else inp=`<input id="${id}" type="${t==="number"?"number":t==="date"?"date":"text"}" ${t==="number"?'step="any"':""} name="${n}" data-t="${t}" value="${esc(v)}">`;
   return`<div class="f${full}"><label class="lb" for="${id}">${esc(l)}</label>${inp}</div>`;
@@ -224,18 +300,26 @@ function fieldHTML([n,l,t="text",o],val){
 function collect(form,fields,base){
   const o=structuredClone(base||{});
   fields.forEach(([n,,t="text"])=>{
-    const el=form.elements[n]; if(!el)return; let v;
-    if(t==="check")v=el.checked;
-    else if(t==="number")v=el.value===""?null:Number(el.value);
-    else if(t==="datetime")v=el.value?el.value+":00+01:00":"";
-    else if(t==="goals")v=el.value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{const[a,b,c]=s.split("|");return{scorer:(a||"").trim(),minute:(b||"").trim(),team:(c||"home").trim()==="away"?"away":"home"}});
-    else if(n==="content"||n==="categories")v=el.value.split("\n").map(s=>s.trim()).filter(Boolean);
-    else v=el.value.trim();
+    let v;
+    if(t==="people"){
+      v=[...form.querySelectorAll(`[data-people="${n}"] .pp-row`)].map(r=>({
+        name:r.querySelector(".pp-name").value.trim(),category:r.querySelector(".pp-cat").value,
+        position:r.querySelector(".pp-pos").value.trim(),number:r.querySelector(".pp-num").value.trim(),
+        image:r.querySelector("input[type=hidden]").value})).filter(p=>p.name);
+    }else{
+      const el=form.elements[n]; if(!el)return;
+      if(t==="check")v=el.checked;
+      else if(t==="number")v=el.value===""?null:Number(el.value);
+      else if(t==="datetime")v=el.value?el.value+":00+01:00":"";
+      else if(t==="goals")v=el.value.split("\n").map(s=>s.trim()).filter(Boolean).map(s=>{const[a,b,c]=s.split("|");return{scorer:(a||"").trim(),minute:(b||"").trim(),team:(c||"home").trim()==="away"?"away":"home"}});
+      else if(t==="lines")v=el.value.split("\n").map(s=>s.trim()).filter(Boolean);
+      else if(t==="gallery"){try{v=JSON.parse(el.value||"[]");}catch(_){v=[];}}
+      else v=el.value.trim();
+    }
     if(v===null)deleteP(o,n);else setP(o,n,v);
   });
   return o;
 }
-const deleteP=(o,p)=>{const k=p.split("."),t=k.slice(0,-1).reduce((a,x)=>a?.[x],o);if(t)delete t[k.at(-1)];};
 
 /* ================= VIEWS ================= */
 const secOf=id=>SECTIONS.find(s=>s.id===id);
@@ -267,13 +351,15 @@ function single(s){
   $("#sf").onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{await api(s.path,"PUT",collect(e.target,s.fields,data));toast("تم الحفظ ✓ (يظهر في الموقع فورًا)");await load(s.path);}catch(er){toast(er.message);}b.disabled=false;};
 }
 function cell(x,c){
-  const v=x[c]; if(c==="image"||c==="logo")return v?`<img src="${esc(v)}" alt="">`:"—";
+  const v=x[c];
+  if(c==="image"||c==="logo")return v?`<img src="${esc(v)}" alt="">`:"—";
+  if(c==="visible")return v===false?"🚫 مخفي":"ظاهر";
   if(c==="date"||c==="createdAt")return v?esc(String(v).slice(0,16).replace("T"," ")):"—";
-  if(c==="category"){const f=CATS.find(k=>k[0]===v);return esc(f?f[1]:v);}
+  if(c==="category"){const f=CATS.find(k=>k[0]===v)||ACATS.find(k=>k[0]===v);return esc(f?f[1]:v??"—");}
   if(typeof v==="boolean")return v?"✓":"—"; return esc(v??"—");
 }
 function list(s){
-  let rows=arr(s.path); rows.sort(s.sort||((a,b)=>(a.order??0)-(b.order??0)));
+  let rows=arr(s.path); rows.sort(s.sort||byOrder);
   $("#view").onchange=null;
   $("#view").innerHTML=(s.hint?`<p class="hint" style="margin-bottom:10px">${s.hint}</p>`:"")+(rows.length?`<div class="tw"><table><thead><tr>${s.cols.map(c=>`<th>${LBL[c]||c}</th>`).join("")}<th></th></tr></thead><tbody>${rows.map(x=>`<tr>${s.cols.map(c=>`<td>${cell(x,c)}</td>`).join("")}<td><div class="acts"><button class="btn s" data-e="${x._k}">تعديل</button><button class="btn s d" data-x="${x._k}">حذف</button></div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">لا توجد عناصر بعد — اضغط «إضافة»</div>`);
   $("#view").onclick=async e=>{
@@ -291,6 +377,7 @@ function editItem(s,item){
     const o=collect(e.target,s.fields,base);o.id=k;
     if(s.pre){["p","w","d","l","gf","ga"].forEach(f=>o[f]=o[f]??0);s.pre(o);}
     if(s.id==="players"&&!o.details)o.details={};
+    if(!item&&o.order==null&&s.fields.some(f=>f[0]==="order"))o.order=Date.now()%1e6;   // عنصر جديد يظهر في آخر القائمة
     try{await api(`${s.path}/${k}`,"PUT",o);closeM();toast("تم الحفظ ✓");show(cur);}catch(er){toast(er.message);b.disabled=false;}
   };
 }
@@ -310,17 +397,22 @@ $("#menuB").onclick=()=>$("#side").classList.toggle("on");
 
 /* ================= SEED (بيانات البداية — تكتب تحت /usma فقط) ================= */
 async function seed(){
-  if(!confirm("سيتم كتابة البيانات الافتراضية للموقع (تستبدل المحتوى الحالي فقط، لا تمسّ الطلبات). متابعة؟"))return;
+  if(!confirm("سيتم كتابة البيانات الافتراضية للموقع والأرشيف (تستبدل المحتوى الحالي لهذه الأقسام فقط، ولا تمسّ الطلبات). متابعة؟"))return;
   const k=(a,pre)=>Object.fromEntries(a.map((x,i)=>{const id=pre+(i+1);return[id,{...x,id}]}));
   const opp=["CR Belouizdad","JS Kabylie","MC Alger","CS Constantine","ES Sétif","JS Saoura","MC Oran","Paradou AC","USM Khenchela","ES Mostaganem","MC El Bayadh","USM El Harrach","NC Magra","ASO Chlef","US Biskra"];
   const ST5="ملعب 5 جويلية", matches=[];
   for(let r=1;r<=30;r++){const h=r%2===0,o=opp[(r-1)%15];matches.push({round:r,homeTeam:h?"USM Alger":o,awayTeam:h?o:"USM Alger",homeLogo:h?LOGO:"",awayLogo:h?"":LOGO,date:r===2?"2026-10-03T18:00:00+01:00":"",stadium:h?ST5:"",goals:[],info:""});}
   const gk=(n,img)=>({name:n,position:"حارس مرمى",category:"goalkeepers",image:img,description:"حارس مرمى في الفريق الأول لاتحاد العاصمة."});
   const B="https://raw.githubusercontent.com/darkonovic51-hash/Usma-club/";
+  /* الأرشيف — محطات وبطولات أولية من قائمتك، قابلة للتعديل والحذف */
+  const H=[[1937,"التأسيس","تأسس النادي في 5 يوليو 1937."],[1963,"أول لقب بطولة وطنية"],[1981,"كأس الجزائر"],[1988,"كأس الجزائر"],[1997,"كأس الجزائر"],[1999,"كأس الجزائر"],[2001,"كأس الجزائر"],[2003,"البطولة والكأس"],[2004,"كأس الجزائر"],[2013,"كأس الجزائر"],[2013,"لقب عربي"],[2014,"بطولة الجزائر"],[2016,"بطولة الجزائر"],[2019,"بطولة الجزائر"],[2023,"كأس الكونفدرالية الإفريقية"],[2023,"كأس السوبر الإفريقي"],[2025,"كأس الجزائر"],[2026,"كأس الجزائر"]];
+  const T=[[1963,"بطولة الجزائر","أول لقب بطولة وطنية"],[1981,"كأس الجزائر"],[1988,"كأس الجزائر"],[1997,"كأس الجزائر"],[1999,"كأس الجزائر"],[2001,"كأس الجزائر"],[2003,"بطولة الجزائر"],[2003,"كأس الجزائر"],[2004,"كأس الجزائر"],[2013,"كأس الجزائر"],[2013,"بطولة عربية","اللقب العربي"],[2014,"بطولة الجزائر"],[2016,"بطولة الجزائر"],[2019,"بطولة الجزائر"],[2023,"كأس الكونفدرالية الإفريقية","",true],[2023,"كأس السوبر الإفريقي","",true],[2025,"كأس الجزائر"],[2026,"كأس الجزائر"]];
+  const tl=[{label:"1937",from:1937,to:1939,title:"التأسيس",description:"تأسس النادي في 5 يوليو 1937."},...[1940,1950,1960,1970,1980,1990,2000,2010,2020].map(y=>({label:y+"s",from:y,to:y+9,title:"",description:""})),{label:"اليوم",from:2026,to:9999,title:"الحاضر",description:""}];
+  const stats=[["1937","سنة التأسيس","5 يوليو 1937"],["8","بطولات الدوري",""],["10","كؤوس الجزائر","حتى نهاية موسم 2025-2026"],["2","كأس السوبر الجزائري",""],["2","كأس الكونفدرالية الإفريقية","حسب السجل المعتمد حتى 2026"],["1","كأس السوبر الإفريقي",""],["1","اللقب العربي",""]];
   const data={
     siteSettings:{clubName:"اتحاد العاصمة",clubNameEn:"USM Alger",shortName:"USMA",since:1937,logo:LOGO,topTag:"إمبراطورية العاصمة · منذ 1937",slogan:"اتحاد العاصمة أكثر من ناد",about:"نادي اتحاد العاصمة الجزائري، ناد عريق كتب اسمه في تاريخ كرة القدم الجزائرية والإفريقية.",social:SOC.map((n,i)=>({name:n,short:["f","ig","yt","x"][i],url:""}))},
     hero:{image:HERO,title:"اتحاد العاصمة",highlight:"أكثر من ناد",subtitle:"منذ 1937... حكاية تتواصل",buttons:[{text:"اكتشف النادي",target:"#team",style:"red"},{text:"المباراة القادمة",target:"#match",style:"ghost"}]},
-    navigation:k([["الرئيسية","#home"],["الفريق الأول","#team"],["المباريات","#fixtures","fx"],["الترتيب","#fixtures","st"],["المتجر","#store"],["مدرسة كرة القدم","#academy"],["الأخبار","#news"],["التذاكر","#tickets","",true]].map(([label,target,tab,cta],i)=>({label,target,tab:tab||"",cta:!!cta,order:i+1})),"nv"),
+    navigation:k([["الرئيسية","#home"],["الفريق الأول","#team"],["المباريات","#fixtures","fx"],["الترتيب","#fixtures","st"],["المتجر","#store"],["مدرسة كرة القدم","#academy"],["الأخبار","#news"],["الأرشيف","#archive"],["التذاكر","#tickets","",true]].map(([label,target,tab,cta],i)=>({label,target,tab:tab||"",cta:!!cta,order:i+1})),"nv"),
     services:k([["👕","الفريق الأول","تعرّف على اللاعبين والطاقم الفني","#team",""],["📅","الرزنامة","جميع مباريات الموسم جولة بجولة","#fixtures","fx"],["⚽","النتائج","النتائج والأهداف والمسجلون","#fixtures","fx"],["🏆","الترتيب","جدول ترتيب الرابطة المحترفة الأولى","#fixtures","st"],["🎟️","التذاكر","احجز مقعدك في المدرجات","#tickets",""],["🛍️","متجر النادي","القمصان والمنتجات الرسمية","#store",""],["🌱","مدرسة كرة القدم","سجّل طفلك في مدرسة النادي","#academy",""],["📰","الأخبار","آخر أخبار الفريق والنادي","#news",""]].map(([icon,title,desc,target,tab],i)=>({icon,title,desc,target,tab,order:i+1})),"sv"),
     players:k([gk("أسامة بن بوط",B+"4e6aee7709112029c91b4a3b972ba87a8596f217/1790674350714.jpg"),gk("سيفور",B+"516895d4dedcc00948111ceae87d5241055662ad/1790674354583.jpg"),gk("إيدير حديد",B+"df25839a93ae5c80edcdb43ae84b6afb519058d1/1790674357913.jpg")],"pl"),
     nextMatch:{home:{name:"USM Alger",nameAr:"اتحاد العاصمة",logo:LOGO},away:{name:"JS Kabylie",nameAr:"شبيبة القبائل",logo:""},competition:"الدوري الجزائري - القسم المحترف الأول",season:"2026/2027",round:2,datetime:"2026-10-03T18:00:00+01:00",stadium:ST5,durationMinutes:120},
@@ -331,9 +423,15 @@ async function seed(){
       offers:k([["اشتراك مغطى",15000,"موسم 2026/2027","مقعد مغطى طوال الموسم.",false],["اشتراك غير مغطى",9000,"موسم 2026/2027","اشتراك موسمي غير مغطى.",false],["اشتراك VIP",60000,"موسم 2026/2027","مقاعد مميزة وخدمات حصرية.",true],["بطاقة الوفاء",3000,"سنوية","بطاقة عضوية الأنصار.",false]].map(([title,price,period,desc,vip])=>({title,price,period,desc,vip})),"s")},
     products:k([{name:"قميص النادي",price:6500,currency:"دج",image:"",short:"القميص الرسمي لاتحاد العاصمة.",description:"القميص الرسمي للنادي. (وصف تجريبي)",active:true},{name:"وشاح النادي",price:1500,currency:"دج",image:"",short:"وشاح الأنصار الرسمي.",description:"وشاح رسمي للمناصرين. (وصف تجريبي)",active:true}],"pr"),
     academy:{image:HERO,title:"مدرسة اتحاد العاصمة لكرة القدم",text:"نصنع أجيال المستقبل بروح اتحاد العاصمة: تكوين، انضباط، وشغف.",categories:["أقل من 9 سنوات","أقل من 11 سنة","أقل من 13 سنة","أقل من 15 سنة","أقل من 17 سنة"],points:[{icon:"🎯",title:"تكوين احترافي",desc:"مدربون مؤهلون وبرنامج منظم"},{icon:"🛡️",title:"قيم النادي",desc:"الانضباط والروح الجماعية"},{icon:"🌟",title:"أفق مفتوح",desc:"اكتشاف المواهب وصقلها"}]},
-    news:k([{demo:true,category:"أخبار النادي",title:"خبر تجريبي: انطلاق التحضيرات لمواجهة شبيبة القبائل",date:"2026-09-28",author:"المكتب الإعلامي",image:HERO,summary:"محتوى تجريبي (Demo) يُعدَّل أو يُحذف من لوحة التحكم.",content:["هذا النص محتوى تجريبي لعرض شكل المقال.","تواصل التشكيلة تحضيراتها لمواجهة شبيبة القبائل."]}],"n")
+    news:k([{demo:true,category:"أخبار النادي",title:"خبر تجريبي: انطلاق التحضيرات لمواجهة شبيبة القبائل",date:"2026-09-28",author:"المكتب الإعلامي",image:HERO,summary:"محتوى تجريبي (Demo) يُعدَّل أو يُحذف من لوحة التحكم.",content:["هذا النص محتوى تجريبي لعرض شكل المقال.","تواصل التشكيلة تحضيراتها لمواجهة شبيبة القبائل."]}],"n"),
+    archiveSettings:{heroImage:"",kicker:"USMA ARCHIVE",title:"أرشيف النادي",subtitle:"رحلة عبر تاريخ اتحاد العاصمة",tagline:"من التأسيس إلى اليوم، من الذكريات إلى الإنجازات.",buttonText:"استكشف الأرشيف",foundedYear:1937,foundedDate:"5 يوليو 1937",foundedLabel:"تأسس نادي اتحاد العاصمة في 5 يوليو 1937",searchPlaceholder:"ابحث في أرشيف النادي...",featuredKicker:"محطة من التاريخ"},
+    archiveTimeline:k(tl.map((x,i)=>({...x,order:i+1})),"tl"),
+    clubHistory:k(H.map((h,i)=>({year:h[0],title:h[1],description:h[2]||"",order:i+1})),"ch"),
+    trophies:k(T.map((t,i)=>({competition:t[1],season:"",year:t[0],title:t[2]||t[1],description:"بيانات افتراضية قابلة للتعديل.",image:"",trophyImage:"",featured:!!t[3],order:i+1})),"tr"),
+    historicSquads:k([1963,1981,1988,1997,2003,2013,2019,2023].map((y,i)=>({year:y,image:"",coach:"",description:"",order:i+1})),"sq"),
+    clubStats:k(stats.map((s,i)=>({value:s[0],label:s[1],note:s[2],order:i+1})),"cs")
   };
-  try{await api("","PATCH",data);toast("تم تجهيز بيانات الموقع ✓");show(cur||"hero");}catch(er){toast(er.message);}
+  try{await api("","PATCH",data);toast("تم تجهيز بيانات الموقع والأرشيف ✓");show(cur||"hero");}catch(er){toast(er.message);}
 }
 
 /* ================= START ================= */
